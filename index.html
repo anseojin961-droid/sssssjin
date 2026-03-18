@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>우리 둘만의 공간</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=bb60f7842abbe4d6c1d65a31830dc8ea&libraries=services&autoload=false"></script>
+  <style>
+    :root {
+      --bg: #fdf8f3; --rose: #e79aa8; --rose-deep: #d07385; --rose-soft: #f4c2cd;
+      --text-main: #4a3b35; --card-bg: #ffffff; --border-soft: #f0e0d6;
+      --shadow-soft: 0 8px 20px rgba(0,0,0,0.06); --radius-lg: 18px; --radius-md: 12px;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text-main); font-family:"Noto Serif KR",serif; line-height:1.6; }
+    h1,h2,h3 { font-family:"Playfair Display",serif; letter-spacing:0.03em; color:#3c2f2a; }
+    a { color:inherit; text-decoration:none; }
+    button { cursor:pointer; border:none; font-family:inherit; }
+    input,textarea,select { font-family:"Noto Serif KR",serif; }
+    .hidden { display:none !important; }
+    .app-shell { min-height:100vh; display:flex; flex-direction:column; }
+    .auth-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:radial-gradient(circle at top left,#ffe7ef 0,#fdf8f3 46%,#f4dfd8 100%); }
+    .auth-card { background:rgba(255,255,255,0.97); padding:28px 24px; border-radius:24px; max-width:400px; width:100%; box-shadow:0 12px 35px rgba(180,120,120,0.3); border:1px solid rgba(232,197,188,0.85); position:relative; overflow:hidden; }
+    .auth-card::before { content:""; position:absolute; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at center,rgba(231,154,168,0.6),transparent 60%); top:-50px; right:-50px; opacity:0.4; pointer-events:none; }
+    .auth-logo-heart { width:52px; height:52px; border-radius:50%; background:radial-gradient(circle at 30% 20%,#ffe7ee,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; box-shadow:0 6px 16px rgba(217,123,142,0.5); margin:0 auto 10px; }
+    .auth-title { font-size:22px; margin:0 0 4px; text-align:center; }
+    .auth-sub { font-size:12px; opacity:0.7; text-align:center; margin-bottom:20px; }
+    .auth-tabs { display:flex; gap:0; margin-bottom:20px; background:rgba(244,194,205,0.15); border-radius:999px; padding:3px; }
+    .auth-tab { flex:1; padding:7px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:all 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
+    .auth-tab.active { background:#fff; color:#4a3b35; box-shadow:0 2px 8px rgba(200,150,140,0.2); font-weight:500; }
+    .form-group { margin-bottom:12px; }
+    .form-label { font-size:11px; opacity:0.8; margin-bottom:4px; display:block; }
+    .form-input { width:100%; padding:9px 14px; border-radius:999px; border:1px solid #e0c7ba; font-size:13px; outline:none; background:#fff; transition:border 0.15s,box-shadow 0.15s; box-sizing:border-box; }
+    .form-input:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.2); }
+    .btn-full { width:100%; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; cursor:pointer; margin-bottom:8px; }
+    .btn-full-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
+    .btn-full-primary:hover { transform:translateY(-1px); }
+    .btn-full-social { background:#fff; border:1px solid #e0e0e0; color:#333; }
+    .btn-full-social:hover { background:#f5f5f5; }
+    .btn-kakao { background:#FEE500 !important; border:1px solid #FEE500 !important; color:#3C1E1E !important; }
+    .btn-kakao:hover { background:#f5dc00 !important; }
+    .divider-or { display:flex; align-items:center; gap:10px; margin:14px 0; }
+    .divider-or::before,.divider-or::after { content:""; flex:1; height:1px; background:rgba(224,198,185,0.8); }
+    .divider-or span { font-size:11px; opacity:0.6; }
+    .auth-error { font-size:11px; color:#b94a5a; margin-top:6px; text-align:center; min-height:16px; }
+    .code-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:radial-gradient(circle at top left,#ffe7ef 0,#fdf8f3 46%,#f4dfd8 100%); }
+    .code-card { background:rgba(255,255,255,0.97); padding:28px 24px; border-radius:24px; max-width:400px; width:100%; box-shadow:0 12px 35px rgba(180,120,120,0.3); border:1px solid rgba(232,197,188,0.85); position:relative; overflow:hidden; }
+    .code-card::before { content:""; position:absolute; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at center,rgba(231,154,168,0.6),transparent 60%); top:-50px; right:-50px; opacity:0.4; pointer-events:none; }
+    .user-bar { display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(244,194,205,0.15); border-radius:12px; margin-bottom:16px; }
+    .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; flex-shrink:0; }
+    .user-name { font-size:12px; flex:1; }
+    .btn-sm-outline { padding:5px 12px; border-radius:999px; font-size:11px; background:#fff; border:1px solid rgba(224,198,185,0.9); color:#6f4d45; cursor:pointer; }
+    .navbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(10px); background:rgba(253,248,243,0.9); border-bottom:1px solid rgba(224,198,185,0.6); display:flex; align-items:center; justify-content:space-between; padding:10px 18px; }
+    .nav-left { display:flex; align-items:center; gap:10px; }
+    .nav-logo { width:32px; height:32px; border-radius:50%; background:radial-gradient(circle at 30% 20%,#ffe7ee,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; box-shadow:0 4px 12px rgba(217,123,142,0.4); }
+    .nav-title { display:flex; flex-direction:column; gap:2px; }
+    .nav-title-main { font-family:"Playfair Display",serif; font-size:18px; }
+    .nav-title-sub { font-size:11px; opacity:0.8; }
+    .nav-links { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+    .nav-link { padding:6px 12px; border-radius:999px; font-size:12px; background:rgba(255,255,255,0.7); border:1px solid rgba(228,199,189,0.8); transition:background 0.2s,transform 0.1s,box-shadow 0.2s; box-shadow:0 2px 5px rgba(200,160,140,0.25); white-space:nowrap; }
+    .nav-link:hover { background:#ffe8f0; transform:translateY(-1px); }
+    .nav-couple-code { font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(231,154,168,0.12); border:1px dashed rgba(231,154,168,0.7); }
+    .btn-logout-heart { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(217,123,142,0.4); transition:transform 0.2s; color:#fff; flex-shrink:0; }
+    .btn-logout-heart:hover { transform:scale(1.15); }
+    .chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; background:rgba(255,255,255,0.9); border:1px solid rgba(228,199,189,0.9); font-size:10px; }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:#5ec27f; box-shadow:0 0 0 3px rgba(94,194,127,0.4); }
+    .status-dot.offline { background:#c86a6a; box-shadow:0 0 0 3px rgba(200,106,106,0.35); }
+    .main-content { flex:1; padding:24px 14px 40px; max-width:1100px; margin:0 auto; width:100%; }
+    @media (min-width:768px) { .navbar { padding:10px 40px; } .main-content { padding:32px 26px 60px; } }
+    .card { background:var(--card-bg); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft); padding:20px 18px 18px; margin-bottom:18px; border:1px solid var(--border-soft); }
+    @media (min-width:768px) { .card { padding:24px 22px 20px; margin-bottom:22px; } }
+    .card-header { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+    .card-header h2 { font-size:20px; margin:0; }
+    .card-header span { font-size:11px; opacity:0.7; }
+    .section-description { font-size:13px; opacity:0.9; margin-bottom:14px; }
+    .pill-label { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:10px; background:rgba(228,183,185,0.19); border:1px dashed rgba(223,160,165,0.7); margin-left:auto; }
+    .field-group { margin-bottom:10px; display:flex; flex-direction:column; gap:4px; }
+    .field-label { font-size:12px; opacity:0.9; }
+    .field-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    input[type="text"],input[type="date"],input[type="url"],textarea { border-radius:999px; border:1px solid #e0c7ba; padding:7px 12px; font-size:12px; outline:none; background:rgba(255,255,255,0.9); transition:border 0.15s,box-shadow 0.15s; }
+    textarea { border-radius:14px; min-height:70px; resize:vertical; }
+    input:focus,textarea:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.25); background:#fff; }
+    .btn-primary,.btn-outline { padding:7px 15px; border-radius:999px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; cursor:pointer; }
+    .btn-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
+    .btn-primary:hover { transform:translateY(-1px); }
+    .btn-outline { background:rgba(255,255,255,0.9); border:1px solid rgba(224,198,185,0.9); color:#6f4d45; }
+    .btn-outline:hover { background:#ffe9f1; }
+    .badge-soft { font-size:11px; padding:2px 8px; border-radius:999px; background:rgba(244,194,205,0.2); border:1px solid rgba(244,194,205,0.6); cursor:pointer; }
+    .muted { font-size:11px; opacity:0.7; }
+    .small { font-size:11px; }
+    .divider { height:1px; background:linear-gradient(to right,rgba(224,198,185,0),rgba(224,198,185,0.9),rgba(224,198,185,0)); margin:10px 0 14px; }
+    @media (min-width:920px) { .grid-2col { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; } }
+    .schedule-list { display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto; padding-right:4px; }
+    .schedule-item { padding:8px 10px; border-radius:12px; border:1px solid rgba(223,194,180,0.9); background:rgba(255,255,255,0.95); display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .schedule-meta { display:flex; flex-direction:column; gap:2px; }
+    .schedule-title { font-size:13px; font-weight:500; }
+    .schedule-date { font-size:11px; opacity:0.8; }
+    .schedule-type { font-size:10px; padding:1px 8px; border-radius:999px; background:rgba(228,183,185,0.2); border:1px solid rgba(228,183,185,0.7); margin-left:auto; }
+    .btn-icon { width:24px; height:24px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(250,235,229,0.9); border:1px solid rgba(219,182,167,0.9); font-size:13px; color:#7a4b42; cursor:pointer; }
+    .btn-icon:hover { background:#ffe0ea; }
+    .bucket-list { display:flex; flex-direction:column; gap:8px; max-height:230px; overflow-y:auto; padding-right:4px; }
+    .bucket-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background:rgba(255,255,255,0.96); border:1px solid rgba(224,198,185,0.9); }
+    .bucket-item.completed { background:rgba(235,222,219,0.9); opacity:0.9; text-decoration:line-through; }
+    .bucket-title { font-size:13px; flex:1; }
+    .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
+    input[type="checkbox"] { accent-color:#d27990; }
+    .letters-list { display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; padding-right:4px; }
+    .letter-card { padding:9px 11px; border-radius:14px; background:rgba(255,255,255,0.96); border:1px solid rgba(226,195,186,0.95); box-shadow:0 3px 8px rgba(190,147,135,0.15); }
+    .letter-header { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:4px; }
+    .letter-from { font-size:12px; font-weight:500; }
+    .letter-time { font-size:10px; opacity:0.7; }
+    .letter-body { font-size:12px; white-space:pre-wrap; }
+    .letter-footer { margin-top:5px; font-size:10px; opacity:0.7; display:flex; justify-content:space-between; align-items:center; }
+    .pill-mini { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(244,194,205,0.26); border:1px solid rgba(244,194,205,0.7); }
+    .dday-main { display:flex; flex-direction:column; gap:10px; }
+    .dday-display { display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:var(--radius-md); background:linear-gradient(to right,rgba(244,194,205,0.25),rgba(253,248,243,0.9)); border:1px solid rgba(244,194,205,0.7); }
+    .dday-count { font-size:20px; font-weight:700; }
+    .dday-sub { font-size:12px; opacity:0.8; }
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:rgba(248,237,230,0.8); border-radius:999px; }
+    ::-webkit-scrollbar-thumb { background:rgba(214,166,160,0.8); border-radius:999px; }
+    .error-text { font-size:11px; color:#b94a5a; margin-top:6px; }
+    .success-text { font-size:11px; color:#437f57; margin-top:5px; }
+    .footer { text-align:center; padding:12px 10px 24px; font-size:11px; opacity:0.7; }
+  </style>
+</head>
+<body>
+  <div id="authView" class="auth-wrapper">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div class="auth-logo-heart">♥</div>
+        <h1 class="auth-title">우리의 하루들</h1>
+        <p class="auth-sub">둘만의 작은 기록장</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">로그인</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">회원가입</button>
+      </div>
+      <div id="loginForm">
+        <div class="form-group"><label class="form-label">이메일</label><input id="loginEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
+        <div class="form-group"><label class="form-label">비밀번호</label><input id="loginPassword" class="form-input" type="password" placeholder="비밀번호" /></div>
+        <div id="loginError" class="auth-error"></div>
+        <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="loginWithEmail()">로그인</button>
+        <div class="divider-or"><span>또는</span></div>
+        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 로그인</button>
+        <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
+          카카오로 로그인
+        </button>
+      </div>
+      <div id="signupForm" class="hidden">
+        <div class="form-group"><label class="form-label">이메일</label><input id="signupEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
+        <div class="form-group"><label class="form-label">비밀번호</label><input id="signupPassword" class="form-input" type="password" placeholder="6자 이상" /></div>
+        <div class="form-group"><label class="form-label">닉네임</label><input id="signupName" class="form-input" type="text" placeholder="상대방에게 보일 이름" /></div>
+        <div id="signupError" class="auth-error"></div>
+        <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="signupWithEmail()">회원가입</button>
+        <div class="divider-or"><span>또는</span></div>
+        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 시작하기</button>
+        <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
+          카카오로 시작하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="codeView" class="code-wrapper hidden">
+    <div class="code-card">
+      <div style="text-align:center;font-size:28px;margin-bottom:8px;">♥</div>
+      <h2 style="text-align:center;font-size:20px;margin:0 0 4px;">커플 코드 입력</h2>
+      <p style="text-align:center;font-size:12px;opacity:0.7;margin-bottom:16px;">같은 코드를 입력하면 같은 공간을 공유해요</p>
+      <div class="user-bar">
+        <div class="user-avatar">♥</div>
+        <div class="user-name" id="codeViewUserName"></div>
+        <button class="btn-sm-outline" onclick="doLogout()">로그아웃</button>
+      </div>
+      <div class="field-group">
+        <label class="form-label">커플 코드</label>
+        <input id="inputCoupleCode" class="form-input" type="text" placeholder="예: peach-2023-0709" />
+        <div style="font-size:11px;opacity:0.7;margin-top:6px;">- 처음이라면 원하는 코드를 정해서 입력하면 자동으로 만들어져요.<br />- 이미 쓰고 있다면 기존 코드 그대로 입력하세요.</div>
+      </div>
+      <div id="codeError" class="auth-error"></div>
+      <button class="btn-full btn-full-primary" onclick="doEnterWithCode()">들어가기 💗</button>
+    </div>
+  </div>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="navbar">
+      <div class="nav-left">
+        <button id="btnLogout" class="btn-logout-heart" title="로그아웃">♥</button>
+        <div class="nav-logo">♥</div>
+        <div class="nav-title">
+          <div class="nav-title-main">우리의 하루들</div>
+          <div class="nav-title-sub" id="navSubtitle">같이 걷는 매일의 기록</div>
+        </div>
+      </div>
+      <div>
+        <div class="nav-links">
+          <a href="#section-dday" class="nav-link">D-day</a>
+          <a href="#section-calendar" class="nav-link">기념일 달력</a>
+          <a href="#section-photos" class="nav-link">추억 사진첩</a>
+          <a href="#section-bucket" class="nav-link">버킷리스트</a>
+          <a href="#section-letters" class="nav-link">편지함</a>
+          <a href="#section-gifts" class="nav-link">선물 리스트</a>
+          <a href="#section-map" class="nav-link">우리 발자국</a>
+        </div>
+        <div style="margin-top:6px;display:flex;justify-content:flex-end;gap:6px;align-items:center;">
+          <div class="nav-couple-code">코드: <span id="displayCoupleCode">-</span></div>
+          <div class="chip"><span id="realtimeDot" class="status-dot offline"></span><span id="realtimeText">연결 대기중</span></div>
+        </div>
+      </div>
+    </header>
+    <main class="main-content">
+      <section id="section-dday" class="card">
+        <div class="card-header"><h2>우리의 첫날</h2><span>사귄 날부터 오늘까지</span><span class="pill-label">D+day 카운터</span></div>
+        <p class="section-description">우리가 시작된 날을 적어두면, 함께한 지 며칠째인지 매일 자동으로 알려줘요.</p>
+        <div class="dday-main">
+          <div class="dday-display">
+            <div id="ddayPrimary" class="dday-count">사귄 날짜를 아직 설정하지 않았어요.</div>
+            <div id="ddaySecondary" class="dday-sub"></div>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row">
+            <div class="field-group" style="flex:1;min-width:150px;"><label class="field-label">사귄 날짜</label><input id="inputStartDate" type="date" /></div>
+            <button id="btnSaveStartDate" class="btn-outline">D-day 저장</button>
+          </div>
+          <div id="ddaySaveMsg" class="success-text hidden"></div>
+        </div>
+      </section>
+      <div class="grid-2col">
+        <section id="section-calendar" class="card">
+          <div class="card-header"><h2>기념일 · 데이트 달력</h2><span>작은 일정까지 같이 기록하기</span></div>
+          <p class="section-description">기념일, 데이트, 여행 계획을 날짜와 함께 남겨두면 나중에 둘이 돌아보기 좋아요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 120px;"><label class="field-label">날짜</label><input id="inputScheduleDate" type="date" /></div>
+            <div class="field-group" style="flex:2 1 150px;"><label class="field-label">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 120px;">
+              <label class="field-label">종류</label>
+              <select id="selectScheduleType" style="padding:6px 12px;border-radius:999px;border:1px solid #e0c7ba;font-size:12px;">
+                <option value="anniversary">기념일</option><option value="date">데이트</option><option value="trip">여행</option><option value="etc">기타</option>
+              </select>
+            </div>
+            <button id="btnAddSchedule" class="btn-primary" style="margin-top:18px;">달력에 추가</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span class="small muted">달력</span><span class="badge-soft" id="scheduleCountBadge">0개 일정</span>
+          </div>
+          <div id="scheduleList" class="schedule-list"></div>
+        </section>
+        <section id="section-bucket" class="card">
+          <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
+          <p class="section-description">언젠가 둘이서 꼭 해보고 싶은 것들을 적어두고, 하나씩 완성해가요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
+            <div class="field-group" style="flex:1 1 130px;"><label class="field-label">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
+            <button id="btnAddBucket" class="btn-primary" style="margin-top:18px;">추가</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span class="small muted">체크하면 상대방도 바로 완료 표시돼요.</span><span class="badge-soft" id="bucketCountBadge">0개 남음</span>
+          </div>
+          <div id="bucketList" class="bucket-list"></div>
+        </section>
+      </div>
+      <div class="grid-2col">
+        <section id="section-photos" class="card">
+          <div class="card-header"><h2>추억 사진첩</h2><span>함께 담은 장면들</span></div>
+          <p class="section-description">사진을 업로드하거나 URL을 붙여넣으면 실시간으로 공유돼요.</p>
+          <div class="field-group"><label class="field-label">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" style="font-size:11px;" /><span class="muted small">- 한 번에 한 장씩 업로드돼요.</span></div>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">또는 사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://..." /></div>
+            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
+          </div>
+          <div class="field-row" style="margin-top:4px;">
+            <button id="btnAddPhoto" class="btn-primary">사진 추가</button>
+            <span id="photoUploadStatus" class="small muted"></span>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span class="small muted">월별 타임라인</span><span class="badge-soft" id="photoCountBadge">0장</span>
+          </div>
+          <div id="photoList" style="display:flex;flex-direction:column;max-height:500px;overflow-y:auto;padding-right:4px;"></div>
+        </section>
+        <section id="section-letters" class="card">
+          <div class="card-header"><h2>서로에게 쓰는 편지함</h2><span>짧은 메모도 괜찮아요</span></div>
+          <p class="section-description">오늘 전하고 싶은 말을 짧게라도 남겨보세요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">작성자</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+            <div class="field-group" style="flex:1 1 140px;"><label class="field-label">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
+          </div>
+          <div class="field-group"><label class="field-label">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;">
+            <button id="btnSendLetter" class="btn-primary">편지 보내기</button>
+            <span id="letterStatus" class="small muted"></span>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span class="small muted">새로 작성된 편지는 위쪽에 쌓여요.</span><span class="badge-soft" id="letterCountBadge">0통</span>
+          </div>
+          <div id="lettersList" class="letters-list"></div>
+        </section>
+      </div>
+      <section id="section-gifts" class="card">
+        <div class="card-header"><h2>받고 싶은 선물 리스트 🎁</h2><span>서로의 위시리스트</span><span class="pill-label">선물 힌트</span></div>
+        <p class="section-description">갖고 싶은 것들을 미리 적어두면, 기념일에 딱 맞는 선물을 고를 수 있어요.</p>
+        <div class="field-row">
+          <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+          <div class="field-group" style="flex:2 1 180px;"><label class="field-label">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
+          <div class="field-group" style="flex:1 1 120px;"><label class="field-label">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://..." /></div>
+          <button id="btnAddGift" class="btn-primary" style="margin-top:18px;">추가</button>
+        </div>
+        <div class="divider"></div>
+        <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span class="small muted">선물 받으면 체크!</span><span class="badge-soft" id="giftCountBadge">0개</span>
+        </div>
+        <div id="giftList" class="bucket-list"></div>
+      </section>
+      <section id="section-map" class="card">
+        <div class="card-header"><h2>우리 발자국 🗺️</h2><span>함께 간 곳들</span><span class="pill-label">추억 지도</span></div>
+        <p class="section-description">함께 갔던 곳을 지도에 핀으로 남겨요.</p>
+        <div class="field-row">
+          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
+          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
+          <button id="btnSearchPlace" class="btn-primary" style="margin-top:18px;">장소 검색</button>
+          <button id="btnMyLocation" class="btn-outline" style="margin-top:18px;">📍 현재 위치</button>
+        </div>
+        <div id="mapSearchResults" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div id="kakaoMap" style="width:100%;height:400px;border-radius:14px;border:1px solid var(--border-soft);margin-top:8px;"></div>
+        <div class="divider"></div>
+        <div id="placeList" class="schedule-list" style="max-height:200px;"></div>
+      </section>
+    </main>
+    <footer class="footer">오늘도 같이, 한 걸음씩 담아가기 ♡</footer>
+  </div>
+
+  <script>
+    function switchTab(t) { if(window._app) window._app.switchTab(t); }
+    function loginWithEmail() { if(window._app) window._app.loginWithEmail(); }
+    function signupWithEmail() { if(window._app) window._app.signupWithEmail(); }
+    function loginWithGoogle() { if(window._app) window._app.loginWithGoogle(); }
+    function loginWithKakao() { if(window._app) window._app.loginWithKakao(); }
+    function doLogout() { if(window._app) window._app.doLogout(); }
+    function doEnterWithCode() { if(window._app) window._app.doEnterWithCode(); }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDp8-HY4YxpR3hHWeDLEtyA3AV78siWyvo",
+      authDomain: "dnfl-bdc76.firebaseapp.com",
+      projectId: "dnfl-bdc76",
+      storageBucket: "dnfl-bdc76.firebasestorage.app",
+      messagingSenderId: "118876262664",
+      appId: "1:118876262664:web:c92b7f408f168f6df69cbd"
+    };
+    const KAKAO_REST_KEY = "2a71f06d5335fc05a0917d34b923d609";
+    const KAKAO_FUNCTION_URL = "https://kakaologin-ke65mbcpiq-uc.a.run.app";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+    let currentCoupleCode = null;
+    let unsubscribers = [];
+    let kakaoMap = null;
+    let kakaoMarkers = [];
+
+    function showView(view) {
+      ["authView","codeView","appView"].forEach(v => document.getElementById(v).classList.add("hidden"));
+      document.getElementById(view).classList.remove("hidden");
+    }
+
+    // 카카오 콜백 처리
+    // 카카오 콜백 처리
+    const kakaoCode = sessionStorage.getItem("kakaoCode");
+    if (kakaoCode && kakaoCode.length > 10) {
+      sessionStorage.removeItem("kakaoCode");
+      (async () => {
+        try {
+          const res = await fetch(KAKAO_FUNCTION_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: kakaoCode })
+          });
+          const data = await res.json();
+          if (data.customToken) {
+            await signInWithCustomToken(auth, data.customToken);
+          }
+        } catch(e) { console.error("카카오 로그인 실패", e); }
+      })();
+    }
+
+    window._app = {
+      switchTab(tab) {
+        document.getElementById("loginForm").classList.toggle("hidden", tab !== "login");
+        document.getElementById("signupForm").classList.toggle("hidden", tab !== "signup");
+        document.getElementById("tabLogin").classList.toggle("active", tab === "login");
+        document.getElementById("tabSignup").classList.toggle("active", tab === "signup");
+      },
+      async loginWithEmail() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const pw = document.getElementById("loginPassword").value;
+        const err = document.getElementById("loginError");
+        err.textContent = "";
+        try { await signInWithEmailAndPassword(auth, email, pw); }
+        catch(e) { err.textContent = "이메일 또는 비밀번호가 올바르지 않아요."; }
+      },
+      async signupWithEmail() {
+        const email = document.getElementById("signupEmail").value.trim();
+        const pw = document.getElementById("signupPassword").value;
+        const name = document.getElementById("signupName").value.trim();
+        const err = document.getElementById("signupError");
+        err.textContent = "";
+        if (!name) { err.textContent = "닉네임을 입력해주세요."; return; }
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, pw);
+          await updateProfile(cred.user, { displayName: name });
+        } catch(e) {
+          if (e.code === "auth/email-already-in-use") err.textContent = "이미 사용 중인 이메일이에요.";
+          else if (e.code === "auth/weak-password") err.textContent = "비밀번호는 6자 이상이어야 해요.";
+          else err.textContent = "회원가입 중 문제가 생겼어요.";
+        }
+      },
+      async loginWithGoogle() {
+        try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+        catch(e) { console.error(e); }
+      },
+      loginWithKakao() {
+        const redirectUri = encodeURIComponent(`${location.origin}/kakao-callback`);
+        location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_KEY}&redirect_uri=${redirectUri}&response_type=code`;
+      },
+      async doLogout() {
+        if (!confirm("로그아웃 할까요?")) return;
+        clearUnsubscribers();
+        currentCoupleCode = null;
+        try { localStorage.removeItem("coupleCode"); } catch(e) {}
+        kakaoMap = null; kakaoMarkers = [];
+        await signOut(auth);
+      },
+      async doEnterWithCode() {
+        const code = document.getElementById("inputCoupleCode").value.trim();
+        const err = document.getElementById("codeError");
+        err.textContent = "";
+        if (!code) { err.textContent = "커플 코드를 입력해주세요."; return; }
+        try {
+          currentCoupleCode = code;
+          try { localStorage.setItem("coupleCode", code); } catch(e) {}
+          await enterMainApp(code);
+        } catch(e) {
+          console.error(e);
+          err.textContent = "연결 중 문제가 생겼어요.";
+          currentCoupleCode = null;
+        }
+      }
+    };
+
+    document.getElementById("inputCoupleCode").addEventListener("keydown", e => {
+      if (e.key === "Enter") window._app.doEnterWithCode();
+    });
+
+    document.getElementById("btnLogout").addEventListener("click", () => window._app.doLogout());
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const savedCode = (() => { try { return localStorage.getItem("coupleCode"); } catch(e) { return null; } })();
+        if (savedCode) {
+          currentCoupleCode = savedCode;
+          document.getElementById("codeViewUserName").textContent = user.displayName || user.email;
+          await enterMainApp(savedCode);
+        } else {
+          document.getElementById("codeViewUserName").textContent = user.displayName || user.email;
+          showView("codeView");
+        }
+      } else {
+        currentUser = null;
+        showView("authView");
+      }
+    });
+
+    async function enterMainApp(code) {
+      clearUnsubscribers();
+      showView("appView");
+      document.getElementById("displayCoupleCode").textContent = code;
+      setRealtimeStatus(true);
+      const coupleRef = doc(db, "couples", code);
+      const snap = await getDoc(coupleRef);
+      if (!snap.exists()) {
+        await setDoc(coupleRef, { createdAt: serverTimestamp(), title: "우리의 하루들", startDate: null });
+      } else {
+        const data = snap.data();
+        if (data.startDate) { document.getElementById("inputStartDate").value = data.startDate; updateDdayView(data.startDate); }
+        if (data.title) document.getElementById("navSubtitle").textContent = data.title;
+      }
+      unsubscribers.push(onSnapshot(coupleRef, snap => {
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.startDate) updateDdayView(data.startDate);
+          if (data.title) document.getElementById("navSubtitle").textContent = data.title;
+        }
+      }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"schedules"), orderBy("date","asc"), orderBy("createdAt","asc")), snap => renderSchedules(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","asc")), snap => renderBucketList(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"photos"), orderBy("createdAt","desc")), snap => renderPhotos(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"letters"), orderBy("createdAt","desc")), snap => renderLetters(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"gifts"), orderBy("createdAt","asc")), snap => renderGifts(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"places"), orderBy("createdAt","desc")), snap => renderPlaces(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      setTimeout(() => initKakaoMap(), 500);
+    }
+
+    function clearUnsubscribers() {
+      unsubscribers.forEach(fn => { if (typeof fn === "function") fn(); });
+      unsubscribers = [];
+    }
+
+    function setRealtimeStatus(online) {
+      const dot = document.getElementById("realtimeDot"); const text = document.getElementById("realtimeText");
+      if (online) { dot.classList.remove("offline"); text.textContent = "실시간 동기화 중"; }
+      else { dot.classList.add("offline"); text.textContent = "연결 대기중"; }
+    }
+
+    function formatDate(ds) {
+      if (!ds) return "-";
+      const d = new Date(ds + "T00:00:00"); if (isNaN(d)) return ds;
+      return `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,"0")}.${d.getDate().toString().padStart(2,"0")} (${["일","월","화","수","목","금","토"][d.getDay()]})`;
+    }
+
+    function formatTimestamp(ts) {
+      if (!ts) return "";
+      const d = ts.toDate ? ts.toDate() : new Date(ts); if (isNaN(d)) return "";
+      return `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,"0")}.${d.getDate().toString().padStart(2,"0")} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+    }
+
+    function diffDaysFrom(ds) {
+      const start = new Date(ds + "T00:00:00"); if (isNaN(start)) return null;
+      return Math.floor((new Date().setHours(0,0,0,0) - start.getTime()) / 86400000);
+    }
+
+    function updateDdayView(startDate) {
+      if (!startDate) { document.getElementById("ddayPrimary").textContent = "사귄 날짜를 아직 설정하지 않았어요."; document.getElementById("ddaySecondary").textContent = ""; return; }
+      const diff = diffDaysFrom(startDate);
+      document.getElementById("ddayPrimary").textContent = diff >= 0 ? `우리가 함께한 지 D+${diff}일` : `우리의 첫날까지 D${diff}일`;
+      document.getElementById("ddaySecondary").textContent = `시작한 날: ${formatDate(startDate)}`;
+    }
+
+    function initKakaoMap() {
+      if (kakaoMap) return;
+      kakao.maps.load(() => {
+        try { kakaoMap = new kakao.maps.Map(document.getElementById("kakaoMap"), { center: new kakao.maps.LatLng(37.5665, 126.9780), level: 8 }); }
+        catch(e) { setTimeout(() => initKakaoMap(), 800); }
+      });
+    }
+
+    function addMarkerToMap(lat, lng, title, memo) {
+      if (!kakaoMap) return;
+      const heartImg = new kakao.maps.MarkerImage(
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 28C16 28 3 19 3 11C3 7.5 5.5 5 9 5C11.5 5 14 6.5 16 9C18 6.5 20.5 5 23 5C26.5 5 29 7.5 29 11C29 19 16 28 16 28Z" fill="#e79aa8" stroke="#fff" stroke-width="1.5"/></svg>`),
+        new kakao.maps.Size(32, 32), { offset: new kakao.maps.Point(16, 32) }
+      );
+      const marker = new kakao.maps.Marker({ map: kakaoMap, position: new kakao.maps.LatLng(lat, lng), image: heartImg });
+      const infowindow = new kakao.maps.InfoWindow({
+        content: `<div style="padding:8px 12px;font-family:'Noto Serif KR',serif;font-size:12px;"><b>💗 ${title}</b>${memo ? `<br><span style="opacity:0.7">${memo}</span>` : ""}</div>`,
+        removable: true
+      });
+      kakao.maps.event.addListener(marker, "click", () => { if (infowindow.getMap()) infowindow.close(); else infowindow.open(kakaoMap, marker); });
+      kakaoMarkers.push(marker);
+    }
+
+    function renderSchedules(items) {
+      const scheduleList = document.getElementById("scheduleList");
+      const scheduleCountBadge = document.getElementById("scheduleCountBadge");
+      scheduleList.innerHTML = "";
+      scheduleCountBadge.textContent = `${items ? items.length : 0}개 일정`;
+      const now = new Date(); let year = now.getFullYear(); let month = now.getMonth();
+      function renderCalendar() {
+        scheduleList.innerHTML = "";
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        const header = document.createElement("div"); header.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
+        const btnPrev = document.createElement("button"); btnPrev.className = "btn-icon"; btnPrev.innerHTML = "◀";
+        btnPrev.addEventListener("click", () => { month--; if (month < 0) { month = 11; year--; } renderCalendar(); });
+        const btnNext = document.createElement("button"); btnNext.className = "btn-icon"; btnNext.innerHTML = "▶";
+        btnNext.addEventListener("click", () => { month++; if (month > 11) { month = 0; year++; } renderCalendar(); });
+        const title = document.createElement("div"); title.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; title.textContent = `${year}년 ${month+1}월`;
+        header.appendChild(btnPrev); header.appendChild(title); header.appendChild(btnNext);
+        scheduleList.appendChild(header);
+        const dayRow = document.createElement("div"); dayRow.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px;";
+        ["일","월","화","수","목","금","토"].forEach((d, i) => { const cell = document.createElement("div"); cell.style.cssText = `font-size:10px;padding:4px 0;color:${i===0?"#e79aa8":i===6?"#7aabe7":"#9a8a84"};`; cell.textContent = d; dayRow.appendChild(cell); });
+        scheduleList.appendChild(dayRow);
+        const grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;";
+        const scheduleMap = {};
+        (items || []).forEach(item => { if (!scheduleMap[item.date]) scheduleMap[item.date] = []; scheduleMap[item.date].push(item); });
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
+        for (let d = 1; d <= lastDate; d++) {
+          const dateKey = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+          const cell = document.createElement("div");
+          const isToday = (d === now.getDate() && month === now.getMonth() && year === now.getFullYear());
+          const hasEvent = scheduleMap[dateKey];
+          cell.style.cssText = `min-height:36px;padding:3px;border-radius:8px;cursor:pointer;text-align:center;background:${isToday?"rgba(231,154,168,0.15)":"transparent"};`;
+          const numEl = document.createElement("div");
+          numEl.style.cssText = `font-size:12px;width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto;text-align:center;background:${isToday?"#e79aa8":"transparent"};color:${isToday?"#fff":"#4a3b35"};position:relative;`;
+          if (hasEvent) {
+            numEl.innerHTML = `<span style="position:relative;z-index:1;">${d}</span><svg viewBox="0 0 26 24" style="position:absolute;inset:0;width:26px;height:26px;z-index:0;" xmlns="http://www.w3.org/2000/svg"><path d="M13 21C13 21 2 14 2 7.5C2 5 4 3 6.5 3C8.5 3 10.5 4.5 13 7C15.5 4.5 17.5 3 19.5 3C22 3 24 5 24 7.5C24 14 13 21 13 21Z" fill="rgba(231,154,168,0.25)" stroke="#e79aa8" stroke-width="1.2"/></svg>`;
+          } else { numEl.textContent = d; }
+          cell.appendChild(numEl);
+          cell.addEventListener("click", () => {
+            if (!hasEvent) return;
+            const popup = document.getElementById("calPopup"); if (popup) popup.remove();
+            const box = document.createElement("div"); box.id = "calPopup";
+            box.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #f0e0d6;border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:220px;max-width:80vw;";
+            const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.style.cssText = "float:right;margin-left:8px;"; closeBtn.addEventListener("click", () => box.remove());
+            box.appendChild(closeBtn);
+            const dateTitle = document.createElement("div"); dateTitle.style.cssText = "font-size:12px;color:#b07a8a;margin-bottom:8px;font-weight:500;"; dateTitle.textContent = `${year}년 ${month+1}월 ${d}일`;
+            box.appendChild(dateTitle);
+            hasEvent.forEach(e => { const item = document.createElement("div"); item.style.cssText = "font-size:12px;padding:4px 0;border-bottom:1px solid #f5e8e0;color:#4a3b35;"; item.textContent = `💗 ${e.title} · ${{ anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[e.type || "etc"]}`; box.appendChild(item); });
+            document.body.appendChild(box);
+            setTimeout(() => { document.addEventListener("click", () => box.remove(), { once: true }); }, 100);
+          });
+          grid.appendChild(cell);
+        }
+        scheduleList.appendChild(grid);
+        scheduleCountBadge.style.cursor = "pointer";
+        scheduleCountBadge.onclick = () => {
+          const existing = document.getElementById("scheduleListPopup"); if (existing) { existing.remove(); return; }
+          const box = document.createElement("div"); box.id = "scheduleListPopup";
+          box.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #f4c2cd;border-radius:18px;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:200;min-width:260px;max-width:85vw;max-height:70vh;overflow-y:auto;";
+          const hdr = document.createElement("div"); hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
+          const htitle = document.createElement("div"); htitle.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; htitle.textContent = "전체 일정 목록";
+          const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.addEventListener("click", () => box.remove());
+          hdr.appendChild(htitle); hdr.appendChild(closeBtn); box.appendChild(hdr);
+          (items || []).forEach(item => {
+            const row = document.createElement("div"); row.style.cssText = "padding:8px 0;border-bottom:1px solid #f5e8e0;";
+            const typeLabel = { anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[item.type || "etc"];
+            const viewMode = document.createElement("div"); viewMode.style.cssText = "display:flex;gap:8px;align-items:center;";
+            const badge = document.createElement("div"); badge.style.cssText = "font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(244,194,205,0.3);border:1px solid #f4c2cd;color:#b07a8a;white-space:nowrap;"; badge.textContent = typeLabel;
+            const info = document.createElement("div"); info.style.flex = "1";
+            const t = document.createElement("div"); t.style.cssText = "font-size:13px;color:#4a3b35;"; t.textContent = item.title;
+            const dd = document.createElement("div"); dd.style.cssText = "font-size:10px;color:#b07a8a;margin-top:2px;"; dd.textContent = formatDate(item.date);
+            info.appendChild(t); info.appendChild(dd);
+            const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
+            const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+            btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"schedules",item.id)); row.remove(); });
+            viewMode.appendChild(badge); viewMode.appendChild(info); viewMode.appendChild(btnEdit); viewMode.appendChild(btnDel);
+            const editMode = document.createElement("div"); editMode.style.cssText = "display:none;flex-direction:column;gap:6px;padding:6px 0;";
+            const editTitle = document.createElement("input"); editTitle.type = "text"; editTitle.value = item.title; editTitle.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
+            const editDate = document.createElement("input"); editDate.type = "date"; editDate.value = item.date; editDate.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
+            const editType = document.createElement("select"); editType.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
+            [["anniversary","기념일"],["date","데이트"],["trip","여행"],["etc","기타"]].forEach(([v,l]) => { const opt = document.createElement("option"); opt.value = v; opt.textContent = l; if (v === item.type) opt.selected = true; editType.appendChild(opt); });
+            const editBtns = document.createElement("div"); editBtns.style.cssText = "display:flex;gap:6px;justify-content:flex-end;";
+            const btnSave = document.createElement("button"); btnSave.className = "btn-primary"; btnSave.style.cssText = "font-size:11px;padding:5px 12px;"; btnSave.textContent = "저장";
+            const btnCancel = document.createElement("button"); btnCancel.className = "btn-outline"; btnCancel.style.cssText = "font-size:11px;padding:5px 12px;"; btnCancel.textContent = "취소";
+            btnSave.addEventListener("click", async () => {
+              const nTitle = editTitle.value.trim(), nDate = editDate.value, nType = editType.value;
+              if (!nTitle || !nDate) { alert("제목과 날짜를 입력해주세요."); return; }
+              await updateDoc(doc(db,"couples",currentCoupleCode,"schedules",item.id), { title: nTitle, date: nDate, type: nType });
+              t.textContent = nTitle; dd.textContent = formatDate(nDate); badge.textContent = { anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[nType];
+              editMode.style.display = "none"; viewMode.style.display = "flex";
+            });
+            btnCancel.addEventListener("click", () => { editMode.style.display = "none"; viewMode.style.display = "flex"; });
+            editBtns.appendChild(btnCancel); editBtns.appendChild(btnSave);
+            editMode.appendChild(editTitle); editMode.appendChild(editDate); editMode.appendChild(editType); editMode.appendChild(editBtns);
+            btnEdit.addEventListener("click", () => { viewMode.style.display = "none"; editMode.style.display = "flex"; });
+            row.appendChild(viewMode); row.appendChild(editMode); box.appendChild(row);
+          });
+          document.body.appendChild(box);
+          setTimeout(() => { document.addEventListener("click", (e) => { if (!box.contains(e.target) && e.target !== scheduleCountBadge) box.remove(); }, { once: true }); }, 100);
+        };
+      }
+      renderCalendar();
+    }
+
+    function renderBucketList(items) {
+      const el = document.getElementById("bucketList"); const badge = document.getElementById("bucketCountBadge");
+      el.innerHTML = "";
+      if (!items || !items.length) { el.innerHTML = '<div class="muted small">버킷리스트를 채워볼까요?</div>'; badge.textContent = "0개 남음"; return; }
+      badge.textContent = `${items.filter(i => !i.completed).length}개 남음`;
+      items.forEach(item => {
+        const div = document.createElement("div"); div.className = "bucket-item"; if (item.completed) div.classList.add("completed");
+        const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.completed;
+        checkbox.addEventListener("change", async () => await updateDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id), { completed: checkbox.checked }));
+        const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = item.title || "";
+        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id)); });
+        div.appendChild(checkbox); div.appendChild(title);
+        if (item.tag) { const tag = document.createElement("div"); tag.className = "bucket-tag"; tag.textContent = item.tag; div.appendChild(tag); }
+        div.appendChild(btnDel); el.appendChild(div);
+      });
+    }
+
+    function renderPhotos(items) {
+      const photoList = document.getElementById("photoList"); const badge = document.getElementById("photoCountBadge");
+      photoList.innerHTML = "";
+      if (!items || !items.length) { photoList.innerHTML = '<div class="muted small">아직 올라온 사진이 없어요.</div>'; badge.textContent = "0장"; return; }
+      badge.textContent = `${items.length}장`;
+      const groups = {};
+      items.forEach(item => {
+        const d = item.createdAt ? (item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt)) : new Date();
+        const key = `${d.getFullYear()}년 ${d.getMonth()+1}월`;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+      });
+      Object.entries(groups).forEach(([month, photos], idx) => {
+        const section = document.createElement("div");
+        section.style.cssText = "margin-bottom:10px;border-radius:14px;overflow:hidden;border:1px solid rgba(224,198,185,0.9);";
+        const header = document.createElement("div");
+        header.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(244,194,205,0.2);cursor:pointer;";
+        const monthTitle = document.createElement("div");
+        monthTitle.style.cssText = "font-size:13px;font-weight:500;color:#b07a8a;";
+        monthTitle.innerHTML = `<span style="border-left:3px solid #e79aa8;padding-left:8px;">${month}</span>`;
+        const countBadge = document.createElement("div");
+        countBadge.style.cssText = "display:flex;align-items:center;gap:6px;";
+        const arrowId = `photo_arrow_${idx}`;
+        countBadge.innerHTML = `<span style="font-size:11px;color:#b07a8a;">${photos.length}장</span><span id="${arrowId}" style="font-size:11px;color:#e79aa8;">▼</span>`;
+        header.appendChild(monthTitle); header.appendChild(countBadge);
+        const body = document.createElement("div");
+        body.style.cssText = "display:none;flex-direction:column;padding:8px;gap:8px;background:#fff;";
+        photos.forEach(item => {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex;gap:10px;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.96);border:1px solid rgba(224,198,185,0.6);border-radius:12px;cursor:pointer;";
+          const thumb = document.createElement("div"); thumb.style.cssText = "width:60px;height:60px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f5e1dc;";
+          const img = document.createElement("img"); img.src = item.url; img.alt = ""; img.style.cssText = "width:100%;height:100%;object-fit:cover;"; thumb.appendChild(img);
+          const info = document.createElement("div"); info.style.flex = "1";
+          const cap = document.createElement("div"); cap.style.cssText = "font-size:13px;font-weight:500;color:#4a3b35;"; cap.textContent = item.caption || "(캡션 없음)";
+          const date = document.createElement("div"); date.style.cssText = "font-size:10px;opacity:0.6;margin-top:3px;"; date.textContent = formatTimestamp(item.createdAt);
+          info.appendChild(cap); info.appendChild(date);
+          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.style.flexShrink = "0";
+          btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"photos",item.id)); });
+          row.addEventListener("click", () => {
+            const overlay = document.createElement("div"); overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;";
+            const fullImg = document.createElement("img"); fullImg.src = item.url; fullImg.style.cssText = "max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;";
+            overlay.appendChild(fullImg); overlay.addEventListener("click", () => overlay.remove()); document.body.appendChild(overlay);
+          });
+          row.appendChild(thumb); row.appendChild(info); row.appendChild(btnDel);
+          body.appendChild(row);
+        });
+        if (idx === 0) {
+          body.style.display = "flex";
+          setTimeout(() => { const a = document.getElementById(arrowId); if(a) a.style.transform = "rotate(180deg)"; }, 0);
+        }
+        header.addEventListener("click", () => {
+          const isOpen = body.style.display === "flex";
+          body.style.display = isOpen ? "none" : "flex";
+          const a = document.getElementById(arrowId);
+          if(a) a.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+        });
+        section.appendChild(header); section.appendChild(body);
+        photoList.appendChild(section);
+      });
+    }
+
+    function renderLetters(items) {
+      const el = document.getElementById("lettersList"); const badge = document.getElementById("letterCountBadge");
+      el.innerHTML = "";
+      if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
+      badge.textContent = `${items.length}통`;
+      items.forEach(item => {
+        const card = document.createElement("div"); card.className = "letter-card";
+        const header = document.createElement("div"); header.className = "letter-header";
+        const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
+        const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
+        header.appendChild(from); header.appendChild(time);
+        const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "";
+        const footer = document.createElement("div"); footer.className = "letter-footer";
+        const titleEl = document.createElement("div"); titleEl.textContent = item.title || "";
+        const mini = document.createElement("div"); mini.className = "pill-mini"; mini.textContent = "편지";
+        footer.appendChild(titleEl); footer.appendChild(mini);
+        card.appendChild(header); card.appendChild(body); card.appendChild(footer); el.appendChild(card);
+      });
+    }
+
+    function renderGifts(items) {
+      const el = document.getElementById("giftList"); const badge = document.getElementById("giftCountBadge");
+      el.innerHTML = "";
+      if (!items || !items.length) { el.innerHTML = '<div class="muted small">위시리스트가 비어있어요 🎁</div>'; badge.textContent = "0개"; return; }
+      badge.textContent = `${items.length}개`;
+      items.forEach(item => {
+        const div = document.createElement("div"); div.className = "bucket-item"; if (item.received) div.classList.add("completed");
+        const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.received;
+        checkbox.addEventListener("change", async () => await updateDoc(doc(db,"couples",currentCoupleCode,"gifts",item.id), { received: checkbox.checked }));
+        const info = document.createElement("div"); info.style.flex = "1";
+        const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = (item.from ? `[${item.from}] ` : "") + (item.title || "");
+        info.appendChild(title);
+        if (item.link) { const link = document.createElement("a"); link.href = item.link; link.target = "_blank"; link.style.cssText = "font-size:10px;color:#c9736f;text-decoration:underline;"; link.textContent = "링크 보기"; info.appendChild(link); }
+        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"gifts",item.id)); });
+        div.appendChild(checkbox); div.appendChild(info); div.appendChild(btnDel); el.appendChild(div);
+      });
+    }
+
+    function renderPlaces(items) {
+      const el = document.getElementById("placeList"); el.innerHTML = "";
+      if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 추가된 장소가 없어요.</div>'; return; }
+      const drawMarkers = () => {
+        kakaoMarkers.forEach(m => m.setMap(null)); kakaoMarkers = [];
+        items.forEach(item => addMarkerToMap(item.lat, item.lng, item.name, item.memo));
+        kakaoMap.setCenter(new kakao.maps.LatLng(items[items.length-1].lat, items[items.length-1].lng));
+      };
+      if (kakaoMap) drawMarkers();
+      items.forEach(item => {
+        const div = document.createElement("div"); div.className = "schedule-item";
+        const meta = document.createElement("div"); meta.className = "schedule-meta"; meta.style.cursor = "pointer";
+        const name = document.createElement("div"); name.className = "schedule-title"; name.textContent = item.name;
+        const memo = document.createElement("div"); memo.className = "schedule-date"; memo.textContent = item.memo || item.address || "";
+        const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
+        meta.appendChild(name); meta.appendChild(memo); meta.appendChild(ts);
+        meta.addEventListener("click", () => {
+          if (!kakaoMap) return;
+          kakaoMap.setCenter(new kakao.maps.LatLng(item.lat, item.lng)); kakaoMap.setLevel(3);
+          document.getElementById("kakaoMap").scrollIntoView({ behavior:"smooth", block:"center" });
+        });
+        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"places",item.id)); });
+        div.appendChild(meta); div.appendChild(btnDel); el.appendChild(div);
+      });
+    }
+
+    document.getElementById("btnSaveStartDate").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const date = document.getElementById("inputStartDate").value;
+      if (!date) { alert("사귄 날짜를 선택해주세요."); return; }
+      await updateDoc(doc(db,"couples",currentCoupleCode), { startDate: date });
+      updateDdayView(date);
+      const msg = document.getElementById("ddaySaveMsg"); msg.textContent = "저장됐어요 💗"; msg.classList.remove("hidden");
+      setTimeout(() => msg.classList.add("hidden"), 2500);
+    });
+
+    document.getElementById("btnAddSchedule").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const date = document.getElementById("inputScheduleDate").value;
+      const title = document.getElementById("inputScheduleTitle").value.trim();
+      const type = document.getElementById("selectScheduleType").value;
+      if (!date || !title) { alert("날짜와 제목을 입력해주세요."); return; }
+      await addDoc(collection(db,"couples",currentCoupleCode,"schedules"), { date, title, type, createdAt: serverTimestamp() });
+      document.getElementById("inputScheduleTitle").value = "";
+    });
+
+    document.getElementById("btnAddBucket").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const title = document.getElementById("inputBucketTitle").value.trim();
+      const tag = document.getElementById("inputBucketTag").value.trim();
+      if (!title) { alert("내용을 입력해주세요."); return; }
+      await addDoc(collection(db,"couples",currentCoupleCode,"bucket"), { title, tag: tag || null, completed: false, createdAt: serverTimestamp() });
+      document.getElementById("inputBucketTitle").value = ""; document.getElementById("inputBucketTag").value = "";
+    });
+
+    document.getElementById("btnAddPhoto").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const file = document.getElementById("inputPhotoFile").files[0];
+      const url = document.getElementById("inputPhotoUrl").value.trim();
+      const caption = document.getElementById("inputPhotoCaption").value.trim();
+      if (!file && !url) { alert("사진을 선택하거나 URL을 입력해주세요."); return; }
+      const status = document.getElementById("photoUploadStatus"); status.textContent = "업로드 중…";
+      try {
+        let finalUrl = url;
+        if (file) { const ref = storageRef(storage, `couples/${currentCoupleCode}/photos/${Date.now()}_${file.name}`); await uploadBytes(ref, file); finalUrl = await getDownloadURL(ref); }
+        await addDoc(collection(db,"couples",currentCoupleCode,"photos"), { url: finalUrl, caption: caption || "", createdAt: serverTimestamp() });
+        document.getElementById("inputPhotoFile").value = ""; document.getElementById("inputPhotoUrl").value = ""; document.getElementById("inputPhotoCaption").value = "";
+        status.textContent = "추가됐어요!"; setTimeout(() => status.textContent = "", 2500);
+      } catch(e) { status.textContent = "업로드 실패"; }
+    });
+
+    document.getElementById("btnSendLetter").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const from = document.getElementById("inputLetterFrom").value.trim();
+      const title = document.getElementById("inputLetterTitle").value.trim();
+      const body = document.getElementById("textareaLetterBody").value.trim();
+      if (!from || !body) { alert("작성자와 내용을 입력해주세요."); return; }
+      const status = document.getElementById("letterStatus"); status.textContent = "보내는 중…";
+      await addDoc(collection(db,"couples",currentCoupleCode,"letters"), { from, title: title || "", body, createdAt: serverTimestamp() });
+      document.getElementById("textareaLetterBody").value = ""; document.getElementById("inputLetterTitle").value = "";
+      status.textContent = "편지가 도착했어요 💌"; setTimeout(() => status.textContent = "", 2500);
+    });
+
+    document.getElementById("btnAddGift").addEventListener("click", async () => {
+      if (!currentCoupleCode) return;
+      const from = document.getElementById("inputGiftFrom").value.trim();
+      const title = document.getElementById("inputGiftTitle").value.trim();
+      const link = document.getElementById("inputGiftLink").value.trim();
+      if (!title) { alert("선물 이름을 입력해주세요."); return; }
+      await addDoc(collection(db,"couples",currentCoupleCode,"gifts"), { from: from || "", title, link: link || "", received: false, createdAt: serverTimestamp() });
+      document.getElementById("inputGiftFrom").value = ""; document.getElementById("inputGiftTitle").value = ""; document.getElementById("inputGiftLink").value = "";
+    });
+
+    document.getElementById("btnSearchPlace").addEventListener("click", () => {
+      if (!currentCoupleCode) return;
+      const keyword = document.getElementById("inputPlaceName").value.trim();
+      if (!keyword) { alert("장소 이름을 입력해주세요."); return; }
+      if (!kakaoMap) { initKakaoMap(); setTimeout(() => document.getElementById("btnSearchPlace").click(), 1000); return; }
+      const mapSearchResults = document.getElementById("mapSearchResults"); mapSearchResults.innerHTML = '<div class="muted small">검색 중...</div>';
+      const ps = new kakao.maps.services.Places();
+      ps.keywordSearch(keyword, (data, status) => {
+        mapSearchResults.innerHTML = "";
+        if (status !== kakao.maps.services.Status.OK || !data.length) { mapSearchResults.innerHTML = '<div class="muted small">검색 결과가 없어요.</div>'; return; }
+        data.slice(0, 5).forEach(place => {
+          const btn = document.createElement("button"); btn.className = "btn-outline";
+          btn.style.cssText = "text-align:left;border-radius:10px;padding:7px 12px;font-size:12px;width:100%;margin-bottom:4px;";
+          btn.textContent = `📍 ${place.place_name} — ${place.address_name}`;
+          btn.addEventListener("click", async () => {
+            const memo = document.getElementById("inputPlaceMemo").value.trim();
+            await addDoc(collection(db,"couples",currentCoupleCode,"places"), { name: place.place_name, address: place.address_name, lat: parseFloat(place.y), lng: parseFloat(place.x), memo: memo || "", createdAt: serverTimestamp() });
+            document.getElementById("inputPlaceName").value = ""; document.getElementById("inputPlaceMemo").value = ""; mapSearchResults.innerHTML = "";
+          });
+          mapSearchResults.appendChild(btn);
+        });
+      });
+    });
+
+    document.getElementById("btnMyLocation").addEventListener("click", () => {
+      if (!kakaoMap) { initKakaoMap(); setTimeout(() => document.getElementById("btnMyLocation").click(), 1000); return; }
+      if (!navigator.geolocation) { alert("위치 기능을 지원하지 않아요."); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const position = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        kakaoMap.setCenter(position); kakaoMap.setLevel(3);
+        new kakao.maps.Marker({ map: kakaoMap, position });
+      }, () => { alert("위치 권한을 허용해주세요."); });
+    });
+
+  </script>
+</body>
+</html>
