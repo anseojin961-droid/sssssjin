@@ -10,6 +10,10 @@
       {
         "source": "/kakao-callback",
         "destination": "/kakao-callback.html"
+      },
+      {
+        "source": "/naver-callback",
+        "destination": "/naver-callback.html"
       }
     ]
   },

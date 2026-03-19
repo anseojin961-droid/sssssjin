@@ -40,6 +40,8 @@
     .btn-full-social:hover { background:#f5f5f5; }
     .btn-kakao { background:#FEE500 !important; border:1px solid #FEE500 !important; color:#3C1E1E !important; }
     .btn-kakao:hover { background:#f5dc00 !important; }
+    .btn-naver { background:#03C75A !important; border:1px solid #03C75A !important; color:#fff !important; }
+    .btn-naver:hover { background:#02b350 !important; }
     .divider-or { display:flex; align-items:center; gap:10px; margin:14px 0; }
     .divider-or::before,.divider-or::after { content:""; flex:1; height:1px; background:rgba(224,198,185,0.8); }
     .divider-or span { font-size:11px; opacity:0.6; }
@@ -148,6 +150,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
           카카오로 로그인
         </button>
+        <button class="btn-full btn-full-social btn-naver" onclick="loginWithNaver()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+          네이버로 로그인
+        </button>
       </div>
       <div id="signupForm" class="hidden">
         <div class="form-group"><label class="form-label">이메일</label><input id="signupEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
@@ -160,6 +166,10 @@
         <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
           카카오로 시작하기
+        </button>
+        <button class="btn-full btn-full-social btn-naver" onclick="loginWithNaver()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+          네이버로 시작하기
         </button>
       </div>
     </div>
@@ -343,6 +353,7 @@
     function signupWithEmail() { if(window._app) window._app.signupWithEmail(); }
     function loginWithGoogle() { if(window._app) window._app.loginWithGoogle(); }
     function loginWithKakao() { if(window._app) window._app.loginWithKakao(); }
+    function loginWithNaver() { if(window._app) window._app.loginWithNaver(); }
     function doLogout() { if(window._app) window._app.doLogout(); }
     function doEnterWithCode() { if(window._app) window._app.doEnterWithCode(); }
   </script>
@@ -363,6 +374,8 @@
     };
     const KAKAO_REST_KEY = "2a71f06d5335fc05a0917d34b923d609";
     const KAKAO_FUNCTION_URL = "https://kakaologin-ke65mbcpiq-uc.a.run.app";
+    const NAVER_CLIENT_ID = "Hp9CDEZgTHBWGdWLGe0x";
+    const NAVER_FUNCTION_URL = "https://us-central1-dnfl-bdc76.cloudfunctions.net/naverLogin";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -397,6 +410,27 @@
             await signInWithCustomToken(auth, data.customToken);
           }
         } catch(e) { console.error("카카오 로그인 실패", e); }
+      })();
+    }
+
+    // 네이버 콜백 처리
+    const naverCode = sessionStorage.getItem("naverCode");
+    const naverState = sessionStorage.getItem("naverState");
+    if (naverCode && naverCode.length > 10) {
+      sessionStorage.removeItem("naverCode");
+      sessionStorage.removeItem("naverState");
+      (async () => {
+        try {
+          const res = await fetch(NAVER_FUNCTION_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: naverCode, state: naverState })
+          });
+          const data = await res.json();
+          if (data.customToken) {
+            await signInWithCustomToken(auth, data.customToken);
+          }
+        } catch(e) { console.error("네이버 로그인 실패", e); }
       })();
     }
 
@@ -438,6 +472,12 @@
       loginWithKakao() {
         const redirectUri = encodeURIComponent(`${location.origin}/kakao-callback`);
         location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_KEY}&redirect_uri=${redirectUri}&response_type=code`;
+      },
+      loginWithNaver() {
+        const state = Math.random().toString(36).substring(2);
+        sessionStorage.setItem("naverStateCheck", state);
+        const redirectUri = encodeURIComponent(`${location.origin}/naver-callback`);
+        location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${redirectUri}&state=${state}`;
       },
       async doLogout() {
         if (!confirm("로그아웃 할까요?")) return;
@@ -510,7 +550,7 @@
         }
       }));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"schedules"), orderBy("date","asc"), orderBy("createdAt","asc")), snap => renderSchedules(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","asc")), snap => renderBucketList(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","desc")), snap => renderBucketList(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"photos"), orderBy("createdAt","desc")), snap => renderPhotos(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"letters"), orderBy("createdAt","desc")), snap => renderLetters(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"gifts"), orderBy("createdAt","asc")), snap => renderGifts(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
@@ -688,10 +728,13 @@
         const div = document.createElement("div"); div.className = "bucket-item"; if (item.completed) div.classList.add("completed");
         const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.completed;
         checkbox.addEventListener("change", async () => await updateDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id), { completed: checkbox.checked }));
+        const info = document.createElement("div"); info.style.flex = "1";
         const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = item.title || "";
+        const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
+        info.appendChild(title); info.appendChild(ts);
         const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
         btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id)); });
-        div.appendChild(checkbox); div.appendChild(title);
+        div.appendChild(checkbox); div.appendChild(info);
         if (item.tag) { const tag = document.createElement("div"); tag.className = "bucket-tag"; tag.textContent = item.tag; div.appendChild(tag); }
         div.appendChild(btnDel); el.appendChild(div);
       });
