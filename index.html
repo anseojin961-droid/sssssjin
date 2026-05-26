@@ -1,1072 +1,1928 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>우리 둘만의 공간</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=bb60f7842abbe4d6c1d65a31830dc8ea&libraries=services&autoload=false"></script>
-  <style>
-    :root {
-      --bg: #fdf8f3; --rose: #e79aa8; --rose-deep: #d07385; --rose-soft: #f4c2cd;
-      --text-main: #4a3b35; --card-bg: #ffffff; --border-soft: #f0e0d6;
-      --shadow-soft: 0 8px 20px rgba(0,0,0,0.06); --radius-lg: 18px; --radius-md: 12px;
-    }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text-main); font-family:"Noto Serif KR",serif; line-height:1.6; }
-    h1,h2,h3 { font-family:"Playfair Display",serif; letter-spacing:0.03em; color:#3c2f2a; }
-    a { color:inherit; text-decoration:none; }
-    button { cursor:pointer; border:none; font-family:inherit; }
-    input,textarea,select { font-family:"Noto Serif KR",serif; }
-    .hidden { display:none !important; }
-    .app-shell { min-height:100vh; display:flex; flex-direction:column; }
-    .auth-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:radial-gradient(circle at top left,#ffe7ef 0,#fdf8f3 46%,#f4dfd8 100%); }
-    .auth-card { background:rgba(255,255,255,0.97); padding:28px 24px; border-radius:24px; max-width:400px; width:100%; box-shadow:0 12px 35px rgba(180,120,120,0.3); border:1px solid rgba(232,197,188,0.85); position:relative; overflow:hidden; }
-    .auth-card::before { content:""; position:absolute; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at center,rgba(231,154,168,0.6),transparent 60%); top:-50px; right:-50px; opacity:0.4; pointer-events:none; }
-    .auth-logo-heart { width:52px; height:52px; border-radius:50%; background:radial-gradient(circle at 30% 20%,#ffe7ee,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; box-shadow:0 6px 16px rgba(217,123,142,0.5); margin:0 auto 10px; }
-    .auth-title { font-size:22px; margin:0 0 4px; text-align:center; }
-    .auth-sub { font-size:12px; opacity:0.7; text-align:center; margin-bottom:20px; }
-    .auth-tabs { display:flex; gap:0; margin-bottom:20px; background:rgba(244,194,205,0.15); border-radius:999px; padding:3px; }
-    .auth-tab { flex:1; padding:7px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:all 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
-    .auth-tab.active { background:#fff; color:#4a3b35; box-shadow:0 2px 8px rgba(200,150,140,0.2); font-weight:500; }
-    .form-group { margin-bottom:12px; }
-    .form-label { font-size:11px; opacity:0.8; margin-bottom:4px; display:block; }
-    .form-input { width:100%; padding:9px 14px; border-radius:999px; border:1px solid #e0c7ba; font-size:13px; outline:none; background:#fff; transition:border 0.15s,box-shadow 0.15s; box-sizing:border-box; }
-    .form-input:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.2); }
-    .btn-full { width:100%; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; cursor:pointer; margin-bottom:8px; }
-    .btn-full-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
-    .btn-full-primary:hover { transform:translateY(-1px); }
-    .btn-full-social { background:#fff; border:1px solid #e0e0e0; color:#333; }
-    .btn-full-social:hover { background:#f5f5f5; }
-    .btn-kakao { background:#FEE500 !important; border:1px solid #FEE500 !important; color:#3C1E1E !important; }
-    .btn-kakao:hover { background:#f5dc00 !important; }
-    .btn-naver { background:#03C75A !important; border:1px solid #03C75A !important; color:#fff !important; }
-    .btn-naver:hover { background:#02b350 !important; }
-    .divider-or { display:flex; align-items:center; gap:10px; margin:14px 0; }
-    .divider-or::before,.divider-or::after { content:""; flex:1; height:1px; background:rgba(224,198,185,0.8); }
-    .divider-or span { font-size:11px; opacity:0.6; }
-    .auth-error { font-size:11px; color:#b94a5a; margin-top:6px; text-align:center; min-height:16px; }
-    .code-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:radial-gradient(circle at top left,#ffe7ef 0,#fdf8f3 46%,#f4dfd8 100%); }
-    .code-card { background:rgba(255,255,255,0.97); padding:28px 24px; border-radius:24px; max-width:400px; width:100%; box-shadow:0 12px 35px rgba(180,120,120,0.3); border:1px solid rgba(232,197,188,0.85); position:relative; overflow:hidden; }
-    .code-card::before { content:""; position:absolute; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at center,rgba(231,154,168,0.6),transparent 60%); top:-50px; right:-50px; opacity:0.4; pointer-events:none; }
-    .user-bar { display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(244,194,205,0.15); border-radius:12px; margin-bottom:16px; }
-    .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; flex-shrink:0; }
-    .user-name { font-size:12px; flex:1; }
-    .btn-sm-outline { padding:5px 12px; border-radius:999px; font-size:11px; background:#fff; border:1px solid rgba(224,198,185,0.9); color:#6f4d45; cursor:pointer; }
-    .navbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(10px); background:rgba(253,248,243,0.9); border-bottom:1px solid rgba(224,198,185,0.6); display:flex; align-items:center; justify-content:space-between; padding:10px 18px; }
-    .nav-left { display:flex; align-items:center; gap:10px; }
-    .nav-logo { width:32px; height:32px; border-radius:50%; background:radial-gradient(circle at 30% 20%,#ffe7ee,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; box-shadow:0 4px 12px rgba(217,123,142,0.4); }
-    .nav-title { display:flex; flex-direction:column; gap:2px; }
-    .nav-title-main { font-family:"Playfair Display",serif; font-size:18px; }
-    .nav-title-sub { font-size:11px; opacity:0.8; }
-    .nav-links { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
-    .nav-link { padding:6px 12px; border-radius:999px; font-size:12px; background:rgba(255,255,255,0.7); border:1px solid rgba(228,199,189,0.8); transition:background 0.2s,transform 0.1s,box-shadow 0.2s; box-shadow:0 2px 5px rgba(200,160,140,0.25); white-space:nowrap; }
-    .nav-link:hover { background:#ffe8f0; transform:translateY(-1px); }
-    .nav-couple-code { font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(231,154,168,0.12); border:1px dashed rgba(231,154,168,0.7); }
-    .btn-logout-heart { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); border:none; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(217,123,142,0.4); transition:transform 0.2s; color:#fff; flex-shrink:0; }
-    .btn-logout-heart:hover { transform:scale(1.15); }
-    .chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; background:rgba(255,255,255,0.9); border:1px solid rgba(228,199,189,0.9); font-size:10px; }
-    .status-dot { width:7px; height:7px; border-radius:50%; background:#5ec27f; box-shadow:0 0 0 3px rgba(94,194,127,0.4); }
-    .status-dot.offline { background:#c86a6a; box-shadow:0 0 0 3px rgba(200,106,106,0.35); }
-    .main-content { flex:1; padding:24px 14px 40px; max-width:1100px; margin:0 auto; width:100%; }
-    @media (min-width:768px) { .navbar { padding:10px 40px; } .main-content { padding:32px 26px 60px; } }
-    .card { background:var(--card-bg); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft); padding:20px 18px 18px; margin-bottom:18px; border:1px solid var(--border-soft); }
-    @media (min-width:768px) { .card { padding:24px 22px 20px; margin-bottom:22px; } }
-    .card-header { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
-    .card-header h2 { font-size:20px; margin:0; }
-    .card-header span { font-size:11px; opacity:0.7; }
-    .section-description { font-size:13px; opacity:0.9; margin-bottom:14px; }
-    .pill-label { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:10px; background:rgba(228,183,185,0.19); border:1px dashed rgba(223,160,165,0.7); margin-left:auto; }
-    .field-group { margin-bottom:10px; display:flex; flex-direction:column; gap:4px; }
-    .field-label { font-size:12px; opacity:0.9; }
-    .field-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    input[type="text"],input[type="date"],input[type="url"],textarea { border-radius:999px; border:1px solid #e0c7ba; padding:7px 12px; font-size:12px; outline:none; background:rgba(255,255,255,0.9); transition:border 0.15s,box-shadow 0.15s; }
-    textarea { border-radius:14px; min-height:70px; resize:vertical; }
-    input:focus,textarea:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.25); background:#fff; }
-    .btn-primary,.btn-outline { padding:7px 15px; border-radius:999px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; cursor:pointer; }
-    .btn-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
-    .btn-primary:hover { transform:translateY(-1px); }
-    .btn-outline { background:rgba(255,255,255,0.9); border:1px solid rgba(224,198,185,0.9); color:#6f4d45; }
-    .btn-outline:hover { background:#ffe9f1; }
-    .badge-soft { font-size:11px; padding:2px 8px; border-radius:999px; background:rgba(244,194,205,0.2); border:1px solid rgba(244,194,205,0.6); cursor:pointer; }
-    .muted { font-size:11px; opacity:0.7; }
-    .small { font-size:11px; }
-    .divider { height:1px; background:linear-gradient(to right,rgba(224,198,185,0),rgba(224,198,185,0.9),rgba(224,198,185,0)); margin:10px 0 14px; }
-    @media (min-width:920px) { .grid-2col { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; } }
-    .schedule-list { display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto; padding-right:4px; }
-    .schedule-item { padding:8px 10px; border-radius:12px; border:1px solid rgba(223,194,180,0.9); background:rgba(255,255,255,0.95); display:flex; justify-content:space-between; gap:8px; align-items:center; }
-    .schedule-meta { display:flex; flex-direction:column; gap:2px; }
-    .schedule-title { font-size:13px; font-weight:500; }
-    .schedule-date { font-size:11px; opacity:0.8; }
-    .schedule-type { font-size:10px; padding:1px 8px; border-radius:999px; background:rgba(228,183,185,0.2); border:1px solid rgba(228,183,185,0.7); margin-left:auto; }
-    .btn-icon { width:24px; height:24px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(250,235,229,0.9); border:1px solid rgba(219,182,167,0.9); font-size:13px; color:#7a4b42; cursor:pointer; }
-    .btn-icon:hover { background:#ffe0ea; }
-    .bucket-list { display:flex; flex-direction:column; gap:8px; max-height:230px; overflow-y:auto; padding-right:4px; }
-    .bucket-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background:rgba(255,255,255,0.96); border:1px solid rgba(224,198,185,0.9); }
-    .bucket-item.completed { background:rgba(235,222,219,0.9); opacity:0.9; text-decoration:line-through; }
-    .bucket-title { font-size:13px; flex:1; }
-    .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
-    input[type="checkbox"] { accent-color:#d27990; }
-    .letters-list { display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; padding-right:4px; }
-    .letter-card { padding:9px 11px; border-radius:14px; background:rgba(255,255,255,0.96); border:1px solid rgba(226,195,186,0.95); box-shadow:0 3px 8px rgba(190,147,135,0.15); }
-    .letter-header { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:4px; }
-    .letter-from { font-size:12px; font-weight:500; }
-    .letter-time { font-size:10px; opacity:0.7; }
-    .letter-body { font-size:12px; white-space:pre-wrap; }
-    .letter-footer { margin-top:5px; font-size:10px; opacity:0.7; display:flex; justify-content:space-between; align-items:center; }
-    .pill-mini { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(244,194,205,0.26); border:1px solid rgba(244,194,205,0.7); }
-    .dday-main { display:flex; flex-direction:column; gap:10px; }
-    .dday-display { display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:var(--radius-md); background:linear-gradient(to right,rgba(244,194,205,0.25),rgba(253,248,243,0.9)); border:1px solid rgba(244,194,205,0.7); }
-    .dday-count { font-size:20px; font-weight:700; }
-    .dday-sub { font-size:12px; opacity:0.8; }
-    ::-webkit-scrollbar { width:6px; }
-    ::-webkit-scrollbar-track { background:rgba(248,237,230,0.8); border-radius:999px; }
-    ::-webkit-scrollbar-thumb { background:rgba(214,166,160,0.8); border-radius:999px; }
-    .error-text { font-size:11px; color:#b94a5a; margin-top:6px; }
-    .success-text { font-size:11px; color:#437f57; margin-top:5px; }
-    .footer { text-align:center; padding:12px 10px 24px; font-size:11px; opacity:0.7; }
-    /* 하단 탭 */
-    .tab-page { display:none; }
-    .tab-page.active { display:block; }
-    .main-content { padding-bottom:84px !important; }
-    .bottom-tabs { position:fixed; bottom:0; left:0; right:0; z-index:30; background:rgba(255,250,252,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid rgba(224,198,185,0.6); display:flex; justify-content:space-around; align-items:center; padding:6px 0 max(env(safe-area-inset-bottom),8px); box-shadow:0 -4px 20px rgba(180,120,130,0.1); }
-    .bottom-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 2px; border:none; background:transparent; cursor:pointer; font-family:inherit; transition:all 0.18s; color:#c09090; }
-    .bottom-tab.active { color:#d07385; }
-    .bottom-tab-icon { font-size:22px; line-height:1; transition:transform 0.2s; }
-    .bottom-tab.active .bottom-tab-icon { transform:scale(1.18); filter:drop-shadow(0 2px 4px rgba(208,115,133,0.4)); }
-    .bottom-tab-label { font-size:10px; font-weight:500; letter-spacing:0.02em; }
+<meta charset="UTF-8" />
+<title>우리의 하루들</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #FBF5F0;
+  --bg-tint: #F8E9E3;
+  --bg-warm: #F2D9D1;
+  --paper: #FFFBF8;
+  --paper-2: #FFF6F1;
 
-    /* 봉투 애니메이션 */
-    .letter-envelope-wrap { border-radius:14px; cursor:pointer; transition:transform 0.2s; }
-    .letter-envelope-wrap:hover { transform:translateY(-2px); }
-    .letter-env-closed {
-      position:relative; overflow:hidden; text-align:center;
-      background:linear-gradient(150deg,#fff5f8 0%,#fff9fb 60%,#fff 100%);
-      border:1.5px solid #e79aa8; border-radius:14px; padding:24px 16px 16px;
-      box-shadow:0 0 0 3px rgba(231,154,168,0.12),0 4px 14px rgba(190,147,135,0.15);
-      animation:env-pulse 2.2s ease-in-out infinite;
-    }
-    .letter-env-closed::before {
-      content:""; position:absolute; top:0; left:0; right:0; height:40px;
-      background:linear-gradient(180deg,rgba(231,154,168,0.22) 0%,transparent 100%);
-      clip-path:polygon(0 0,100% 0,50% 100%);
-    }
-    @keyframes env-pulse {
-      0%,100% { box-shadow:0 0 0 3px rgba(231,154,168,0.12),0 4px 14px rgba(190,147,135,0.15); }
-      50% { box-shadow:0 0 0 6px rgba(231,154,168,0.28),0 8px 22px rgba(190,147,135,0.28); }
-    }
-    .letter-env-icon { font-size:32px; line-height:1; margin-bottom:8px; }
-    .letter-env-from { font-size:13px; font-weight:500; color:#4a3b35; margin-bottom:3px; }
-    .letter-env-time { font-size:10px; color:#b07a8a; opacity:0.8; }
-    .letter-env-hint { font-size:11px; color:#e79aa8; margin-top:10px; letter-spacing:0.04em; }
-    @keyframes env-open-anim {
-      0% { transform:scaleY(1) translateY(0); opacity:1; }
-      35% { transform:scaleY(0.85) translateY(-6px); opacity:0.8; }
-      100% { transform:scaleY(0) translateY(-36px); opacity:0; }
-    }
-    .letter-env-opening { animation:env-open-anim 0.42s cubic-bezier(0.4,0,1,1) forwards; pointer-events:none; }
-    .letter-read-badge { font-size:9px; padding:1px 6px; border-radius:999px; background:rgba(94,194,127,0.12); border:1px solid rgba(94,194,127,0.35); color:#437f57; }
-  </style>
+  --rose-50: #FCE9E5;
+  --rose-100: #F7D2CB;
+  --rose-200: #F0B3A8;
+  --rose-300: #E89A8E;
+  --rose-400: #DA7B6B;
+  --rose-500: #C46055;
+  --rose-600: #A04A45;
+  --wine: #6B2737;
+  --plum: #8B3A4A;
+
+  --peach: #F5C9A8;
+  --apricot: #F6B58A;
+  --sage: #C9D2BC;
+  --mist: #D6CFD8;
+  --butter: #F3E2BC;
+
+  --ink: #2C2025;
+  --ink-2: #4B3940;
+  --ink-3: #806B72;
+  --ink-4: #B2A0A6;
+  --line: rgba(122, 64, 70, 0.10);
+  --line-2: rgba(122, 64, 70, 0.18);
+
+  --sh-1: 0 1px 2px rgba(80, 30, 40, 0.04), 0 4px 12px rgba(80, 30, 40, 0.06);
+  --sh-2: 0 4px 14px rgba(80, 30, 40, 0.08), 0 18px 40px -8px rgba(80, 30, 40, 0.10);
+  --sh-glow: 0 0 0 1px rgba(255,255,255,0.6) inset, 0 8px 24px rgba(196, 96, 85, 0.18);
+
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+
+  --font-kr: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-en: "Outfit", "Pretendard Variable", system-ui, sans-serif;
+  --font-display: "Fraunces", "Outfit", "Pretendard Variable", serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-kr);
+  color: var(--ink);
+  background: var(--bg-base);
+  background:
+    radial-gradient(1200px 600px at 20% 10%, #F8DDD4 0%, transparent 60%),
+    radial-gradient(900px 600px at 80% 90%, #F1CFC8 0%, transparent 60%),
+    linear-gradient(180deg, #F4E2DA 0%, #EDD1C6 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+input, textarea, select { font-family: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── Stage ─── */
+.stage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px 80px;
+}
+.stage-inner { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.stage-meta { max-width: 340px; padding-top: 40px; color: var(--ink-2); }
+.stage-meta .brand { font-family: var(--font-display); font-weight: 500; font-size: 40px; letter-spacing: -0.02em; line-height: 1; color: var(--wine); }
+.stage-meta .brand em { font-style: italic; font-weight: 400; }
+.stage-meta .tag { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rose-500); margin-bottom: 14px; font-family: var(--font-en); font-weight: 500; }
+.stage-meta .desc { margin-top: 18px; font-size: 14px; line-height: 1.7; color: var(--ink-3); }
+.stage-meta .pill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.stage-meta .pill-list span { font-size: 11px; padding: 5px 11px; border-radius: 999px; background: rgba(255,255,255,0.65); border: 1px solid var(--line-2); color: var(--ink-2); font-family: var(--font-en); letter-spacing: 0.02em; }
+
+@media (max-width: 900px) {
+  .stage { padding: 0; }
+  .stage-meta { display: none; }
+  .stage-inner { gap: 0; }
+}
+
+/* ─── Phone Shell ─── */
+.phone {
+  width: 393px;
+  height: 852px;
+  border-radius: 54px;
+  background: var(--bg-base);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 12px #1c1418,
+    0 0 0 13px #2a1f23,
+    0 40px 80px -20px rgba(80, 30, 40, 0.4),
+    0 80px 120px -40px rgba(80, 30, 40, 0.3);
+  isolation: isolate;
+}
+@media (max-width: 900px) {
+  .phone {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Status Bar */
+.statusbar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px 0;
+  font-family: var(--font-en);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  z-index: 50;
+  pointer-events: none;
+}
+.dynamic-island {
+  position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 122px; height: 36px; background: #0a0608; border-radius: 999px; z-index: 60;
+}
+.statusbar .right { display: flex; align-items: center; gap: 5px; }
+.statusbar svg { display: block; }
+
+.home-indicator {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: rgba(0,0,0,0.35); border-radius: 999px; z-index: 60;
+}
+
+/* ─── Screen Container ─── */
+.screen-wrap {
+  position: absolute; inset: 0;
+  padding-top: 54px;
+  display: flex; flex-direction: column;
+}
+.screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 102px;
+  scroll-behavior: smooth;
+}
+.screen-scroll::-webkit-scrollbar { width: 0; }
+
+.screen { display: none; }
+.screen.active { display: block; animation: screenIn 0.35s cubic-bezier(.22,.61,.36,1); }
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page Header */
+.page-header {
+  padding: 14px 22px 6px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.page-header .h-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  color: var(--wine);
+}
+.page-header .h-title em { font-style: italic; font-weight: 400; }
+.page-header .h-action { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  transition: transform .15s ease, background .2s;
+}
+.icon-btn:hover { transform: scale(1.05); background: #fff; }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* ─── Bottom Nav ─── */
+.tabbar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 10px 12px 26px;
+  z-index: 40;
+}
+.tabbar-inner {
+  background: rgba(255, 251, 248, 0.82);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 28px;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 8px 28px rgba(140, 60, 70, 0.18),
+    0 20px 60px -20px rgba(140, 60, 70, 0.25);
+  position: relative;
+}
+.tab-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 22px;
+  color: var(--ink-3);
+  transition: color .2s;
+  position: relative;
+  z-index: 2;
+}
+.tab-item.active { color: var(--wine); }
+.tab-item .ti-ico { width: 22px; height: 22px; display: grid; place-items: center; }
+.tab-item .ti-ico svg { width: 22px; height: 22px; stroke-width: 1.6; }
+.tab-item .ti-label { font-size: 10px; font-weight: 600; letter-spacing: 0.02em; font-family: var(--font-en); }
+.tab-item .ti-label.kr { font-family: var(--font-kr); font-size: 10px; }
+.tab-indicator {
+  position: absolute; top: 8px; bottom: 8px;
+  width: calc(20% - 6px);
+  background: linear-gradient(180deg, #FCE2DC, #F6CFC4);
+  border-radius: 18px;
+  z-index: 1;
+  transition: left 0.38s cubic-bezier(.22,.61,.36,1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 4px 14px rgba(196,96,85,0.18);
+}
+
+/* ─── Card Base ─── */
+.card {
+  background: var(--paper);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.glass {
+  background: rgba(255, 251, 248, 0.75);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.7);
+}
+
+.section { padding: 0 22px; margin-top: 18px; }
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.section-head .s-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--ink-2); text-transform: uppercase;
+  font-family: var(--font-en);
+}
+.section-head .s-title.kr { font-family: var(--font-kr); letter-spacing: 0; font-size: 14px; }
+.section-head .s-more { font-size: 11px; color: var(--ink-3); display: flex; align-items: center; gap: 2px; }
+.section-head .s-more svg { width: 12px; height: 12px; }
+
+.row { display: flex; align-items: center; gap: 8px; }
+.col { display: flex; flex-direction: column; gap: 8px; }
+.center { display: grid; place-items: center; }
+.muted { color: var(--ink-3); }
+.mono { font-family: var(--font-en); font-variant-numeric: tabular-nums; }
+
+/* ════════════════════════════════════════════
+   HOME
+   ════════════════════════════════════════════ */
+.home-hero {
+  margin: 8px 16px 0;
+  border-radius: 28px;
+  padding: 22px 22px 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(140% 90% at 100% 0%, #FBDDD3 0%, transparent 55%),
+    radial-gradient(120% 80% at 0% 100%, #F4C7BD 0%, transparent 50%),
+    linear-gradient(155deg, #FFF1EA 0%, #F8D9CF 100%);
+  box-shadow: 0 12px 28px -10px rgba(180, 80, 70, 0.25);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+.home-hero::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 50% at 80% 20%, rgba(255,255,255,0.5), transparent 70%);
+  pointer-events: none;
+}
+.hero-top {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-bottom: 22px;
+  position: relative; z-index: 2;
+}
+.hero-top .weather {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.7);
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 500;
+}
+.hero-top .weather .temp { font-family: var(--font-en); font-weight: 600; }
+.hero-top .greet { font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
+
+.couple-stack {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  position: relative; z-index: 2;
+  margin-bottom: 18px;
+}
+.avatar {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 6px 18px rgba(180, 80, 70, 0.22);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, var(--rose-100), var(--peach));
+}
+.avatar.a1 { transform: translateX(8px) rotate(-4deg); }
+.avatar.a2 { transform: translateX(-8px) rotate(4deg); margin-left: -16px; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar .ph {
+  width: 100%; height: 100%;
+  display: grid; place-items: center;
+  font-family: var(--font-en); font-weight: 600; font-size: 24px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.avatar.a1 .ph { background: linear-gradient(135deg, #F4A89A, #DA7B6B); }
+.avatar.a2 .ph { background: linear-gradient(135deg, #E89AB0, #C46055); }
+.heart-link {
+  position: absolute;
+  width: 28px; height: 28px;
+  background: #fff;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  box-shadow: 0 4px 10px rgba(196, 96, 85, 0.3);
+  z-index: 5;
+  animation: heart-pulse 2.2s ease-in-out infinite;
+}
+.heart-link svg { width: 16px; height: 16px; color: var(--rose-400); }
+@keyframes heart-pulse {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.97); }
+}
+
+.dday {
+  text-align: center;
+  position: relative; z-index: 2;
+}
+.dday .dday-label {
+  font-family: var(--font-en);
+  font-weight: 500; font-size: 10px;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--rose-500);
+}
+.dday .dday-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 72px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--wine);
+  margin: 6px 0 4px;
+  display: inline-flex; align-items: baseline; gap: 2px;
+  font-feature-settings: "ss01" on;
+}
+.dday .dday-num .plus { font-size: 36px; vertical-align: top; opacity: 0.6; transform: translateY(-18px); font-style: italic; font-weight: 300; }
+.dday .dday-num em { font-style: italic; font-weight: 300; }
+.dday .dday-sub {
+  font-size: 11px; color: var(--ink-3);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.dday .dday-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--rose-300); }
+
+/* Mood Card */
+.mood-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mood {
+  border-radius: 22px;
+  padding: 16px 14px 14px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+.mood.m1 { background: linear-gradient(155deg, #FFEFE8 0%, #FBD9CD 100%); }
+.mood.m2 { background: linear-gradient(155deg, #FFE6EC 0%, #F7CAD4 100%); }
+.mood .m-who {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3);
+  font-family: var(--font-en);
+  margin-bottom: 8px;
+}
+.mood .m-emoji {
+  font-size: 36px; line-height: 1; margin-bottom: 6px;
+}
+.mood .m-text {
+  font-size: 12px; color: var(--ink-2);
+  font-weight: 500;
+}
+.mood .m-time {
+  font-size: 10px; color: var(--ink-4);
+  margin-top: 4px;
+  font-family: var(--font-en);
+}
+
+/* Quick Action Grid */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.quick {
+  aspect-ratio: 1 / 1.05;
+  border-radius: 20px;
+  padding: 14px 12px;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 4px 14px -4px rgba(180, 80, 70, 0.15);
+  transition: transform .25s cubic-bezier(.22,.61,.36,1), box-shadow .25s;
+  cursor: pointer;
+}
+.quick:active { transform: translateY(1px); }
+.quick:hover { transform: translateY(-3px); box-shadow: 0 10px 22px -6px rgba(180, 80, 70, 0.22); }
+.quick.q-photo { background: linear-gradient(160deg, #FFE8DD 0%, #FBC9B6 100%); }
+.quick.q-letter { background: linear-gradient(160deg, #FFE2E8 0%, #F8C2CF 100%); }
+.quick.q-bucket { background: linear-gradient(160deg, #E8F0E0 0%, #C5D6B4 100%); }
+.quick.q-schedule { background: linear-gradient(160deg, #FFF0CE 0%, #F4D896 100%); }
+.quick.q-place { background: linear-gradient(160deg, #E6DEEC 0%, #C9BCD6 100%); }
+.quick.q-game { background: linear-gradient(160deg, #FDE5D4 0%, #F5BFA0 100%); }
+.quick .q-ico {
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.55);
+  display: grid; place-items: center;
+  backdrop-filter: blur(6px);
+}
+.quick .q-ico svg { width: 18px; height: 18px; stroke-width: 1.7; color: var(--ink); }
+.quick .q-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.quick .q-count {
+  position: absolute; top: 10px; right: 12px;
+  font-family: var(--font-en);
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-2);
+  background: rgba(255,255,255,0.7);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+/* Today's Question */
+.qcard {
+  border-radius: 24px;
+  padding: 20px 20px 18px;
+  background:
+    radial-gradient(80% 60% at 100% 0%, #FFE2D8 0%, transparent 60%),
+    linear-gradient(180deg, #FFFBF8 0%, #FCF0EA 100%);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--sh-1);
+}
+.qcard .q-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.qcard .q-tag {
+  font-family: var(--font-en);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--rose-500);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.qcard .q-tag::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--rose-400);
+  box-shadow: 0 0 0 3px rgba(218,123,107,0.18);
+}
+.qcard .q-day {
+  font-family: var(--font-en); font-size: 11px; color: var(--ink-3);
+}
+.qcard .q-body {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--wine);
+  margin: 0 0 16px;
+  position: relative;
+}
+.qcard .q-body::before {
+  content: "\201C";
+  position: absolute; left: -6px; top: -20px;
+  font-size: 56px;
+  color: var(--rose-200);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+.qcard .q-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.qcard .q-status {
+  font-size: 11px; color: var(--ink-3);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.qcard .q-status .av-mini {
+  display: inline-flex;
+}
+.qcard .q-status .av-mini span {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #FFFBF8;
+  margin-left: -6px;
+}
+.qcard .q-status .av-mini span:first-child { margin-left: 0; background: linear-gradient(135deg, #F4A89A, #DA7B6B); }
+.qcard .q-status .av-mini span:nth-child(2) { background: linear-gradient(135deg, #E89AB0, #C46055); }
+.btn-answer {
+  padding: 10px 18px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+  color: #fff;
+  font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  box-shadow: 0 6px 16px -2px rgba(196,96,85,0.35);
+  transition: transform .15s;
+}
+.btn-answer:hover { transform: translateY(-1px); }
+.btn-answer svg { width: 13px; height: 13px; }
+
+/* Recent Activity */
+.activity {
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.activity .a-list { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.a-item { display: flex; align-items: center; gap: 12px; }
+.a-item .a-thumb {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--rose-100), var(--peach));
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.a-item .a-thumb.t-photo { background: linear-gradient(135deg, #FBC9B6, #F4A89A); }
+.a-item .a-thumb.t-letter { background: linear-gradient(135deg, #F8C2CF, #E89AB0); }
+.a-item .a-thumb.t-bucket { background: linear-gradient(135deg, #C5D6B4, #A9C290); }
+.a-item .a-body { flex: 1; min-width: 0; }
+.a-item .a-title { font-size: 13px; font-weight: 500; color: var(--ink); }
+.a-item .a-meta { font-size: 11px; color: var(--ink-3); margin-top: 2px; font-family: var(--font-en); }
+.a-item .a-time { font-size: 11px; color: var(--ink-4); font-family: var(--font-en); }
+
+/* ════════════════════════════════════════════
+   PHOTOS
+   ════════════════════════════════════════════ */
+.photos-filter {
+  margin: 6px 22px 14px;
+  display: flex; gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.photos-filter::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--line);
+  font-size: 12px; font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .2s;
+  cursor: pointer;
+}
+.chip.active {
+  background: var(--wine); color: #FFFBF8;
+  border-color: var(--wine);
+}
+.chip .count { font-family: var(--font-en); font-size: 10px; opacity: 0.7; margin-left: 4px; }
+
+.photo-grid {
+  margin: 0 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.photo-grid.cols-2 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.photo {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, var(--rose-100), var(--peach));
+  cursor: pointer;
+  transition: transform .25s;
+}
+.photo:hover { transform: scale(1.02); }
+.photo.tall { aspect-ratio: 1/1.4; grid-row: span 2; }
+.photo .ph-tile {
+  width: 100%; height: 100%;
+  display: grid; place-items: center;
+  font-family: var(--font-en); font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  background-size: cover; background-position: center;
+}
+.photo .ph-date {
+  position: absolute; bottom: 6px; left: 8px;
+  font-family: var(--font-en); font-size: 9px; font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  letter-spacing: 0.08em;
+  background: rgba(0,0,0,0.25);
+  padding: 2px 7px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+.photo .ph-fav {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  display: grid; place-items: center;
+  color: var(--rose-400);
+}
+.photo .ph-fav svg { width: 12px; height: 12px; }
+
+.month-divider {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 22px 8px;
+}
+.month-divider .m-num {
+  font-family: var(--font-display);
+  font-weight: 400; font-size: 28px;
+  line-height: 1; letter-spacing: -0.02em;
+  color: var(--wine);
+}
+.month-divider .m-num em { font-style: italic; }
+.month-divider .m-info { display: flex; flex-direction: column; gap: 1px; }
+.month-divider .m-info .m-yr { font-size: 11px; font-family: var(--font-en); color: var(--ink-3); letter-spacing: 0.1em; }
+.month-divider .m-info .m-cnt { font-size: 11px; color: var(--ink-3); }
+.month-divider .m-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); margin-left: 4px; }
+
+.photo-upload {
+  margin: 16px 18px 0;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1.5px dashed var(--rose-200);
+  background: linear-gradient(180deg, rgba(252,233,229,0.4), rgba(252,233,229,0.1));
+  display: flex; align-items: center; gap: 14px;
+}
+.photo-upload .pu-ico {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--rose-50), var(--rose-100));
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.photo-upload .pu-ico svg { width: 22px; height: 22px; color: var(--rose-500); }
+.photo-upload .pu-text { flex: 1; }
+.photo-upload .pu-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.photo-upload .pu-sub { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+/* ════════════════════════════════════════════
+   LETTERS
+   ════════════════════════════════════════════ */
+.letters-wrap { padding: 0 18px; }
+.letter-write {
+  margin: 0 18px 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(80% 60% at 100% 100%, #FFE0D6 0%, transparent 60%),
+    linear-gradient(180deg, #FFFBF8 0%, #FCF1EB 100%);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.letter-write .lw-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.letter-write .lw-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.letter-write .lw-sub { font-size: 11px; color: var(--ink-3); font-family: var(--font-en); }
+.letter-write textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  outline: none;
+  resize: none;
+  min-height: 70px;
+  transition: border-color .2s;
+}
+.letter-write textarea:focus { border-color: var(--rose-300); background: #fff; }
+.letter-write .lw-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px;
+}
+.letter-write .lw-foot .lw-len { font-size: 10px; color: var(--ink-4); font-family: var(--font-en); }
+.btn-send {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+  color: #fff;
+  font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  box-shadow: 0 4px 12px -2px rgba(196,96,85,0.4);
+}
+.btn-send svg { width: 13px; height: 13px; }
+
+.letter-list { display: flex; flex-direction: column; gap: 12px; padding: 0 18px 30px; }
+.envelope {
+  background: linear-gradient(160deg, #FFF5F0 0%, #FBE2D8 100%);
+  border-radius: 20px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 4px 12px -2px rgba(180, 80, 70, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s;
+  cursor: pointer;
+}
+.envelope:hover { transform: translateY(-2px); }
+.envelope.unread {
+  background: linear-gradient(160deg, #FFE5DD 0%, #F7C9BC 100%);
+  box-shadow: 0 0 0 3px rgba(231,154,168,0.18), 0 6px 18px -2px rgba(196,96,85,0.25);
+  animation: env-glow 2.6s ease-in-out infinite;
+}
+@keyframes env-glow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(231,154,168,0.18), 0 6px 18px -2px rgba(196,96,85,0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(231,154,168,0.28), 0 8px 22px -2px rgba(196,96,85,0.32); }
+}
+.envelope::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 70%; height: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  pointer-events: none;
+}
+.env-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.env-from { display: flex; align-items: center; gap: 8px; }
+.env-from .ef-av {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, #F4A89A, #DA7B6B);
+  display: grid; place-items: center;
+  color: #fff; font-size: 10px; font-weight: 600;
+  font-family: var(--font-en);
+}
+.env-from .ef-av.b { background: linear-gradient(135deg, #E89AB0, #C46055); }
+.env-from .ef-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.env-time { font-size: 10px; color: var(--ink-3); font-family: var(--font-en); }
+.env-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--wine);
+  margin-bottom: 4px;
+}
+.env-preview {
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.env-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px;
+}
+.env-badge {
+  font-family: var(--font-en);
+  font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+  padding: 3px 9px; border-radius: 999px;
+  text-transform: uppercase;
+}
+.env-badge.new { background: var(--rose-500); color: #fff; }
+.env-badge.read { background: rgba(122,64,70,0.08); color: var(--ink-3); }
+.env-hint { font-size: 10px; color: var(--rose-500); font-weight: 600; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 2px; }
+.env-hint svg { width: 10px; height: 10px; }
+
+/* ════════════════════════════════════════════
+   CALENDAR
+   ════════════════════════════════════════════ */
+.cal-hero {
+  margin: 6px 18px 14px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: linear-gradient(155deg, #FFF1EA 0%, #F6D0C2 100%);
+  border: 1px solid rgba(255,255,255,0.7);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.cal-hero .ch-l .ch-month {
+  font-family: var(--font-display);
+  font-size: 28px; letter-spacing: -0.02em; color: var(--wine);
+  font-weight: 400;
+}
+.cal-hero .ch-l .ch-month em { font-style: italic; }
+.cal-hero .ch-l .ch-yr { font-size: 11px; color: var(--ink-3); font-family: var(--font-en); letter-spacing: 0.12em; white-space: nowrap; }
+.cal-hero .ch-r { display: flex; gap: 6px; }
+.cal-hero .ch-r .nav-b {
+  width: 32px; height: 32px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.6);
+  display: grid; place-items: center;
+  color: var(--wine);
+  cursor: pointer;
+}
+.cal-hero .ch-r .nav-b svg { width: 14px; height: 14px; }
+
+.cal-grid {
+  margin: 0 18px;
+  background: var(--paper);
+  border-radius: 22px;
+  padding: 16px 14px;
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.cal-week, .cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+.cal-week .wd {
+  font-family: var(--font-en);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 4px 0 10px;
+}
+.cal-week .wd.sun { color: var(--rose-400); }
+.cal-week .wd.sat { color: #7494C0; }
+.cal-day {
+  aspect-ratio: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+  cursor: pointer;
+  border-radius: 12px;
+  font-family: var(--font-en);
+}
+.cal-day .d-num {
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.cal-day.muted .d-num { color: var(--ink-4); opacity: 0.5; }
+.cal-day.today {
+  background: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+  box-shadow: 0 4px 10px -2px rgba(196,96,85,0.4);
+}
+.cal-day.today .d-num { color: #fff; font-weight: 700; }
+.cal-day .d-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--rose-400);
+  margin-top: 3px;
+}
+.cal-day.today .d-dot { background: #fff; }
+.cal-day.has-event:not(.today) {
+  background: rgba(231,154,168,0.12);
+}
+
+.event-list { padding: 18px 18px 30px; display: flex; flex-direction: column; gap: 10px; }
+.event {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: var(--paper);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+}
+.event .e-date {
+  width: 48px; flex-shrink: 0;
+  text-align: center;
+  border-right: 1px solid var(--line);
+  padding-right: 12px;
+}
+.event .e-date .e-d {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500; color: var(--wine);
+  line-height: 1;
+}
+.event .e-date .e-m {
+  font-family: var(--font-en);
+  font-size: 10px; color: var(--ink-3);
+  margin-top: 3px; letter-spacing: 0.1em;
+}
+.event .e-body { flex: 1; min-width: 0; }
+.event .e-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.event .e-meta {
+  font-size: 11px; color: var(--ink-3); margin-top: 2px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.event .e-type {
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--rose-50); color: var(--rose-500);
+  font-size: 10px; font-weight: 600;
+}
+.event .e-type.trip { background: #E6DEEC; color: #6A5278; }
+.event .e-type.date { background: #FFF0CE; color: #8B6A1F; }
+.event .e-type.ann { background: var(--rose-50); color: var(--rose-500); }
+
+/* ════════════════════════════════════════════
+   MORE
+   ════════════════════════════════════════════ */
+.more-banner {
+  margin: 6px 18px 16px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  display: flex; align-items: center; gap: 14px;
+  background:
+    radial-gradient(80% 80% at 100% 0%, #FBE2D8 0%, transparent 70%),
+    linear-gradient(155deg, var(--rose-50) 0%, var(--rose-100) 100%);
+  border: 1px solid rgba(255,255,255,0.7);
+}
+.more-banner .mb-av {
+  display: flex; align-items: center;
+}
+.more-banner .mb-av .a {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 3px solid #FFFBF8;
+  background: linear-gradient(135deg, #F4A89A, #DA7B6B);
+}
+.more-banner .mb-av .a.b { margin-left: -14px; background: linear-gradient(135deg, #E89AB0, #C46055); }
+.more-banner .mb-body { flex: 1; }
+.more-banner .mb-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+.more-banner .mb-code {
+  font-size: 10px; color: var(--ink-3); margin-top: 2px;
+  font-family: var(--font-en); letter-spacing: 0.1em;
+}
+.more-banner .mb-code b { color: var(--rose-500); font-weight: 600; }
+
+.more-grid {
+  margin: 0 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.more-card {
+  border-radius: 20px;
+  padding: 16px 16px 18px;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 4px 12px -4px rgba(180, 80, 70, 0.15);
+  min-height: 130px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  overflow: hidden;
+  transition: transform .25s;
+  cursor: pointer;
+}
+.more-card:hover { transform: translateY(-3px); }
+.more-card.c-capsule { background: linear-gradient(160deg, #F2E6F4 0%, #D9C2DF 100%); }
+.more-card.c-game { background: linear-gradient(160deg, #FEE3D2 0%, #F8C09C 100%); }
+.more-card.c-map { background: linear-gradient(160deg, #E2EFE4 0%, #BCD4C0 100%); }
+.more-card.c-gift { background: linear-gradient(160deg, #FFF1CC 0%, #F4D896 100%); }
+.more-card.c-mood { background: linear-gradient(160deg, #FFE5EC 0%, #F7C3CF 100%); }
+.more-card.c-memo { background: linear-gradient(160deg, #E0E8F0 0%, #BCC9D8 100%); }
+.more-card .mc-ico {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.6);
+  display: grid; place-items: center;
+  backdrop-filter: blur(8px);
+}
+.more-card .mc-ico svg { width: 20px; height: 20px; color: var(--ink); stroke-width: 1.6; }
+.more-card .mc-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+.more-card .mc-desc { font-size: 11px; color: var(--ink-2); margin-top: 2px; }
+.more-card .mc-badge {
+  position: absolute; top: 14px; right: 14px;
+  font-family: var(--font-en);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.7);
+  color: var(--wine);
+  padding: 3px 8px; border-radius: 999px;
+}
+
+/* ─── Tweaks Panel ─── */
+.tweaks-panel {
+  position: absolute;
+  bottom: 100px; right: 14px;
+  width: 240px;
+  background: rgba(255,251,248,0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 30px -6px rgba(140, 60, 70, 0.3);
+  padding: 14px;
+  z-index: 100;
+  display: none;
+}
+.tweaks-panel.open { display: block; }
+.tweaks-panel h4 {
+  margin: 0 0 10px;
+  font-size: 12px; font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-en);
+}
+.tw-swatch {
+  width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px var(--line-2);
+  cursor: pointer;
+}
+.tw-swatch.active { box-shadow: 0 0 0 2px var(--wine); }
+.tweaks-toggle {
+  position: absolute;
+  bottom: 102px; right: 14px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+  color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 6px 16px -4px rgba(196,96,85,0.5);
+  z-index: 99;
+  cursor: pointer;
+}
+.tweaks-toggle svg { width: 18px; height: 18px; }
+</style>
 </head>
 <body>
-  <div id="authView" class="auth-wrapper">
-    <div class="auth-card">
-      <div style="text-align:center;margin-bottom:16px;">
-        <div class="auth-logo-heart">♥</div>
-        <h1 class="auth-title">우리의 하루들</h1>
-        <p class="auth-sub">둘만의 작은 기록장</p>
-      </div>
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">로그인</button>
-        <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">회원가입</button>
-      </div>
-      <div id="loginForm">
-        <div class="form-group"><label class="form-label">이메일</label><input id="loginEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
-        <div class="form-group"><label class="form-label">비밀번호</label><input id="loginPassword" class="form-input" type="password" placeholder="비밀번호" /></div>
-        <div id="loginError" class="auth-error"></div>
-        <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="loginWithEmail()">로그인</button>
-        <div class="divider-or"><span>또는</span></div>
-        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 로그인</button>
-        <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
-          카카오로 로그인
-        </button>
-        <button class="btn-full btn-full-social btn-naver" onclick="loginWithNaver()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
-          네이버로 로그인
-        </button>
-      </div>
-      <div id="signupForm" class="hidden">
-        <div class="form-group"><label class="form-label">이메일</label><input id="signupEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
-        <div class="form-group"><label class="form-label">비밀번호</label><input id="signupPassword" class="form-input" type="password" placeholder="6자 이상" /></div>
-        <div class="form-group"><label class="form-label">닉네임</label><input id="signupName" class="form-input" type="text" placeholder="상대방에게 보일 이름" /></div>
-        <div id="signupError" class="auth-error"></div>
-        <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="signupWithEmail()">회원가입</button>
-        <div class="divider-or"><span>또는</span></div>
-        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 시작하기</button>
-        <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
-          카카오로 시작하기
-        </button>
-        <button class="btn-full btn-full-social btn-naver" onclick="loginWithNaver()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
-          네이버로 시작하기
-        </button>
+<div class="stage">
+  <aside class="stage-meta">
+    <div class="tag">case study · couple app</div>
+    <div class="brand">우리의 <em>하루들</em></div>
+    <p class="desc">Firebase 기반 커플 전용 웹앱 리디자인. 둘만의 작은 기록장이 매일 열고 싶은 감성 공간으로 다시 태어났어요. 소프트 로맨틱과 모던 미니멀 사이의 균형 — 따뜻한 로즈/피치 베이스, 부드러운 글래스모피즘, 그리고 디테일한 마이크로 인터랙션.</p>
+    <div class="pill-list">
+      <span>Pretendard · Outfit · Fraunces</span>
+      <span>Mobile First 393×852</span>
+      <span>Soft Rose Palette</span>
+      <span>Glassmorphism</span>
+    </div>
+  </aside>
+
+  <div class="phone" id="phone">
+    <div class="dynamic-island"></div>
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="right">
+        <svg width="18" height="11" viewBox="0 0 18 11" fill="none"><rect x="0" y="6" width="3" height="5" rx="0.6" fill="currentColor"/><rect x="5" y="3.5" width="3" height="7.5" rx="0.6" fill="currentColor"/><rect x="10" y="1.5" width="3" height="9.5" rx="0.6" fill="currentColor"/><rect x="15" y="0" width="3" height="11" rx="0.6" fill="currentColor"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 11.5a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8Z" fill="currentColor"/><path d="M3.6 7.4a6 6 0 0 1 8.8 0l1.2-1.3a7.8 7.8 0 0 0-11.2 0l1.2 1.3Z" fill="currentColor"/><path d="M.6 4.2a10.6 10.6 0 0 1 14.8 0l1.2-1.3a12.4 12.4 0 0 0-17.2 0l1.2 1.3Z" fill="currentColor"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3" stroke="currentColor" stroke-opacity="0.5" fill="none"/><rect x="2" y="2" width="17" height="9" rx="1.5" fill="currentColor"/><rect x="24" y="4" width="1.5" height="5" rx="0.6" fill="currentColor" fill-opacity="0.5"/></svg>
+      </span>
+    </div>
+
+    <div class="screen-wrap">
+      <div class="screen-scroll" id="screenScroll">
+        <div id="screens"></div>
       </div>
     </div>
-  </div>
 
-  <div id="codeView" class="code-wrapper hidden">
-    <div class="code-card">
-      <div style="text-align:center;font-size:28px;margin-bottom:8px;">♥</div>
-      <h2 style="text-align:center;font-size:20px;margin:0 0 4px;">커플 코드 입력</h2>
-      <p style="text-align:center;font-size:12px;opacity:0.7;margin-bottom:16px;">같은 코드를 입력하면 같은 공간을 공유해요</p>
-      <div class="user-bar">
-        <div class="user-avatar">♥</div>
-        <div class="user-name" id="codeViewUserName"></div>
-        <button class="btn-sm-outline" onclick="doLogout()">로그아웃</button>
+    <nav class="tabbar">
+      <div class="tabbar-inner" id="tabbar">
+        <span class="tab-indicator" id="tabIndicator"></span>
+        <button class="tab-item active" data-tab="home">
+          <span class="ti-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1.5 1.5 0 0 1-1.5 1.5h-3.5v-7h-6v7H4.5A1.5 1.5 0 0 1 3 20V10.5Z"/></svg></span>
+          <span class="ti-label kr">홈</span>
+        </button>
+        <button class="tab-item" data-tab="photos">
+          <span class="ti-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"/><path d="M8.5 6 10 3.5h4L15.5 6"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+          <span class="ti-label kr">사진</span>
+        </button>
+        <button class="tab-item" data-tab="calendar">
+          <span class="ti-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/><circle cx="12" cy="14.5" r="1.3" fill="currentColor"/></svg></span>
+          <span class="ti-label kr">일정</span>
+        </button>
+        <button class="tab-item" data-tab="letters">
+          <span class="ti-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="m3.5 7 8 6.2a1 1 0 0 0 1.2 0L20.5 7"/></svg></span>
+          <span class="ti-label kr">편지</span>
+        </button>
+        <button class="tab-item" data-tab="more">
+          <span class="ti-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11.4 3.6a1 1 0 0 1 1.2 0l2 1.4 2.4-.2a1 1 0 0 1 1 .8l.6 2.3 1.8 1.6a1 1 0 0 1 .2 1.2l-1.2 2.1.2 2.4a1 1 0 0 1-.7 1.1l-2.3.7-1.4 2a1 1 0 0 1-1.2.4l-2.3-.8-2.3.8a1 1 0 0 1-1.2-.4l-1.4-2-2.3-.7a1 1 0 0 1-.7-1.1l.2-2.4-1.2-2.1a1 1 0 0 1 .2-1.2L4 7.9l.6-2.3a1 1 0 0 1 1-.8L8 5l2-1.4Z"/></svg></span>
+          <span class="ti-label kr">더보기</span>
+        </button>
       </div>
-      <div class="field-group">
-        <label class="form-label">커플 코드</label>
-        <input id="inputCoupleCode" class="form-input" type="text" placeholder="예: peach-2023-0709" />
-        <div style="font-size:11px;opacity:0.7;margin-top:6px;">- 처음이라면 원하는 코드를 정해서 입력하면 자동으로 만들어져요.<br />- 이미 쓰고 있다면 기존 코드 그대로 입력하세요.</div>
-      </div>
-      <div id="codeError" class="auth-error"></div>
-      <button class="btn-full btn-full-primary" onclick="doEnterWithCode()">들어가기 💗</button>
-    </div>
-  </div>
-
-  <div id="appView" class="app-shell hidden">
-    <header class="navbar">
-      <div class="nav-left">
-        <button id="btnLogout" class="btn-logout-heart" title="로그아웃">♥</button>
-        <div class="nav-logo">♥</div>
-        <div class="nav-title">
-          <div class="nav-title-main">우리의 하루들</div>
-          <div class="nav-title-sub" id="navSubtitle">같이 걷는 매일의 기록</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <div class="nav-couple-code">코드: <span id="displayCoupleCode">-</span></div>
-        <div class="chip"><span id="realtimeDot" class="status-dot offline"></span><span id="realtimeText">연결 대기중</span></div>
-      </div>
-    </header>
-    <main class="main-content">
-      <!-- 홈 탭 -->
-      <div id="tab-home" class="tab-page active">
-      <section id="section-dday" class="card">
-        <div class="card-header"><h2>우리의 첫날</h2><span>사귄 날부터 오늘까지</span><span class="pill-label">D+day 카운터</span></div>
-        <p class="section-description">우리가 시작된 날을 적어두면, 함께한 지 며칠째인지 매일 자동으로 알려줘요.</p>
-        <div class="dday-main">
-          <div class="dday-display">
-            <div id="ddayPrimary" class="dday-count">사귄 날짜를 아직 설정하지 않았어요.</div>
-            <div id="ddaySecondary" class="dday-sub"></div>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row">
-            <div class="field-group" style="flex:1;min-width:150px;"><label class="field-label">사귄 날짜</label><input id="inputStartDate" type="date" /></div>
-            <button id="btnSaveStartDate" class="btn-outline">D-day 저장</button>
-          </div>
-          <div id="ddaySaveMsg" class="success-text hidden"></div>
-        </div>
-      </section>
-      </div><!-- /tab-home -->
-
-      <!-- 달력 탭 -->
-      <div id="tab-calendar" class="tab-page">
-        <section id="section-calendar" class="card">
-          <div class="card-header"><h2>기념일 · 데이트 달력</h2><span>작은 일정까지 같이 기록하기</span></div>
-          <p class="section-description">기념일, 데이트, 여행 계획을 날짜와 함께 남겨두면 나중에 둘이 돌아보기 좋아요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 120px;"><label class="field-label">날짜</label><input id="inputScheduleDate" type="date" /></div>
-            <div class="field-group" style="flex:2 1 150px;"><label class="field-label">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
-          </div>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 120px;">
-              <label class="field-label">종류</label>
-              <select id="selectScheduleType" style="padding:6px 12px;border-radius:999px;border:1px solid #e0c7ba;font-size:12px;">
-                <option value="anniversary">기념일</option><option value="date">데이트</option><option value="trip">여행</option><option value="etc">기타</option>
-              </select>
-            </div>
-            <button id="btnAddSchedule" class="btn-primary" style="margin-top:18px;">달력에 추가</button>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">달력</span><span class="badge-soft" id="scheduleCountBadge">0개 일정</span>
-          </div>
-          <div id="scheduleList" class="schedule-list"></div>
-        </section>
-      </div><!-- /tab-calendar -->
-
-      <!-- 추억 탭 -->
-      <div id="tab-photos" class="tab-page">
-        <section id="section-photos" class="card">
-          <div class="card-header"><h2>추억 사진첩</h2><span>함께 담은 장면들</span></div>
-          <p class="section-description">사진을 업로드하거나 URL을 붙여넣으면 실시간으로 공유돼요.</p>
-          <div class="field-group"><label class="field-label">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" style="font-size:11px;" /><span class="muted small">- 한 번에 한 장씩 업로드돼요.</span></div>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">또는 사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://..." /></div>
-            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
-          </div>
-          <div class="field-row" style="margin-top:4px;">
-            <button id="btnAddPhoto" class="btn-primary">사진 추가</button>
-            <span id="photoUploadStatus" class="small muted"></span>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span class="small muted">월별 타임라인</span><span class="badge-soft" id="photoCountBadge">0장</span>
-          </div>
-          <div id="photoList" style="display:flex;flex-direction:column;max-height:500px;overflow-y:auto;padding-right:4px;"></div>
-        </section>
-      </div><!-- /tab-photos -->
-
-      <!-- 편지 탭 -->
-      <div id="tab-letters" class="tab-page">
-        <section id="section-letters" class="card">
-          <div class="card-header"><h2>서로에게 쓰는 편지함</h2><span>짧은 메모도 괜찮아요</span></div>
-          <p class="section-description">오늘 전하고 싶은 말을 짧게라도 남겨보세요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">작성자</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-            <div class="field-group" style="flex:1 1 140px;"><label class="field-label">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
-          </div>
-          <div class="field-group"><label class="field-label">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;">
-            <button id="btnSendLetter" class="btn-primary">편지 보내기</button>
-            <span id="letterStatus" class="small muted"></span>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">새로 작성된 편지는 위쪽에 쌓여요.</span><span class="badge-soft" id="letterCountBadge">0통</span>
-          </div>
-          <div id="lettersList" class="letters-list"></div>
-        </section>
-      </div><!-- /tab-letters -->
-
-      <!-- 더보기 탭 -->
-      <div id="tab-more" class="tab-page">
-        <section id="section-bucket" class="card">
-          <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
-          <p class="section-description">언젠가 둘이서 꼭 해보고 싶은 것들을 적어두고, 하나씩 완성해가요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
-            <div class="field-group" style="flex:1 1 130px;"><label class="field-label">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
-            <button id="btnAddBucket" class="btn-primary" style="margin-top:18px;">추가</button>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">체크하면 상대방도 바로 완료 표시돼요.</span><span class="badge-soft" id="bucketCountBadge">0개 남음</span>
-          </div>
-          <div id="bucketList" class="bucket-list"></div>
-        </section>
-        <section id="section-gifts" class="card">
-          <div class="card-header"><h2>받고 싶은 선물 리스트 🎁</h2><span>서로의 위시리스트</span><span class="pill-label">선물 힌트</span></div>
-          <p class="section-description">갖고 싶은 것들을 미리 적어두면, 기념일에 딱 맞는 선물을 고를 수 있어요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-            <div class="field-group" style="flex:2 1 180px;"><label class="field-label">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
-            <div class="field-group" style="flex:1 1 120px;"><label class="field-label">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://..." /></div>
-            <button id="btnAddGift" class="btn-primary" style="margin-top:18px;">추가</button>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">선물 받으면 체크!</span><span class="badge-soft" id="giftCountBadge">0개</span>
-          </div>
-          <div id="giftList" class="bucket-list"></div>
-        </section>
-        <section id="section-map" class="card">
-          <div class="card-header"><h2>우리 발자국 🗺️</h2><span>함께 간 곳들</span><span class="pill-label">추억 지도</span></div>
-          <p class="section-description">함께 갔던 곳을 지도에 핀으로 남겨요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
-            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
-            <button id="btnSearchPlace" class="btn-primary" style="margin-top:18px;">장소 검색</button>
-            <button id="btnMyLocation" class="btn-outline" style="margin-top:18px;">📍 현재 위치</button>
-          </div>
-          <div id="mapSearchResults" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
-          <div id="kakaoMap" style="width:100%;height:400px;border-radius:14px;border:1px solid var(--border-soft);margin-top:8px;"></div>
-          <div class="divider"></div>
-          <div id="placeList" class="schedule-list" style="max-height:200px;"></div>
-        </section>
-      </div><!-- /tab-more -->
-    </main>
-    <nav class="bottom-tabs">
-      <button class="bottom-tab active" id="btab-home" onclick="switchBottomTab('home')">
-        <span class="bottom-tab-icon">🏠</span>
-        <span class="bottom-tab-label">홈</span>
-      </button>
-      <button class="bottom-tab" id="btab-calendar" onclick="switchBottomTab('calendar')">
-        <span class="bottom-tab-icon">📅</span>
-        <span class="bottom-tab-label">달력</span>
-      </button>
-      <button class="bottom-tab" id="btab-photos" onclick="switchBottomTab('photos')">
-        <span class="bottom-tab-icon">📸</span>
-        <span class="bottom-tab-label">추억</span>
-      </button>
-      <button class="bottom-tab" id="btab-letters" onclick="switchBottomTab('letters')">
-        <span class="bottom-tab-icon">💌</span>
-        <span class="bottom-tab-label">편지</span>
-      </button>
-      <button class="bottom-tab" id="btab-more" onclick="switchBottomTab('more')">
-        <span class="bottom-tab-icon">✨</span>
-        <span class="bottom-tab-label">더보기</span>
-      </button>
     </nav>
-    <footer class="footer">오늘도 같이, 한 걸음씩 담아가기 ♡</footer>
+
+    <div class="home-indicator"></div>
+  </div>
+</div>
+
+<script>
+/* ─── SVG Icons ─── */
+const SVG = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2.5"/><path d="M8.5 6 10 3.5h4L15.5 6"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  letter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="m3.5 7 8 6.2a1 1 0 0 0 1.2 0L20.5 7"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9 17.5 20 6.5"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="11" rx="3.5"/><path d="M7 12h3M8.5 10.5v3M15 11.5h.01M17 13.5h.01"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11Z"/></svg>',
+  heartO: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10.5a4 4 0 0 1 7-2.6 4 4 0 0 1 7 2.6c0 6-7 10.5-7 10.5Z"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2H4.5L6 16Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 11 14M21.5 3.5 14.5 21l-3.5-7-7-3.5L21.5 3.5Z"/></svg>',
+  arrowR: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>',
+  arrowL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="11" width="15" height="9.5" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h11a4 4 0 0 0 0-8 6 6 0 0 0-11.7-1.3A4 4 0 0 0 7 18Z"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6 8 8M16 16l2.4 2.4M5.6 18.4 8 16M16 8l2.4-2.4"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>',
+  gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="12" rx="2"/><path d="M3.5 12h17M12 8.5v12"/><path d="M12 8.5c-1-2-3-3-4-2s-.5 3 1 3M12 8.5c1-2 3-3 4-2s.5 3-1 3"/></svg>',
+  note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l4 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M8 11h8M8 15h5"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.6 5.5 6 .9-4.4 4.3 1.1 6L12 17 6.7 19.7l1.1-6L3.4 9.4l6-.9L12 3Z"/></svg>',
+  question: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 9.5a3.5 3.5 0 1 1 4.6 3.3c-.7.3-1.1 1-1.1 1.7v.5M12 17.5h.01"/><circle cx="12" cy="12" r="9"/></svg>'
+};
+
+/* ─── Screen Renderers ─── */
+function renderHome() {
+  return `
+<section class="screen active" id="screen-home">
+  <div class="home-hero">
+    <div class="hero-top">
+      <span class="weather">${SVG.sun}<span class="temp">18°</span>·서울</span>
+      <span class="greet">Tuesday · May 26</span>
+    </div>
+    <div class="couple-stack">
+      <div class="avatar a1"><div class="ph">S</div></div>
+      <div class="heart-link">${SVG.heart}</div>
+      <div class="avatar a2"><div class="ph">J</div></div>
+    </div>
+    <div class="dday">
+      <div class="dday-label">Our days together</div>
+      <div class="dday-num"><span class="plus">+</span>1<em>2</em>48</div>
+      <div class="dday-sub">서후 · 서진 <span class="dot"></span> since 2022.12.25</div>
+    </div>
   </div>
 
-  <script>
-    function switchTab(t) { if(window._app) window._app.switchTab(t); }
-    function loginWithEmail() { if(window._app) window._app.loginWithEmail(); }
-    function signupWithEmail() { if(window._app) window._app.signupWithEmail(); }
-    function loginWithGoogle() { if(window._app) window._app.loginWithGoogle(); }
-    function loginWithKakao() { if(window._app) window._app.loginWithKakao(); }
-    function loginWithNaver() { if(window._app) window._app.loginWithNaver(); }
-    function doLogout() { if(window._app) window._app.doLogout(); }
-    function doEnterWithCode() { if(window._app) window._app.doEnterWithCode(); }
-    function switchBottomTab(tab) {
-      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.bottom-tab').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tab)?.classList.add('active');
-      document.getElementById('btab-' + tab)?.classList.add('active');
-      window.scrollTo(0, 0);
-    }
-  </script>
+  <div class="section">
+    <div class="section-head">
+      <span class="s-title kr">오늘의 무드</span>
+      <span class="s-more">기록하기 ${SVG.arrowR}</span>
+    </div>
+    <div class="mood-card">
+      <div class="mood m1">
+        <div class="m-who">서후 · him</div>
+        <div class="m-emoji">🥰</div>
+        <div class="m-text">너 보고 싶은 화요일</div>
+        <div class="m-time">방금 전</div>
+      </div>
+      <div class="mood m2">
+        <div class="m-who">서진 · her</div>
+        <div class="m-emoji">☕️</div>
+        <div class="m-text">카페에서 일하는 중</div>
+        <div class="m-time">12분 전</div>
+      </div>
+    </div>
+  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+  <div class="section">
+    <div class="section-head">
+      <span class="s-title kr">우리의 기록</span>
+      <span class="s-more">전체보기 ${SVG.arrowR}</span>
+    </div>
+    <div class="quick-grid">
+      <div class="quick q-photo">
+        <div class="q-ico">${SVG.camera}</div>
+        <div class="q-name">사진첩</div>
+        <div class="q-count">36</div>
+      </div>
+      <div class="quick q-letter">
+        <div class="q-ico">${SVG.letter}</div>
+        <div class="q-name">편지함</div>
+        <div class="q-count">69</div>
+      </div>
+      <div class="quick q-bucket">
+        <div class="q-ico">${SVG.check}</div>
+        <div class="q-name">버킷</div>
+        <div class="q-count">6</div>
+      </div>
+      <div class="quick q-schedule">
+        <div class="q-ico">${SVG.cal}</div>
+        <div class="q-name">일정</div>
+        <div class="q-count">8</div>
+      </div>
+      <div class="quick q-place">
+        <div class="q-ico">${SVG.pin}</div>
+        <div class="q-name">장소</div>
+        <div class="q-count">45</div>
+      </div>
+      <div class="quick q-game">
+        <div class="q-ico">${SVG.game}</div>
+        <div class="q-name">게임</div>
+        <div class="q-count">NEW</div>
+      </div>
+    </div>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDp8-HY4YxpR3hHWeDLEtyA3AV78siWyvo",
-      authDomain: "dnfl-bdc76.firebaseapp.com",
-      projectId: "dnfl-bdc76",
-      storageBucket: "dnfl-bdc76.firebasestorage.app",
-      messagingSenderId: "118876262664",
-      appId: "1:118876262664:web:c92b7f408f168f6df69cbd"
-    };
-    const KAKAO_REST_KEY = "2a71f06d5335fc05a0917d34b923d609";
-    const KAKAO_FUNCTION_URL = "https://kakaologin-ke65mbcpiq-uc.a.run.app";
-    const NAVER_CLIENT_ID = "Hp9CDEZgTHBWGdWLGe0x";
-    const NAVER_FUNCTION_URL = "https://us-central1-dnfl-bdc76.cloudfunctions.net/naverLogin";
+  <div class="section">
+    <div class="section-head">
+      <span class="s-title kr">오늘의 질문</span>
+      <span class="s-more">지난 답변 ${SVG.arrowR}</span>
+    </div>
+    <div class="qcard">
+      <div class="q-meta">
+        <span class="q-tag">Daily question</span>
+        <span class="q-day">Day 1248</span>
+      </div>
+      <p class="q-body">우리가 처음 만난 그날, 너의 첫인상은 어땠어?</p>
+      <div class="q-foot">
+        <span class="q-status">
+          <span class="av-mini"><span></span><span></span></span>
+          0/2 답변
+        </span>
+        <button class="btn-answer">답변하기 ${SVG.arrowR}</button>
+      </div>
+    </div>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const storage = getStorage(app);
+  <div class="section" id="activity-section">
+    <div class="section-head">
+      <span class="s-title kr">최근 활동</span>
+      <span class="s-more">전체보기 ${SVG.arrowR}</span>
+    </div>
+    <div class="activity">
+      <div class="a-list">
+        <div class="a-item">
+          <div class="a-thumb t-letter">💌</div>
+          <div class="a-body">
+            <div class="a-title">서후가 편지를 보냈어요</div>
+            <div class="a-meta">"Hi Hoo, I'm going to sleep…"</div>
+          </div>
+          <div class="a-time">2h ago</div>
+        </div>
+        <div class="a-item">
+          <div class="a-thumb t-photo">📸</div>
+          <div class="a-body">
+            <div class="a-title">새 사진 3장이 추가됐어요</div>
+            <div class="a-meta">서징티비 닭마 그리고 행궁댕</div>
+          </div>
+          <div class="a-time">어제</div>
+        </div>
+        <div class="a-item">
+          <div class="a-thumb t-bucket">✓</div>
+          <div class="a-body">
+            <div class="a-title">버킷 하나 완료! 🎉</div>
+            <div class="a-meta">강릉 바다 보러 가기</div>
+          </div>
+          <div class="a-time">3일 전</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    let currentUser = null;
-    let currentCoupleCode = null;
-    let unsubscribers = [];
-    let kakaoMap = null;
-    let kakaoMarkers = [];
+  <div style="height: 20px;"></div>
+</section>`;
+}
 
-    function showView(view) {
-      ["authView","codeView","appView"].forEach(v => document.getElementById(v).classList.add("hidden"));
-      document.getElementById(view).classList.remove("hidden");
-    }
+function renderPhotos() {
+  const tiles = [
+    ['linear-gradient(135deg,#F4A89A,#DA7B6B)', '2026.05.24'],
+    ['linear-gradient(135deg,#E89AB0,#C46055)', '05.22'],
+    ['linear-gradient(135deg,#F5C9A8,#E89A8E)', '05.20'],
+    ['linear-gradient(135deg,#C9D2BC,#A9C290)', '05.18'],
+    ['linear-gradient(135deg,#F8C2CF,#E89AB0)', '05.15'],
+    ['linear-gradient(135deg,#F3E2BC,#E8C97C)', '05.12'],
+    ['linear-gradient(135deg,#D6CFD8,#9C8FA5)', '05.10'],
+    ['linear-gradient(135deg,#FBC9B6,#F4A89A)', '05.06'],
+    ['linear-gradient(135deg,#F0B3A8,#C46055)', '05.04'],
+  ];
+  const aprTiles = [
+    ['linear-gradient(135deg,#E6DEEC,#B9A8C7)', '04.28'],
+    ['linear-gradient(135deg,#FFE6EC,#F7CAD4)', '04.25'],
+    ['linear-gradient(135deg,#F5D9C5,#DA9A78)', '04.20'],
+    ['linear-gradient(135deg,#C2D6C4,#7DA585)', '04.16'],
+    ['linear-gradient(135deg,#FFD9C8,#DA7B6B)', '04.10'],
+    ['linear-gradient(135deg,#F8C2CF,#C46055)', '04.04'],
+  ];
 
-    // 카카오 콜백 처리
-    // 카카오 콜백 처리
-    const kakaoCode = sessionStorage.getItem("kakaoCode");
-    if (kakaoCode && kakaoCode.length > 10) {
-      sessionStorage.removeItem("kakaoCode");
-      (async () => {
-        try {
-          const res = await fetch(KAKAO_FUNCTION_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: kakaoCode })
-          });
-          const data = await res.json();
-          if (data.customToken) {
-            await signInWithCustomToken(auth, data.customToken);
-          }
-        } catch(e) { console.error("카카오 로그인 실패", e); }
-      })();
-    }
+  const tile = (g, d, fav, label) => `
+    <div class="photo">
+      <div class="ph-tile" style="background:${g}">${label || ''}</div>
+      ${fav ? `<div class="ph-fav">${SVG.heart}</div>` : ''}
+      <div class="ph-date">${d}</div>
+    </div>`;
 
-    // 네이버 콜백 처리
-    const naverCode = sessionStorage.getItem("naverCode");
-    const naverState = sessionStorage.getItem("naverState");
-    if (naverCode && naverCode.length > 10) {
-      sessionStorage.removeItem("naverCode");
-      sessionStorage.removeItem("naverState");
-      (async () => {
-        try {
-          const res = await fetch(NAVER_FUNCTION_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: naverCode, state: naverState })
-          });
-          const data = await res.json();
-          if (data.customToken) {
-            await signInWithCustomToken(auth, data.customToken);
-          }
-        } catch(e) { console.error("네이버 로그인 실패", e); }
-      })();
-    }
+  return `
+<section class="screen" id="screen-photos">
+  <div class="page-header">
+    <div class="h-title"><em>Memories</em></div>
+    <div class="h-action">
+      <button class="icon-btn">${SVG.spark}</button>
+      <button class="icon-btn">${SVG.plus}</button>
+    </div>
+  </div>
 
-    window._app = {
-      switchTab(tab) {
-        document.getElementById("loginForm").classList.toggle("hidden", tab !== "login");
-        document.getElementById("signupForm").classList.toggle("hidden", tab !== "signup");
-        document.getElementById("tabLogin").classList.toggle("active", tab === "login");
-        document.getElementById("tabSignup").classList.toggle("active", tab === "signup");
-      },
-      async loginWithEmail() {
-        const email = document.getElementById("loginEmail").value.trim();
-        const pw = document.getElementById("loginPassword").value;
-        const err = document.getElementById("loginError");
-        err.textContent = "";
-        try { await signInWithEmailAndPassword(auth, email, pw); }
-        catch(e) { err.textContent = "이메일 또는 비밀번호가 올바르지 않아요."; }
-      },
-      async signupWithEmail() {
-        const email = document.getElementById("signupEmail").value.trim();
-        const pw = document.getElementById("signupPassword").value;
-        const name = document.getElementById("signupName").value.trim();
-        const err = document.getElementById("signupError");
-        err.textContent = "";
-        if (!name) { err.textContent = "닉네임을 입력해주세요."; return; }
-        try {
-          const cred = await createUserWithEmailAndPassword(auth, email, pw);
-          await updateProfile(cred.user, { displayName: name });
-        } catch(e) {
-          if (e.code === "auth/email-already-in-use") err.textContent = "이미 사용 중인 이메일이에요.";
-          else if (e.code === "auth/weak-password") err.textContent = "비밀번호는 6자 이상이어야 해요.";
-          else err.textContent = "회원가입 중 문제가 생겼어요.";
-        }
-      },
-      async loginWithGoogle() {
-        try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-        catch(e) { console.error(e); }
-      },
-      loginWithKakao() {
-        const redirectUri = encodeURIComponent(`${location.origin}/kakao-callback`);
-        location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_KEY}&redirect_uri=${redirectUri}&response_type=code`;
-      },
-      loginWithNaver() {
-        const state = Math.random().toString(36).substring(2);
-        sessionStorage.setItem("naverStateCheck", state);
-        const redirectUri = encodeURIComponent(`${location.origin}/naver-callback`);
-        location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${redirectUri}&state=${state}`;
-      },
-      async doLogout() {
-        if (!confirm("로그아웃 할까요?")) return;
-        clearUnsubscribers();
-        currentCoupleCode = null;
-        try { localStorage.removeItem("coupleCode"); } catch(e) {}
-        kakaoMap = null; kakaoMarkers = [];
-        await signOut(auth);
-      },
-      async doEnterWithCode() {
-        const code = document.getElementById("inputCoupleCode").value.trim();
-        const err = document.getElementById("codeError");
-        err.textContent = "";
-        if (!code) { err.textContent = "커플 코드를 입력해주세요."; return; }
-        try {
-          currentCoupleCode = code;
-          try { localStorage.setItem("coupleCode", code); } catch(e) {}
-          await enterMainApp(code);
-        } catch(e) {
-          console.error(e);
-          err.textContent = "연결 중 문제가 생겼어요.";
-          currentCoupleCode = null;
-        }
-      }
-    };
+  <div class="photos-filter">
+    <button class="chip active">전체 <span class="count">36</span></button>
+    <button class="chip">좋아요 <span class="count">12</span></button>
+    <button class="chip">데이트 <span class="count">9</span></button>
+    <button class="chip">여행 <span class="count">7</span></button>
+    <button class="chip">일상 <span class="count">8</span></button>
+  </div>
 
-    document.getElementById("inputCoupleCode").addEventListener("keydown", e => {
-      if (e.key === "Enter") window._app.doEnterWithCode();
+  <div class="photo-upload">
+    <div class="pu-ico">${SVG.camera}</div>
+    <div class="pu-text">
+      <div class="pu-title">오늘 찍은 사진 올리기</div>
+      <div class="pu-sub">탭 한 번으로 둘에게 동시에 저장돼요</div>
+    </div>
+    <button class="icon-btn">${SVG.plus}</button>
+  </div>
+
+  <div class="month-divider">
+    <span class="m-num"><em>May</em></span>
+    <div class="m-info">
+      <span class="m-yr">2026</span>
+      <span class="m-cnt">8장의 추억</span>
+    </div>
+    <span class="m-line"></span>
+  </div>
+
+  <div class="photo-grid">
+    ${tile(tiles[0][0], tiles[0][1], true, 'STRAWBERRY')}
+    ${tile(tiles[1][0], tiles[1][1])}
+    ${tile(tiles[2][0], tiles[2][1])}
+    ${tile(tiles[3][0], tiles[3][1], true)}
+    ${tile(tiles[4][0], tiles[4][1])}
+    ${tile(tiles[5][0], tiles[5][1])}
+    ${tile(tiles[6][0], tiles[6][1])}
+    ${tile(tiles[7][0], tiles[7][1])}
+    ${tile(tiles[8][0], tiles[8][1])}
+  </div>
+
+  <div class="month-divider">
+    <span class="m-num"><em>Apr</em></span>
+    <div class="m-info">
+      <span class="m-yr">2026</span>
+      <span class="m-cnt">10장의 추억</span>
+    </div>
+    <span class="m-line"></span>
+  </div>
+
+  <div class="photo-grid">
+    ${aprTiles.map(([g, d], i) => tile(g, d, i === 0)).join('')}
+  </div>
+
+  <div style="height: 30px;"></div>
+</section>`;
+}
+
+function renderLetters() {
+  return `
+<section class="screen" id="screen-letters">
+  <div class="page-header">
+    <div class="h-title"><em>Letters</em></div>
+    <div class="h-action">
+      <button class="icon-btn">${SVG.bell}</button>
+    </div>
+  </div>
+
+  <div class="letter-write">
+    <div class="lw-head">
+      <span class="lw-title">서진에게 ✍️</span>
+      <span class="lw-sub">Today · 5월 26일</span>
+    </div>
+    <textarea placeholder="오늘 전하고 싶은 말을 적어보세요. 짧은 메모도 괜찮아요." id="letterText"></textarea>
+    <div class="lw-foot">
+      <span class="lw-len" id="letterLen">0 / 500</span>
+      <button class="btn-send">${SVG.send} 편지 보내기</button>
+    </div>
+  </div>
+
+  <div class="section-head" style="padding: 0 20px; margin-bottom: 8px; margin-top: 0;">
+    <span class="s-title kr">받은 편지함 <span style="font-family:var(--font-en);font-size:11px;color:var(--ink-3);font-weight:500;margin-left:4px;letter-spacing:0;text-transform:none;">69통</span></span>
+    <span class="s-more">읽지 않음 2</span>
+  </div>
+
+  <div class="letter-list">
+    <div class="envelope unread">
+      <div class="env-head">
+        <div class="env-from">
+          <span class="ef-av">S</span>
+          <span class="ef-name">서후</span>
+        </div>
+        <span class="env-time">2026.05.25 · 00:59</span>
+      </div>
+      <div class="env-title">Hi Hoo, 자기 전에 한 줄</div>
+      <div class="env-preview">Hi Hoo, I'm going to sleep after writing this letter. Today as I went to Bongdam, I thought to myself this week is my love's magic period...</div>
+      <div class="env-foot">
+        <span class="env-badge new">New</span>
+        <span class="env-hint">탭해서 열어보기 ${SVG.arrowR}</span>
+      </div>
+    </div>
+
+    <div class="envelope unread">
+      <div class="env-head">
+        <div class="env-from">
+          <span class="ef-av">S</span>
+          <span class="ef-name">서후</span>
+        </div>
+        <span class="env-time">2026.05.24 · 23:29</span>
+      </div>
+      <div class="env-title">멋쟁이 토마토에게</div>
+      <div class="env-preview">너는 지금 누워있어. 오늘은 행복한 하루였어. 너랑 같이 맛있는 것도 먹고 산책도 하고...</div>
+      <div class="env-foot">
+        <span class="env-badge new">New</span>
+        <span class="env-hint">탭해서 열어보기 ${SVG.arrowR}</span>
+      </div>
+    </div>
+
+    <div class="envelope">
+      <div class="env-head">
+        <div class="env-from">
+          <span class="ef-av b">J</span>
+          <span class="ef-name">서진</span>
+        </div>
+        <span class="env-time">2026.05.23 · 22:14</span>
+      </div>
+      <div class="env-title">오늘 너무 보고싶었어</div>
+      <div class="env-preview">자기야 오늘 너 못 봐서 너무 아쉬웠어. 내일은 꼭 만나자. 일찍 끝나면 우리 그 카페 갈래?</div>
+      <div class="env-foot">
+        <span class="env-badge read">읽음</span>
+        <span class="env-hint" style="color:var(--ink-4);">2일 전 읽음</span>
+      </div>
+    </div>
+
+    <div class="envelope">
+      <div class="env-head">
+        <div class="env-from">
+          <span class="ef-av">S</span>
+          <span class="ef-name">서후</span>
+        </div>
+        <span class="env-time">2026.05.20 · 19:48</span>
+      </div>
+      <div class="env-title">결혼기념일 D-200</div>
+      <div class="env-preview">우리 함께한 지 1242일이 됐네. 시간 진짜 빠르다. 너랑 있는 모든 순간이 다 좋아.</div>
+      <div class="env-foot">
+        <span class="env-badge read">읽음</span>
+        <span class="env-hint" style="color:var(--ink-4);">5일 전 읽음</span>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function renderCalendar() {
+  const firstDow = 5;
+  const daysInMay = 31;
+  const today = 26;
+  const events = { 1: true, 8: true, 14: true, 17: true, 22: true, 25: true, 30: true };
+
+  let cells = [];
+  for (let i = 0; i < firstDow; i++) {
+    const prev = 30 - firstDow + i + 1;
+    cells.push(`<div class="cal-day muted"><span class="d-num">${prev}</span></div>`);
+  }
+  for (let d = 1; d <= daysInMay; d++) {
+    const isToday = d === today;
+    const hasEvent = events[d];
+    const cls = ['cal-day'];
+    if (isToday) cls.push('today');
+    if (hasEvent) cls.push('has-event');
+    cells.push(`<div class="${cls.join(' ')}"><span class="d-num">${d}</span>${hasEvent ? '<span class="d-dot"></span>' : ''}</div>`);
+  }
+  const remaining = 42 - cells.length;
+  for (let i = 1; i <= remaining; i++) {
+    cells.push(`<div class="cal-day muted"><span class="d-num">${i}</span></div>`);
+  }
+
+  return `
+<section class="screen" id="screen-calendar">
+  <div class="page-header">
+    <div class="h-title"><em>Calendar</em></div>
+    <div class="h-action">
+      <button class="icon-btn">${SVG.plus}</button>
+    </div>
+  </div>
+
+  <div class="cal-hero">
+    <div class="ch-l">
+      <div class="ch-month"><em>May</em></div>
+      <div class="ch-yr">2026 · 8개 일정</div>
+    </div>
+    <div class="ch-r">
+      <button class="nav-b">${SVG.arrowL}</button>
+      <button class="nav-b">${SVG.arrowR}</button>
+    </div>
+  </div>
+
+  <div class="cal-grid">
+    <div class="cal-week">
+      <span class="wd sun">Sun</span>
+      <span class="wd">Mon</span>
+      <span class="wd">Tue</span>
+      <span class="wd">Wed</span>
+      <span class="wd">Thu</span>
+      <span class="wd">Fri</span>
+      <span class="wd sat">Sat</span>
+    </div>
+    <div class="cal-days">
+      ${cells.join('')}
+    </div>
+  </div>
+
+  <div class="section-head" style="padding: 0 22px; margin-top: 22px; margin-bottom: 4px;">
+    <span class="s-title kr">다가오는 기념일</span>
+    <span class="s-more">전체보기 ${SVG.arrowR}</span>
+  </div>
+
+  <div class="event-list">
+    <div class="event">
+      <div class="e-date">
+        <div class="e-d">30</div>
+        <div class="e-m">MAY</div>
+      </div>
+      <div class="e-body">
+        <div class="e-title">강릉 1박 여행 🌊</div>
+        <div class="e-meta"><span class="e-type trip">여행</span> 강릉 안목해변 · D-4</div>
+      </div>
+    </div>
+    <div class="event">
+      <div class="e-date">
+        <div class="e-d">12</div>
+        <div class="e-m">JUN</div>
+      </div>
+      <div class="e-body">
+        <div class="e-title">서진 생일 🎂</div>
+        <div class="e-meta"><span class="e-type ann">기념일</span> D-17 · 매년 반복</div>
+      </div>
+    </div>
+    <div class="event">
+      <div class="e-date">
+        <div class="e-d">23</div>
+        <div class="e-m">JUN</div>
+      </div>
+      <div class="e-body">
+        <div class="e-title">우리만의 미술관 데이트</div>
+        <div class="e-meta"><span class="e-type date">데이트</span> 리움미술관 · 14:00</div>
+      </div>
+    </div>
+    <div class="event">
+      <div class="e-date">
+        <div class="e-d">25</div>
+        <div class="e-m">DEC</div>
+      </div>
+      <div class="e-body">
+        <div class="e-title">우리의 4주년 ♥</div>
+        <div class="e-meta"><span class="e-type ann">기념일</span> D-213 · since 2022</div>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function renderMore() {
+  return `
+<section class="screen" id="screen-more">
+  <div class="page-header">
+    <div class="h-title"><em>More</em></div>
+    <div class="h-action">
+      <button class="icon-btn">${SVG.spark}</button>
+    </div>
+  </div>
+
+  <div class="more-banner">
+    <div class="mb-av">
+      <div class="a"></div>
+      <div class="a b"></div>
+    </div>
+    <div class="mb-body">
+      <div class="mb-name">서후 · 서진</div>
+      <div class="mb-code">CODE <b>peach-2022-1225</b></div>
+    </div>
+    <button class="icon-btn">${SVG.arrowR}</button>
+  </div>
+
+  <div class="section-head" style="padding: 0 22px; margin-bottom: 10px;">
+    <span class="s-title kr">우리만의 공간</span>
+  </div>
+
+  <div class="more-grid">
+    <div class="more-card c-capsule">
+      <div class="mc-ico">${SVG.lock}</div>
+      <div>
+        <div class="mc-name">타임캡슐</div>
+        <div class="mc-desc">미래에 열어볼 편지</div>
+      </div>
+      <span class="mc-badge">3 봉인됨</span>
+    </div>
+    <div class="more-card c-game">
+      <div class="mc-ico">${SVG.game}</div>
+      <div>
+        <div class="mc-name">커플 게임</div>
+        <div class="mc-desc">애정도 · 이심전심</div>
+      </div>
+      <span class="mc-badge">NEW</span>
+    </div>
+    <div class="more-card c-map">
+      <div class="mc-ico">${SVG.globe}</div>
+      <div>
+        <div class="mc-name">발자국 지도</div>
+        <div class="mc-desc">함께 간 곳 45</div>
+      </div>
+    </div>
+    <div class="more-card c-gift">
+      <div class="mc-ico">${SVG.gift}</div>
+      <div>
+        <div class="mc-name">위시리스트</div>
+        <div class="mc-desc">받고 싶은 선물 12</div>
+      </div>
+    </div>
+    <div class="more-card c-mood">
+      <div class="mc-ico">${SVG.heartO}</div>
+      <div>
+        <div class="mc-name">버킷리스트</div>
+        <div class="mc-desc">함께 이루고 싶은 일</div>
+      </div>
+      <span class="mc-badge">6/24</span>
+    </div>
+    <div class="more-card c-memo">
+      <div class="mc-ico">${SVG.note}</div>
+      <div>
+        <div class="mc-name">공유 메모장</div>
+        <div class="mc-desc">같이 쓰는 메모</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head" style="padding: 0 22px; margin-top: 22px; margin-bottom: 10px;">
+    <span class="s-title kr">설정</span>
+  </div>
+
+  <div style="margin: 0 18px; background: var(--paper); border-radius: 18px; border: 1px solid var(--line); overflow: hidden;">
+    ${['공간 꾸미기 · 배경 · 테마', '알림 설정', '백업 · 동기화', '계정 · 커플 코드', '도움말 · 문의'].map((t, i, arr) => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; ${i < arr.length - 1 ? 'border-bottom: 1px solid var(--line);' : ''} cursor: pointer;">
+        <span style="font-size: 13px; color: var(--ink);">${t}</span>
+        <span style="color: var(--ink-4);">${SVG.arrowR}</span>
+      </div>
+    `).join('')}
+  </div>
+
+  <div style="text-align: center; padding: 24px 0 16px; font-family: var(--font-display); font-style: italic; color: var(--rose-300); font-size: 13px;">
+    오늘도 같이, 한 걸음씩 ♡
+  </div>
+</section>`;
+}
+
+/* ─── App Logic ─── */
+const SCREENS = ['home', 'photos', 'calendar', 'letters', 'more'];
+
+function setActiveScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  const tab = document.querySelector(`.tab-item[data-tab="${name}"]`);
+  if (tab) tab.classList.add('active');
+
+  moveIndicator(name);
+  document.getElementById('screenScroll').scrollTop = 0;
+}
+
+function moveIndicator(name) {
+  const idx = SCREENS.indexOf(name);
+  if (idx < 0) return;
+  const ind = document.getElementById('tabIndicator');
+  const tabbar = document.getElementById('tabbar');
+  const innerW = tabbar.clientWidth - 16;
+  const slot = innerW / 5;
+  ind.style.width = (slot - 4) + 'px';
+  ind.style.left = (8 + idx * slot + 2) + 'px';
+}
+
+function bindTabs() {
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.addEventListener('click', () => {
+      setActiveScreen(t.dataset.tab);
     });
+  });
+}
 
-    document.getElementById("btnLogout").addEventListener("click", () => window._app.doLogout());
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const savedCode = (() => { try { return localStorage.getItem("coupleCode"); } catch(e) { return null; } })();
-        if (savedCode) {
-          currentCoupleCode = savedCode;
-          document.getElementById("codeViewUserName").textContent = user.displayName || user.email;
-          await enterMainApp(savedCode);
-        } else {
-          document.getElementById("codeViewUserName").textContent = user.displayName || user.email;
-          showView("codeView");
-        }
+function bindPhotoFav() {
+  document.querySelectorAll('.photo').forEach(p => {
+    p.addEventListener('click', () => {
+      const fav = p.querySelector('.ph-fav');
+      if (fav) {
+        fav.remove();
       } else {
-        currentUser = null;
-        showView("authView");
+        const f = document.createElement('div');
+        f.className = 'ph-fav';
+        f.innerHTML = SVG.heart;
+        p.appendChild(f);
       }
     });
+  });
+}
 
-    async function enterMainApp(code) {
-      clearUnsubscribers();
-      showView("appView");
-      document.getElementById("displayCoupleCode").textContent = code;
-      setRealtimeStatus(true);
-      const coupleRef = doc(db, "couples", code);
-      const snap = await getDoc(coupleRef);
-      if (!snap.exists()) {
-        await setDoc(coupleRef, { createdAt: serverTimestamp(), title: "우리의 하루들", startDate: null });
-      } else {
-        const data = snap.data();
-        if (data.startDate) { document.getElementById("inputStartDate").value = data.startDate; updateDdayView(data.startDate); }
-        if (data.title) document.getElementById("navSubtitle").textContent = data.title;
-      }
-      unsubscribers.push(onSnapshot(coupleRef, snap => {
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.startDate) updateDdayView(data.startDate);
-          if (data.title) document.getElementById("navSubtitle").textContent = data.title;
+function bindEnvelopes() {
+  document.querySelectorAll('.envelope').forEach(e => {
+    e.addEventListener('click', () => {
+      if (e.classList.contains('unread')) {
+        e.classList.remove('unread');
+        const badge = e.querySelector('.env-badge');
+        if (badge) {
+          badge.classList.remove('new');
+          badge.classList.add('read');
+          badge.textContent = '읽음';
         }
-      }));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"schedules"), orderBy("date","asc"), orderBy("createdAt","asc")), snap => renderSchedules(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","desc")), snap => renderBucketList(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"photos"), orderBy("createdAt","desc")), snap => renderPhotos(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"letters"), orderBy("createdAt","desc")), snap => renderLetters(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"gifts"), orderBy("createdAt","asc")), snap => renderGifts(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"places"), orderBy("createdAt","desc")), snap => renderPlaces(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      setTimeout(() => initKakaoMap(), 500);
-    }
+        const hint = e.querySelector('.env-hint');
+        if (hint) {
+          hint.innerHTML = '방금 읽음';
+          hint.style.color = 'var(--ink-4)';
+        }
+      }
+    });
+  });
+}
 
-    function clearUnsubscribers() {
-      unsubscribers.forEach(fn => { if (typeof fn === "function") fn(); });
-      unsubscribers = [];
-    }
+function bindChips() {
+  document.querySelectorAll('.photos-filter .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.photos-filter .chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+}
 
-    function setRealtimeStatus(online) {
-      const dot = document.getElementById("realtimeDot"); const text = document.getElementById("realtimeText");
-      if (online) { dot.classList.remove("offline"); text.textContent = "실시간 동기화 중"; }
-      else { dot.classList.add("offline"); text.textContent = "연결 대기중"; }
-    }
-
-    function formatDate(ds) {
-      if (!ds) return "-";
-      const d = new Date(ds + "T00:00:00"); if (isNaN(d)) return ds;
-      return `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,"0")}.${d.getDate().toString().padStart(2,"0")} (${["일","월","화","수","목","금","토"][d.getDay()]})`;
-    }
-
-    function formatTimestamp(ts) {
-      if (!ts) return "";
-      const d = ts.toDate ? ts.toDate() : new Date(ts); if (isNaN(d)) return "";
-      return `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,"0")}.${d.getDate().toString().padStart(2,"0")} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
-    }
-
-    function diffDaysFrom(ds) {
-      const start = new Date(ds + "T00:00:00"); if (isNaN(start)) return null;
-      return Math.floor((new Date().setHours(0,0,0,0) - start.getTime()) / 86400000);
-    }
-
-    function updateDdayView(startDate) {
-      if (!startDate) { document.getElementById("ddayPrimary").textContent = "사귄 날짜를 아직 설정하지 않았어요."; document.getElementById("ddaySecondary").textContent = ""; return; }
-      const diff = diffDaysFrom(startDate);
-      document.getElementById("ddayPrimary").textContent = diff >= 0 ? `우리가 함께한 지 D+${diff}일` : `우리의 첫날까지 D${diff}일`;
-      document.getElementById("ddaySecondary").textContent = `시작한 날: ${formatDate(startDate)}`;
-    }
-
-    function initKakaoMap() {
-      if (kakaoMap) return;
-      kakao.maps.load(() => {
-        try { kakaoMap = new kakao.maps.Map(document.getElementById("kakaoMap"), { center: new kakao.maps.LatLng(37.5665, 126.9780), level: 8 }); }
-        catch(e) { setTimeout(() => initKakaoMap(), 800); }
-      });
-    }
-
-    function addMarkerToMap(lat, lng, title, memo) {
-      if (!kakaoMap) return;
-      const heartImg = new kakao.maps.MarkerImage(
-        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 28C16 28 3 19 3 11C3 7.5 5.5 5 9 5C11.5 5 14 6.5 16 9C18 6.5 20.5 5 23 5C26.5 5 29 7.5 29 11C29 19 16 28 16 28Z" fill="#e79aa8" stroke="#fff" stroke-width="1.5"/></svg>`),
-        new kakao.maps.Size(32, 32), { offset: new kakao.maps.Point(16, 32) }
+const MOOD_EMOJIS = ['🥰','😊','☕️','🌸','✨','🌙','💭','🌿','🍃','🥹','😴','🥨'];
+function bindMood() {
+  document.querySelectorAll('.mood').forEach(m => {
+    const emo = m.querySelector('.m-emoji');
+    m.addEventListener('click', () => {
+      const cur = emo.textContent.trim();
+      const idx = MOOD_EMOJIS.indexOf(cur);
+      const next = MOOD_EMOJIS[(idx + 1) % MOOD_EMOJIS.length];
+      emo.textContent = next;
+      emo.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }],
+        { duration: 280, easing: 'cubic-bezier(.22,.61,.36,1)' }
       );
-      const marker = new kakao.maps.Marker({ map: kakaoMap, position: new kakao.maps.LatLng(lat, lng), image: heartImg });
-      const infowindow = new kakao.maps.InfoWindow({
-        content: `<div style="padding:8px 12px;font-family:'Noto Serif KR',serif;font-size:12px;"><b>💗 ${title}</b>${memo ? `<br><span style="opacity:0.7">${memo}</span>` : ""}</div>`,
-        removable: true
-      });
-      kakao.maps.event.addListener(marker, "click", () => { if (infowindow.getMap()) infowindow.close(); else infowindow.open(kakaoMap, marker); });
-      kakaoMarkers.push(marker);
-    }
+    });
+  });
+}
 
-    function renderSchedules(items) {
-      const scheduleList = document.getElementById("scheduleList");
-      const scheduleCountBadge = document.getElementById("scheduleCountBadge");
-      scheduleList.innerHTML = "";
-      scheduleCountBadge.textContent = `${items ? items.length : 0}개 일정`;
-      const now = new Date(); let year = now.getFullYear(); let month = now.getMonth();
-      function renderCalendar() {
-        scheduleList.innerHTML = "";
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month + 1, 0).getDate();
-        const header = document.createElement("div"); header.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
-        const btnPrev = document.createElement("button"); btnPrev.className = "btn-icon"; btnPrev.innerHTML = "◀";
-        btnPrev.addEventListener("click", () => { month--; if (month < 0) { month = 11; year--; } renderCalendar(); });
-        const btnNext = document.createElement("button"); btnNext.className = "btn-icon"; btnNext.innerHTML = "▶";
-        btnNext.addEventListener("click", () => { month++; if (month > 11) { month = 0; year++; } renderCalendar(); });
-        const title = document.createElement("div"); title.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; title.textContent = `${year}년 ${month+1}월`;
-        header.appendChild(btnPrev); header.appendChild(title); header.appendChild(btnNext);
-        scheduleList.appendChild(header);
-        const dayRow = document.createElement("div"); dayRow.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px;";
-        ["일","월","화","수","목","금","토"].forEach((d, i) => { const cell = document.createElement("div"); cell.style.cssText = `font-size:10px;padding:4px 0;color:${i===0?"#e79aa8":i===6?"#7aabe7":"#9a8a84"};`; cell.textContent = d; dayRow.appendChild(cell); });
-        scheduleList.appendChild(dayRow);
-        const grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;";
-        const scheduleMap = {};
-        (items || []).forEach(item => { if (!scheduleMap[item.date]) scheduleMap[item.date] = []; scheduleMap[item.date].push(item); });
-        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
-        for (let d = 1; d <= lastDate; d++) {
-          const dateKey = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-          const cell = document.createElement("div");
-          const isToday = (d === now.getDate() && month === now.getMonth() && year === now.getFullYear());
-          const hasEvent = scheduleMap[dateKey];
-          cell.style.cssText = `min-height:36px;padding:3px;border-radius:8px;cursor:pointer;text-align:center;background:${isToday?"rgba(231,154,168,0.15)":"transparent"};`;
-          const numEl = document.createElement("div");
-          numEl.style.cssText = `font-size:12px;width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto;text-align:center;background:${isToday?"#e79aa8":"transparent"};color:${isToday?"#fff":"#4a3b35"};position:relative;`;
-          if (hasEvent) {
-            numEl.innerHTML = `<span style="position:relative;z-index:1;">${d}</span><svg viewBox="0 0 26 24" style="position:absolute;inset:0;width:26px;height:26px;z-index:0;" xmlns="http://www.w3.org/2000/svg"><path d="M13 21C13 21 2 14 2 7.5C2 5 4 3 6.5 3C8.5 3 10.5 4.5 13 7C15.5 4.5 17.5 3 19.5 3C22 3 24 5 24 7.5C24 14 13 21 13 21Z" fill="rgba(231,154,168,0.25)" stroke="#e79aa8" stroke-width="1.2"/></svg>`;
-          } else { numEl.textContent = d; }
-          cell.appendChild(numEl);
-          cell.addEventListener("click", () => {
-            if (!hasEvent) return;
-            const popup = document.getElementById("calPopup"); if (popup) popup.remove();
-            const box = document.createElement("div"); box.id = "calPopup";
-            box.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #f0e0d6;border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:220px;max-width:80vw;";
-            const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.style.cssText = "float:right;margin-left:8px;"; closeBtn.addEventListener("click", () => box.remove());
-            box.appendChild(closeBtn);
-            const dateTitle = document.createElement("div"); dateTitle.style.cssText = "font-size:12px;color:#b07a8a;margin-bottom:8px;font-weight:500;"; dateTitle.textContent = `${year}년 ${month+1}월 ${d}일`;
-            box.appendChild(dateTitle);
-            hasEvent.forEach(e => { const item = document.createElement("div"); item.style.cssText = "font-size:12px;padding:4px 0;border-bottom:1px solid #f5e8e0;color:#4a3b35;"; item.textContent = `💗 ${e.title} · ${{ anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[e.type || "etc"]}`; box.appendChild(item); });
-            document.body.appendChild(box);
-            setTimeout(() => { document.addEventListener("click", () => box.remove(), { once: true }); }, 100);
-          });
-          grid.appendChild(cell);
-        }
-        scheduleList.appendChild(grid);
-        scheduleCountBadge.style.cursor = "pointer";
-        scheduleCountBadge.onclick = () => {
-          const existing = document.getElementById("scheduleListPopup"); if (existing) { existing.remove(); return; }
-          const box = document.createElement("div"); box.id = "scheduleListPopup";
-          box.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #f4c2cd;border-radius:18px;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:200;min-width:260px;max-width:85vw;max-height:70vh;overflow-y:auto;";
-          const hdr = document.createElement("div"); hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
-          const htitle = document.createElement("div"); htitle.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; htitle.textContent = "전체 일정 목록";
-          const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.addEventListener("click", () => box.remove());
-          hdr.appendChild(htitle); hdr.appendChild(closeBtn); box.appendChild(hdr);
-          (items || []).forEach(item => {
-            const row = document.createElement("div"); row.style.cssText = "padding:8px 0;border-bottom:1px solid #f5e8e0;";
-            const typeLabel = { anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[item.type || "etc"];
-            const viewMode = document.createElement("div"); viewMode.style.cssText = "display:flex;gap:8px;align-items:center;";
-            const badge = document.createElement("div"); badge.style.cssText = "font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(244,194,205,0.3);border:1px solid #f4c2cd;color:#b07a8a;white-space:nowrap;"; badge.textContent = typeLabel;
-            const info = document.createElement("div"); info.style.flex = "1";
-            const t = document.createElement("div"); t.style.cssText = "font-size:13px;color:#4a3b35;"; t.textContent = item.title;
-            const dd = document.createElement("div"); dd.style.cssText = "font-size:10px;color:#b07a8a;margin-top:2px;"; dd.textContent = formatDate(item.date);
-            info.appendChild(t); info.appendChild(dd);
-            const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
-            const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
-            btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"schedules",item.id)); row.remove(); });
-            viewMode.appendChild(badge); viewMode.appendChild(info); viewMode.appendChild(btnEdit); viewMode.appendChild(btnDel);
-            const editMode = document.createElement("div"); editMode.style.cssText = "display:none;flex-direction:column;gap:6px;padding:6px 0;";
-            const editTitle = document.createElement("input"); editTitle.type = "text"; editTitle.value = item.title; editTitle.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
-            const editDate = document.createElement("input"); editDate.type = "date"; editDate.value = item.date; editDate.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
-            const editType = document.createElement("select"); editType.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;";
-            [["anniversary","기념일"],["date","데이트"],["trip","여행"],["etc","기타"]].forEach(([v,l]) => { const opt = document.createElement("option"); opt.value = v; opt.textContent = l; if (v === item.type) opt.selected = true; editType.appendChild(opt); });
-            const editBtns = document.createElement("div"); editBtns.style.cssText = "display:flex;gap:6px;justify-content:flex-end;";
-            const btnSave = document.createElement("button"); btnSave.className = "btn-primary"; btnSave.style.cssText = "font-size:11px;padding:5px 12px;"; btnSave.textContent = "저장";
-            const btnCancel = document.createElement("button"); btnCancel.className = "btn-outline"; btnCancel.style.cssText = "font-size:11px;padding:5px 12px;"; btnCancel.textContent = "취소";
-            btnSave.addEventListener("click", async () => {
-              const nTitle = editTitle.value.trim(), nDate = editDate.value, nType = editType.value;
-              if (!nTitle || !nDate) { alert("제목과 날짜를 입력해주세요."); return; }
-              await updateDoc(doc(db,"couples",currentCoupleCode,"schedules",item.id), { title: nTitle, date: nDate, type: nType });
-              t.textContent = nTitle; dd.textContent = formatDate(nDate); badge.textContent = { anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[nType];
-              editMode.style.display = "none"; viewMode.style.display = "flex";
-            });
-            btnCancel.addEventListener("click", () => { editMode.style.display = "none"; viewMode.style.display = "flex"; });
-            editBtns.appendChild(btnCancel); editBtns.appendChild(btnSave);
-            editMode.appendChild(editTitle); editMode.appendChild(editDate); editMode.appendChild(editType); editMode.appendChild(editBtns);
-            btnEdit.addEventListener("click", () => { viewMode.style.display = "none"; editMode.style.display = "flex"; });
-            row.appendChild(viewMode); row.appendChild(editMode); box.appendChild(row);
-          });
-          document.body.appendChild(box);
-          setTimeout(() => { document.addEventListener("click", (e) => { if (!box.contains(e.target) && e.target !== scheduleCountBadge) box.remove(); }, { once: true }); }, 100);
-        };
-      }
-      renderCalendar();
-    }
+function bindLetterCounter() {
+  const ta = document.getElementById('letterText');
+  const len = document.getElementById('letterLen');
+  if (ta && len) {
+    ta.addEventListener('input', () => {
+      len.textContent = ta.value.length + ' / 500';
+    });
+  }
+}
 
-    function renderBucketList(items) {
-      const el = document.getElementById("bucketList"); const badge = document.getElementById("bucketCountBadge");
-      el.innerHTML = "";
-      if (!items || !items.length) { el.innerHTML = '<div class="muted small">버킷리스트를 채워볼까요?</div>'; badge.textContent = "0개 남음"; return; }
-      badge.textContent = `${items.filter(i => !i.completed).length}개 남음`;
-      items.forEach(item => {
-        const div = document.createElement("div"); div.className = "bucket-item"; if (item.completed) div.classList.add("completed");
-        const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.completed;
-        checkbox.addEventListener("change", async () => await updateDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id), { completed: checkbox.checked }));
-        const info = document.createElement("div"); info.style.flex = "1";
-        const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = item.title || "";
-        const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
-        info.appendChild(title); info.appendChild(ts);
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
-        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id)); });
-        div.appendChild(checkbox); div.appendChild(info);
-        if (item.tag) { const tag = document.createElement("div"); tag.className = "bucket-tag"; tag.textContent = item.tag; div.appendChild(tag); }
-        div.appendChild(btnDel); el.appendChild(div);
+/* ─── Tweaks / Palette ─── */
+const PALETTES = {
+  rose: {
+    bg: '#FBF5F0', warm: '#F2D9D1',
+    r400: '#DA7B6B', r500: '#C46055', wine: '#6B2737',
+    stage: 'radial-gradient(1200px 600px at 20% 10%, #F8DDD4 0%, transparent 60%), radial-gradient(900px 600px at 80% 90%, #F1CFC8 0%, transparent 60%), linear-gradient(180deg, #F4E2DA 0%, #EDD1C6 100%)',
+    name: 'Soft Rose'
+  },
+  peach: {
+    bg: '#FBF3EC', warm: '#F5D9C2',
+    r400: '#E59770', r500: '#C97550', wine: '#723526',
+    stage: 'radial-gradient(1200px 600px at 20% 10%, #F8DCC6 0%, transparent 60%), radial-gradient(900px 600px at 80% 90%, #F0C9AC 0%, transparent 60%), linear-gradient(180deg, #F2DDC6 0%, #E8C9AB 100%)',
+    name: 'Warm Peach'
+  },
+  wine: {
+    bg: '#F5EDEE', warm: '#E5CCD2',
+    r400: '#A0566A', r500: '#7E3849', wine: '#3F1A24',
+    stage: 'radial-gradient(1200px 600px at 20% 10%, #E5C8CE 0%, transparent 60%), radial-gradient(900px 600px at 80% 90%, #D5AAB3 0%, transparent 60%), linear-gradient(180deg, #DDC2C9 0%, #C8A2AC 100%)',
+    name: 'Deep Wine'
+  },
+  sand: {
+    bg: '#F7F1E8', warm: '#E8D7BC',
+    r400: '#C99A6B', r500: '#9E7148', wine: '#4A3220',
+    stage: 'radial-gradient(1200px 600px at 20% 10%, #ECD6B8 0%, transparent 60%), radial-gradient(900px 600px at 80% 90%, #DBBC95 0%, transparent 60%), linear-gradient(180deg, #E5CCAA 0%, #D1B186 100%)',
+    name: 'Sandy Cream'
+  }
+};
+
+function applyPalette(key) {
+  const p = PALETTES[key];
+  if (!p) return;
+  const r = document.documentElement.style;
+  r.setProperty('--bg-base', p.bg);
+  r.setProperty('--bg-warm', p.warm);
+  r.setProperty('--rose-400', p.r400);
+  r.setProperty('--rose-500', p.r500);
+  r.setProperty('--wine', p.wine);
+  document.body.style.background = p.stage + ' fixed';
+}
+
+function applyDdayStyle(style) {
+  const dday = document.querySelector('.home-hero .dday');
+  if (!dday) return;
+  dday.classList.toggle('compact', style === 'compact');
+}
+
+function buildTweaks() {
+  const state = { palette: 'rose', showActivity: true, ddayStyle: 'display' };
+
+  const btn = document.createElement('button');
+  btn.className = 'tweaks-toggle';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.2 5.2 7.4 7.4M16.6 16.6 18.8 18.8M5.2 18.8 7.4 16.6M16.6 7.4 18.8 5.2"/></svg>';
+  document.getElementById('phone').appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'tweaks-panel';
+  panel.innerHTML = `
+    <h4>Theme · 팔레트</h4>
+    <div style="display:flex; gap:8px; margin-bottom: 12px;">
+      ${Object.entries(PALETTES).map(([k, p]) => `
+        <button class="tw-swatch ${k === state.palette ? 'active' : ''}" data-pal="${k}"
+          style="background: linear-gradient(135deg, ${p.r400}, ${p.wine});"
+          title="${p.name}"></button>
+      `).join('')}
+    </div>
+    <div id="pal-name" style="font-size: 10px; color: var(--ink-3); margin-bottom: 12px; font-family: var(--font-en); letter-spacing: 0.04em;">
+      ${PALETTES[state.palette].name}
+    </div>
+    <h4>D+day 스타일</h4>
+    <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+      <button class="tw-btn" data-dd="display"
+        style="flex:1; padding: 6px 10px; border-radius: 10px; font-size: 11px; background: var(--wine); color: #fff; border: 1px solid var(--line); cursor: pointer;">Display</button>
+      <button class="tw-btn" data-dd="compact"
+        style="flex:1; padding: 6px 10px; border-radius: 10px; font-size: 11px; background: rgba(255,255,255,0.7); color: var(--ink-2); border: 1px solid var(--line); cursor: pointer;">Compact</button>
+    </div>
+    <h4>최근 활동 표시</h4>
+    <label style="display:flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--ink-2);">
+      <input type="checkbox" id="tw-activity" checked />
+      <span>홈에 보이기</span>
+    </label>
+  `;
+  document.getElementById('phone').appendChild(panel);
+
+  btn.addEventListener('click', () => panel.classList.toggle('open'));
+
+  panel.addEventListener('click', e => {
+    const swatch = e.target.closest('.tw-swatch');
+    if (swatch) {
+      state.palette = swatch.dataset.pal;
+      panel.querySelectorAll('.tw-swatch').forEach(s => s.classList.remove('active'));
+      swatch.classList.add('active');
+      panel.querySelector('#pal-name').textContent = PALETTES[state.palette].name;
+      applyPalette(state.palette);
+      return;
+    }
+    const ddBtn = e.target.closest('[data-dd]');
+    if (ddBtn) {
+      state.ddayStyle = ddBtn.dataset.dd;
+      applyDdayStyle(state.ddayStyle);
+      panel.querySelectorAll('[data-dd]').forEach(b => {
+        const on = b.dataset.dd === state.ddayStyle;
+        b.style.background = on ? 'var(--wine)' : 'rgba(255,255,255,0.7)';
+        b.style.color = on ? '#fff' : 'var(--ink-2)';
       });
     }
+  });
 
-    function renderPhotos(items) {
-      const photoList = document.getElementById("photoList"); const badge = document.getElementById("photoCountBadge");
-      photoList.innerHTML = "";
-      if (!items || !items.length) { photoList.innerHTML = '<div class="muted small">아직 올라온 사진이 없어요.</div>'; badge.textContent = "0장"; return; }
-      badge.textContent = `${items.length}장`;
-      const groups = {};
-      items.forEach(item => {
-        const d = item.createdAt ? (item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt)) : new Date();
-        const key = `${d.getFullYear()}년 ${d.getMonth()+1}월`;
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(item);
-      });
-      Object.entries(groups).forEach(([month, photos], idx) => {
-        const section = document.createElement("div");
-        section.style.cssText = "margin-bottom:10px;border-radius:14px;overflow:hidden;border:1px solid rgba(224,198,185,0.9);";
-        const header = document.createElement("div");
-        header.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(244,194,205,0.2);cursor:pointer;";
-        const monthTitle = document.createElement("div");
-        monthTitle.style.cssText = "font-size:13px;font-weight:500;color:#b07a8a;";
-        monthTitle.innerHTML = `<span style="border-left:3px solid #e79aa8;padding-left:8px;">${month}</span>`;
-        const countBadge = document.createElement("div");
-        countBadge.style.cssText = "display:flex;align-items:center;gap:6px;";
-        const arrowId = `photo_arrow_${idx}`;
-        countBadge.innerHTML = `<span style="font-size:11px;color:#b07a8a;">${photos.length}장</span><span id="${arrowId}" style="font-size:11px;color:#e79aa8;">▼</span>`;
-        header.appendChild(monthTitle); header.appendChild(countBadge);
-        const body = document.createElement("div");
-        body.style.cssText = "display:none;flex-direction:column;padding:8px;gap:8px;background:#fff;";
-        photos.forEach(item => {
-          const row = document.createElement("div");
-          row.style.cssText = "display:flex;gap:10px;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.96);border:1px solid rgba(224,198,185,0.6);border-radius:12px;cursor:pointer;";
-          const thumb = document.createElement("div"); thumb.style.cssText = "width:60px;height:60px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f5e1dc;";
-          const img = document.createElement("img"); img.src = item.url; img.alt = ""; img.style.cssText = "width:100%;height:100%;object-fit:cover;"; thumb.appendChild(img);
-          const info = document.createElement("div"); info.style.flex = "1";
-          const cap = document.createElement("div"); cap.style.cssText = "font-size:13px;font-weight:500;color:#4a3b35;"; cap.textContent = item.caption || "(캡션 없음)";
-          const date = document.createElement("div"); date.style.cssText = "font-size:10px;opacity:0.6;margin-top:3px;"; date.textContent = formatTimestamp(item.createdAt);
-          info.appendChild(cap); info.appendChild(date);
-          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.style.flexShrink = "0";
-          btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"photos",item.id)); });
-          row.addEventListener("click", () => {
-            const overlay = document.createElement("div"); overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;";
-            const fullImg = document.createElement("img"); fullImg.src = item.url; fullImg.style.cssText = "max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;";
-            overlay.appendChild(fullImg); overlay.addEventListener("click", () => overlay.remove()); document.body.appendChild(overlay);
-          });
-          row.appendChild(thumb); row.appendChild(info); row.appendChild(btnDel);
-          body.appendChild(row);
-        });
-        if (idx === 0) {
-          body.style.display = "flex";
-          setTimeout(() => { const a = document.getElementById(arrowId); if(a) a.style.transform = "rotate(180deg)"; }, 0);
-        }
-        header.addEventListener("click", () => {
-          const isOpen = body.style.display === "flex";
-          body.style.display = isOpen ? "none" : "flex";
-          const a = document.getElementById(arrowId);
-          if(a) a.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
-        });
-        section.appendChild(header); section.appendChild(body);
-        photoList.appendChild(section);
-      });
-    }
+  const cb = panel.querySelector('#tw-activity');
+  cb.addEventListener('change', () => {
+    state.showActivity = cb.checked;
+    const section = document.getElementById('activity-section');
+    if (section) section.style.display = cb.checked ? '' : 'none';
+  });
 
-    function renderLetters(items) {
-      const el = document.getElementById("lettersList"); const badge = document.getElementById("letterCountBadge");
-      el.innerHTML = "";
-      if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
-      const unreadCount = items.filter(i => i.readBy && !i.readBy.includes(currentUser?.uid)).length;
-      badge.textContent = unreadCount > 0 ? `${items.length}통 · 💌 ${unreadCount}개 새편지` : `${items.length}통`;
-      items.forEach(item => {
-        // readBy 필드가 없는 구버전 편지는 이미 읽은 것으로 처리
-        const isRead = !item.readBy || item.readBy.includes(currentUser?.uid);
-        if (!isRead) {
-          const wrap = document.createElement("div"); wrap.className = "letter-envelope-wrap";
-          const env = document.createElement("div"); env.className = "letter-env-closed";
-          env.innerHTML = `<div class="letter-env-icon">💌</div><div class="letter-env-from"></div><div class="letter-env-time"></div><div class="letter-env-hint">톡 눌러서 열어보기 ✉️</div>`;
-          env.querySelector(".letter-env-from").textContent = `From. ${item.from || "누군가"}`;
-          env.querySelector(".letter-env-time").textContent = formatTimestamp(item.createdAt);
-          wrap.appendChild(env);
-          wrap.addEventListener("click", async () => {
-            if (env.classList.contains("letter-env-opening")) return;
-            env.classList.add("letter-env-opening");
-            await new Promise(r => setTimeout(r, 420));
-            if (currentUser && currentCoupleCode) {
-              await updateDoc(doc(db, "couples", currentCoupleCode, "letters", item.id), { readBy: arrayUnion(currentUser.uid) });
-            }
-          });
-          el.appendChild(wrap);
-        } else {
-          const card = document.createElement("div"); card.className = "letter-card";
-          const header = document.createElement("div"); header.className = "letter-header";
-          const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
-          const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
-          header.appendChild(from); header.appendChild(time);
-          const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "";
-          const footer = document.createElement("div"); footer.className = "letter-footer";
-          const titleEl = document.createElement("div"); titleEl.textContent = item.title || "";
-          const rightGroup = document.createElement("div"); rightGroup.style.cssText = "display:flex;align-items:center;gap:6px;";
-          const readBadge = document.createElement("div"); readBadge.className = "letter-read-badge"; readBadge.textContent = "읽음 ✓";
-          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
-          btnDel.addEventListener("click", async () => { if (!confirm("편지를 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id)); });
-          rightGroup.appendChild(readBadge); rightGroup.appendChild(btnDel);
-          footer.appendChild(titleEl); footer.appendChild(rightGroup);
-          card.appendChild(header); card.appendChild(body); card.appendChild(footer); el.appendChild(card);
-        }
-      });
-    }
+  applyPalette(state.palette);
+  applyDdayStyle(state.ddayStyle);
+}
 
-    function renderGifts(items) {
-      const el = document.getElementById("giftList"); const badge = document.getElementById("giftCountBadge");
-      el.innerHTML = "";
-      if (!items || !items.length) { el.innerHTML = '<div class="muted small">위시리스트가 비어있어요 🎁</div>'; badge.textContent = "0개"; return; }
-      badge.textContent = `${items.length}개`;
-      items.forEach(item => {
-        const div = document.createElement("div"); div.className = "bucket-item"; if (item.received) div.classList.add("completed");
-        const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.received;
-        checkbox.addEventListener("change", async () => await updateDoc(doc(db,"couples",currentCoupleCode,"gifts",item.id), { received: checkbox.checked }));
-        const info = document.createElement("div"); info.style.flex = "1";
-        const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = (item.from ? `[${item.from}] ` : "") + (item.title || "");
-        info.appendChild(title);
-        if (item.link) { const link = document.createElement("a"); link.href = item.link; link.target = "_blank"; link.style.cssText = "font-size:10px;color:#c9736f;text-decoration:underline;"; link.textContent = "링크 보기"; info.appendChild(link); }
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
-        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"gifts",item.id)); });
-        div.appendChild(checkbox); div.appendChild(info); div.appendChild(btnDel); el.appendChild(div);
-      });
-    }
+/* ─── Compact D+day style ─── */
+const compactCSS = document.createElement('style');
+compactCSS.textContent = `
+  .dday.compact .dday-num { font-size: 44px; }
+  .dday.compact .dday-num .plus { font-size: 22px; transform: translateY(-10px); }
+`;
+document.head.appendChild(compactCSS);
 
-    function renderPlaces(items) {
-      const el = document.getElementById("placeList"); el.innerHTML = "";
-      if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 추가된 장소가 없어요.</div>'; return; }
-      const drawMarkers = () => {
-        kakaoMarkers.forEach(m => m.setMap(null)); kakaoMarkers = [];
-        items.forEach(item => addMarkerToMap(item.lat, item.lng, item.name, item.memo));
-        kakaoMap.setCenter(new kakao.maps.LatLng(items[items.length-1].lat, items[items.length-1].lng));
-      };
-      if (kakaoMap) drawMarkers();
-      items.forEach(item => {
-        const div = document.createElement("div"); div.className = "schedule-item";
-        const meta = document.createElement("div"); meta.className = "schedule-meta"; meta.style.cursor = "pointer";
-        const name = document.createElement("div"); name.className = "schedule-title"; name.textContent = item.name;
-        const memo = document.createElement("div"); memo.className = "schedule-date"; memo.textContent = item.memo || item.address || "";
-        const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
-        meta.appendChild(name); meta.appendChild(memo); meta.appendChild(ts);
-        meta.addEventListener("click", () => {
-          if (!kakaoMap) return;
-          kakaoMap.setCenter(new kakao.maps.LatLng(item.lat, item.lng)); kakaoMap.setLevel(3);
-          document.getElementById("kakaoMap").scrollIntoView({ behavior:"smooth", block:"center" });
-        });
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
-        btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"places",item.id)); });
-        div.appendChild(meta); div.appendChild(btnDel); el.appendChild(div);
-      });
-    }
+/* ─── Init ─── */
+window.addEventListener('DOMContentLoaded', () => {
+  const root = document.getElementById('screens');
+  root.innerHTML = [
+    renderHome(),
+    renderPhotos(),
+    renderLetters(),
+    renderCalendar(),
+    renderMore()
+  ].join('');
 
-    document.getElementById("btnSaveStartDate").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const date = document.getElementById("inputStartDate").value;
-      if (!date) { alert("사귄 날짜를 선택해주세요."); return; }
-      await updateDoc(doc(db,"couples",currentCoupleCode), { startDate: date });
-      updateDdayView(date);
-      const msg = document.getElementById("ddaySaveMsg"); msg.textContent = "저장됐어요 💗"; msg.classList.remove("hidden");
-      setTimeout(() => msg.classList.add("hidden"), 2500);
-    });
+  bindTabs();
+  bindPhotoFav();
+  bindEnvelopes();
+  bindChips();
+  bindMood();
+  bindLetterCounter();
+  buildTweaks();
 
-    document.getElementById("btnAddSchedule").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const date = document.getElementById("inputScheduleDate").value;
-      const title = document.getElementById("inputScheduleTitle").value.trim();
-      const type = document.getElementById("selectScheduleType").value;
-      if (!date || !title) { alert("날짜와 제목을 입력해주세요."); return; }
-      await addDoc(collection(db,"couples",currentCoupleCode,"schedules"), { date, title, type, createdAt: serverTimestamp() });
-      document.getElementById("inputScheduleTitle").value = "";
-    });
-
-    document.getElementById("btnAddBucket").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const title = document.getElementById("inputBucketTitle").value.trim();
-      const tag = document.getElementById("inputBucketTag").value.trim();
-      if (!title) { alert("내용을 입력해주세요."); return; }
-      await addDoc(collection(db,"couples",currentCoupleCode,"bucket"), { title, tag: tag || null, completed: false, createdAt: serverTimestamp() });
-      document.getElementById("inputBucketTitle").value = ""; document.getElementById("inputBucketTag").value = "";
-    });
-
-    document.getElementById("btnAddPhoto").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const file = document.getElementById("inputPhotoFile").files[0];
-      const url = document.getElementById("inputPhotoUrl").value.trim();
-      const caption = document.getElementById("inputPhotoCaption").value.trim();
-      if (!file && !url) { alert("사진을 선택하거나 URL을 입력해주세요."); return; }
-      const status = document.getElementById("photoUploadStatus"); status.textContent = "업로드 중…";
-      try {
-        let finalUrl = url;
-        if (file) { const ref = storageRef(storage, `couples/${currentCoupleCode}/photos/${Date.now()}_${file.name}`); await uploadBytes(ref, file); finalUrl = await getDownloadURL(ref); }
-        await addDoc(collection(db,"couples",currentCoupleCode,"photos"), { url: finalUrl, caption: caption || "", createdAt: serverTimestamp() });
-        document.getElementById("inputPhotoFile").value = ""; document.getElementById("inputPhotoUrl").value = ""; document.getElementById("inputPhotoCaption").value = "";
-        status.textContent = "추가됐어요!"; setTimeout(() => status.textContent = "", 2500);
-      } catch(e) { status.textContent = "업로드 실패"; }
-    });
-
-    document.getElementById("btnSendLetter").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const from = document.getElementById("inputLetterFrom").value.trim();
-      const title = document.getElementById("inputLetterTitle").value.trim();
-      const body = document.getElementById("textareaLetterBody").value.trim();
-      if (!from || !body) { alert("작성자와 내용을 입력해주세요."); return; }
-      const status = document.getElementById("letterStatus"); status.textContent = "보내는 중…";
-      await addDoc(collection(db,"couples",currentCoupleCode,"letters"), { from, title: title || "", body, createdAt: serverTimestamp(), readBy: currentUser ? [currentUser.uid] : [] });
-      document.getElementById("textareaLetterBody").value = ""; document.getElementById("inputLetterTitle").value = "";
-      status.textContent = "편지가 도착했어요 💌"; setTimeout(() => status.textContent = "", 2500);
-    });
-
-    document.getElementById("btnAddGift").addEventListener("click", async () => {
-      if (!currentCoupleCode) return;
-      const from = document.getElementById("inputGiftFrom").value.trim();
-      const title = document.getElementById("inputGiftTitle").value.trim();
-      const link = document.getElementById("inputGiftLink").value.trim();
-      if (!title) { alert("선물 이름을 입력해주세요."); return; }
-      await addDoc(collection(db,"couples",currentCoupleCode,"gifts"), { from: from || "", title, link: link || "", received: false, createdAt: serverTimestamp() });
-      document.getElementById("inputGiftFrom").value = ""; document.getElementById("inputGiftTitle").value = ""; document.getElementById("inputGiftLink").value = "";
-    });
-
-    document.getElementById("btnSearchPlace").addEventListener("click", () => {
-      if (!currentCoupleCode) return;
-      const keyword = document.getElementById("inputPlaceName").value.trim();
-      if (!keyword) { alert("장소 이름을 입력해주세요."); return; }
-      if (!kakaoMap) { initKakaoMap(); setTimeout(() => document.getElementById("btnSearchPlace").click(), 1000); return; }
-      const mapSearchResults = document.getElementById("mapSearchResults"); mapSearchResults.innerHTML = '<div class="muted small">검색 중...</div>';
-      const ps = new kakao.maps.services.Places();
-      ps.keywordSearch(keyword, (data, status) => {
-        mapSearchResults.innerHTML = "";
-        if (status !== kakao.maps.services.Status.OK || !data.length) { mapSearchResults.innerHTML = '<div class="muted small">검색 결과가 없어요.</div>'; return; }
-        data.slice(0, 5).forEach(place => {
-          const btn = document.createElement("button"); btn.className = "btn-outline";
-          btn.style.cssText = "text-align:left;border-radius:10px;padding:7px 12px;font-size:12px;width:100%;margin-bottom:4px;";
-          btn.textContent = `📍 ${place.place_name} — ${place.address_name}`;
-          btn.addEventListener("click", async () => {
-            const memo = document.getElementById("inputPlaceMemo").value.trim();
-            await addDoc(collection(db,"couples",currentCoupleCode,"places"), { name: place.place_name, address: place.address_name, lat: parseFloat(place.y), lng: parseFloat(place.x), memo: memo || "", createdAt: serverTimestamp() });
-            document.getElementById("inputPlaceName").value = ""; document.getElementById("inputPlaceMemo").value = ""; mapSearchResults.innerHTML = "";
-          });
-          mapSearchResults.appendChild(btn);
-        });
-      });
-    });
-
-    document.getElementById("btnMyLocation").addEventListener("click", () => {
-      if (!kakaoMap) { initKakaoMap(); setTimeout(() => document.getElementById("btnMyLocation").click(), 1000); return; }
-      if (!navigator.geolocation) { alert("위치 기능을 지원하지 않아요."); return; }
-      navigator.geolocation.getCurrentPosition(pos => {
-        const position = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-        kakaoMap.setCenter(position); kakaoMap.setLevel(3);
-        new kakao.maps.Marker({ map: kakaoMap, position });
-      }, () => { alert("위치 권한을 허용해주세요."); });
-    });
-
-  </script>
+  setTimeout(() => moveIndicator('home'), 50);
+  window.addEventListener('resize', () => {
+    const activeTab = document.querySelector('.tab-item.active');
+    if (activeTab) moveIndicator(activeTab.dataset.tab);
+  });
+});
+</script>
 </body>
 </html>
