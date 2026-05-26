@@ -125,6 +125,47 @@
     .error-text { font-size:11px; color:#b94a5a; margin-top:6px; }
     .success-text { font-size:11px; color:#437f57; margin-top:5px; }
     .footer { text-align:center; padding:12px 10px 24px; font-size:11px; opacity:0.7; }
+    /* 하단 탭 */
+    .tab-page { display:none; }
+    .tab-page.active { display:block; }
+    .main-content { padding-bottom:84px !important; }
+    .bottom-tabs { position:fixed; bottom:0; left:0; right:0; z-index:30; background:rgba(255,250,252,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid rgba(224,198,185,0.6); display:flex; justify-content:space-around; align-items:center; padding:6px 0 max(env(safe-area-inset-bottom),8px); box-shadow:0 -4px 20px rgba(180,120,130,0.1); }
+    .bottom-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 2px; border:none; background:transparent; cursor:pointer; font-family:inherit; transition:all 0.18s; color:#c09090; }
+    .bottom-tab.active { color:#d07385; }
+    .bottom-tab-icon { font-size:22px; line-height:1; transition:transform 0.2s; }
+    .bottom-tab.active .bottom-tab-icon { transform:scale(1.18); filter:drop-shadow(0 2px 4px rgba(208,115,133,0.4)); }
+    .bottom-tab-label { font-size:10px; font-weight:500; letter-spacing:0.02em; }
+
+    /* 봉투 애니메이션 */
+    .letter-envelope-wrap { border-radius:14px; cursor:pointer; transition:transform 0.2s; }
+    .letter-envelope-wrap:hover { transform:translateY(-2px); }
+    .letter-env-closed {
+      position:relative; overflow:hidden; text-align:center;
+      background:linear-gradient(150deg,#fff5f8 0%,#fff9fb 60%,#fff 100%);
+      border:1.5px solid #e79aa8; border-radius:14px; padding:24px 16px 16px;
+      box-shadow:0 0 0 3px rgba(231,154,168,0.12),0 4px 14px rgba(190,147,135,0.15);
+      animation:env-pulse 2.2s ease-in-out infinite;
+    }
+    .letter-env-closed::before {
+      content:""; position:absolute; top:0; left:0; right:0; height:40px;
+      background:linear-gradient(180deg,rgba(231,154,168,0.22) 0%,transparent 100%);
+      clip-path:polygon(0 0,100% 0,50% 100%);
+    }
+    @keyframes env-pulse {
+      0%,100% { box-shadow:0 0 0 3px rgba(231,154,168,0.12),0 4px 14px rgba(190,147,135,0.15); }
+      50% { box-shadow:0 0 0 6px rgba(231,154,168,0.28),0 8px 22px rgba(190,147,135,0.28); }
+    }
+    .letter-env-icon { font-size:32px; line-height:1; margin-bottom:8px; }
+    .letter-env-from { font-size:13px; font-weight:500; color:#4a3b35; margin-bottom:3px; }
+    .letter-env-time { font-size:10px; color:#b07a8a; opacity:0.8; }
+    .letter-env-hint { font-size:11px; color:#e79aa8; margin-top:10px; letter-spacing:0.04em; }
+    @keyframes env-open-anim {
+      0% { transform:scaleY(1) translateY(0); opacity:1; }
+      35% { transform:scaleY(0.85) translateY(-6px); opacity:0.8; }
+      100% { transform:scaleY(0) translateY(-36px); opacity:0; }
+    }
+    .letter-env-opening { animation:env-open-anim 0.42s cubic-bezier(0.4,0,1,1) forwards; pointer-events:none; }
+    .letter-read-badge { font-size:9px; padding:1px 6px; border-radius:999px; background:rgba(94,194,127,0.12); border:1px solid rgba(94,194,127,0.35); color:#437f57; }
   </style>
 </head>
 <body>
@@ -205,23 +246,14 @@
           <div class="nav-title-sub" id="navSubtitle">같이 걷는 매일의 기록</div>
         </div>
       </div>
-      <div>
-        <div class="nav-links">
-          <a href="#section-dday" class="nav-link">D-day</a>
-          <a href="#section-calendar" class="nav-link">기념일 달력</a>
-          <a href="#section-photos" class="nav-link">추억 사진첩</a>
-          <a href="#section-bucket" class="nav-link">버킷리스트</a>
-          <a href="#section-letters" class="nav-link">편지함</a>
-          <a href="#section-gifts" class="nav-link">선물 리스트</a>
-          <a href="#section-map" class="nav-link">우리 발자국</a>
-        </div>
-        <div style="margin-top:6px;display:flex;justify-content:flex-end;gap:6px;align-items:center;">
-          <div class="nav-couple-code">코드: <span id="displayCoupleCode">-</span></div>
-          <div class="chip"><span id="realtimeDot" class="status-dot offline"></span><span id="realtimeText">연결 대기중</span></div>
-        </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div class="nav-couple-code">코드: <span id="displayCoupleCode">-</span></div>
+        <div class="chip"><span id="realtimeDot" class="status-dot offline"></span><span id="realtimeText">연결 대기중</span></div>
       </div>
     </header>
     <main class="main-content">
+      <!-- 홈 탭 -->
+      <div id="tab-home" class="tab-page active">
       <section id="section-dday" class="card">
         <div class="card-header"><h2>우리의 첫날</h2><span>사귄 날부터 오늘까지</span><span class="pill-label">D+day 카운터</span></div>
         <p class="section-description">우리가 시작된 날을 적어두면, 함께한 지 며칠째인지 매일 자동으로 알려줘요.</p>
@@ -238,7 +270,10 @@
           <div id="ddaySaveMsg" class="success-text hidden"></div>
         </div>
       </section>
-      <div class="grid-2col">
+      </div><!-- /tab-home -->
+
+      <!-- 달력 탭 -->
+      <div id="tab-calendar" class="tab-page">
         <section id="section-calendar" class="card">
           <div class="card-header"><h2>기념일 · 데이트 달력</h2><span>작은 일정까지 같이 기록하기</span></div>
           <p class="section-description">기념일, 데이트, 여행 계획을 날짜와 함께 남겨두면 나중에 둘이 돌아보기 좋아요.</p>
@@ -261,22 +296,10 @@
           </div>
           <div id="scheduleList" class="schedule-list"></div>
         </section>
-        <section id="section-bucket" class="card">
-          <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
-          <p class="section-description">언젠가 둘이서 꼭 해보고 싶은 것들을 적어두고, 하나씩 완성해가요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
-            <div class="field-group" style="flex:1 1 130px;"><label class="field-label">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
-            <button id="btnAddBucket" class="btn-primary" style="margin-top:18px;">추가</button>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">체크하면 상대방도 바로 완료 표시돼요.</span><span class="badge-soft" id="bucketCountBadge">0개 남음</span>
-          </div>
-          <div id="bucketList" class="bucket-list"></div>
-        </section>
-      </div>
-      <div class="grid-2col">
+      </div><!-- /tab-calendar -->
+
+      <!-- 추억 탭 -->
+      <div id="tab-photos" class="tab-page">
         <section id="section-photos" class="card">
           <div class="card-header"><h2>추억 사진첩</h2><span>함께 담은 장면들</span></div>
           <p class="section-description">사진을 업로드하거나 URL을 붙여넣으면 실시간으로 공유돼요.</p>
@@ -295,6 +318,10 @@
           </div>
           <div id="photoList" style="display:flex;flex-direction:column;max-height:500px;overflow-y:auto;padding-right:4px;"></div>
         </section>
+      </div><!-- /tab-photos -->
+
+      <!-- 편지 탭 -->
+      <div id="tab-letters" class="tab-page">
         <section id="section-letters" class="card">
           <div class="card-header"><h2>서로에게 쓰는 편지함</h2><span>짧은 메모도 괜찮아요</span></div>
           <p class="section-description">오늘 전하고 싶은 말을 짧게라도 남겨보세요.</p>
@@ -313,37 +340,77 @@
           </div>
           <div id="lettersList" class="letters-list"></div>
         </section>
-      </div>
-      <section id="section-gifts" class="card">
-        <div class="card-header"><h2>받고 싶은 선물 리스트 🎁</h2><span>서로의 위시리스트</span><span class="pill-label">선물 힌트</span></div>
-        <p class="section-description">갖고 싶은 것들을 미리 적어두면, 기념일에 딱 맞는 선물을 고를 수 있어요.</p>
-        <div class="field-row">
-          <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-          <div class="field-group" style="flex:2 1 180px;"><label class="field-label">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
-          <div class="field-group" style="flex:1 1 120px;"><label class="field-label">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://..." /></div>
-          <button id="btnAddGift" class="btn-primary" style="margin-top:18px;">추가</button>
-        </div>
-        <div class="divider"></div>
-        <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span class="small muted">선물 받으면 체크!</span><span class="badge-soft" id="giftCountBadge">0개</span>
-        </div>
-        <div id="giftList" class="bucket-list"></div>
-      </section>
-      <section id="section-map" class="card">
-        <div class="card-header"><h2>우리 발자국 🗺️</h2><span>함께 간 곳들</span><span class="pill-label">추억 지도</span></div>
-        <p class="section-description">함께 갔던 곳을 지도에 핀으로 남겨요.</p>
-        <div class="field-row">
-          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
-          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
-          <button id="btnSearchPlace" class="btn-primary" style="margin-top:18px;">장소 검색</button>
-          <button id="btnMyLocation" class="btn-outline" style="margin-top:18px;">📍 현재 위치</button>
-        </div>
-        <div id="mapSearchResults" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
-        <div id="kakaoMap" style="width:100%;height:400px;border-radius:14px;border:1px solid var(--border-soft);margin-top:8px;"></div>
-        <div class="divider"></div>
-        <div id="placeList" class="schedule-list" style="max-height:200px;"></div>
-      </section>
+      </div><!-- /tab-letters -->
+
+      <!-- 더보기 탭 -->
+      <div id="tab-more" class="tab-page">
+        <section id="section-bucket" class="card">
+          <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
+          <p class="section-description">언젠가 둘이서 꼭 해보고 싶은 것들을 적어두고, 하나씩 완성해가요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
+            <div class="field-group" style="flex:1 1 130px;"><label class="field-label">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
+            <button id="btnAddBucket" class="btn-primary" style="margin-top:18px;">추가</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span class="small muted">체크하면 상대방도 바로 완료 표시돼요.</span><span class="badge-soft" id="bucketCountBadge">0개 남음</span>
+          </div>
+          <div id="bucketList" class="bucket-list"></div>
+        </section>
+        <section id="section-gifts" class="card">
+          <div class="card-header"><h2>받고 싶은 선물 리스트 🎁</h2><span>서로의 위시리스트</span><span class="pill-label">선물 힌트</span></div>
+          <p class="section-description">갖고 싶은 것들을 미리 적어두면, 기념일에 딱 맞는 선물을 고를 수 있어요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+            <div class="field-group" style="flex:2 1 180px;"><label class="field-label">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
+            <div class="field-group" style="flex:1 1 120px;"><label class="field-label">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://..." /></div>
+            <button id="btnAddGift" class="btn-primary" style="margin-top:18px;">추가</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span class="small muted">선물 받으면 체크!</span><span class="badge-soft" id="giftCountBadge">0개</span>
+          </div>
+          <div id="giftList" class="bucket-list"></div>
+        </section>
+        <section id="section-map" class="card">
+          <div class="card-header"><h2>우리 발자국 🗺️</h2><span>함께 간 곳들</span><span class="pill-label">추억 지도</span></div>
+          <p class="section-description">함께 갔던 곳을 지도에 핀으로 남겨요.</p>
+          <div class="field-row">
+            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
+            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
+            <button id="btnSearchPlace" class="btn-primary" style="margin-top:18px;">장소 검색</button>
+            <button id="btnMyLocation" class="btn-outline" style="margin-top:18px;">📍 현재 위치</button>
+          </div>
+          <div id="mapSearchResults" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+          <div id="kakaoMap" style="width:100%;height:400px;border-radius:14px;border:1px solid var(--border-soft);margin-top:8px;"></div>
+          <div class="divider"></div>
+          <div id="placeList" class="schedule-list" style="max-height:200px;"></div>
+        </section>
+      </div><!-- /tab-more -->
     </main>
+    <nav class="bottom-tabs">
+      <button class="bottom-tab active" id="btab-home" onclick="switchBottomTab('home')">
+        <span class="bottom-tab-icon">🏠</span>
+        <span class="bottom-tab-label">홈</span>
+      </button>
+      <button class="bottom-tab" id="btab-calendar" onclick="switchBottomTab('calendar')">
+        <span class="bottom-tab-icon">📅</span>
+        <span class="bottom-tab-label">달력</span>
+      </button>
+      <button class="bottom-tab" id="btab-photos" onclick="switchBottomTab('photos')">
+        <span class="bottom-tab-icon">📸</span>
+        <span class="bottom-tab-label">추억</span>
+      </button>
+      <button class="bottom-tab" id="btab-letters" onclick="switchBottomTab('letters')">
+        <span class="bottom-tab-icon">💌</span>
+        <span class="bottom-tab-label">편지</span>
+      </button>
+      <button class="bottom-tab" id="btab-more" onclick="switchBottomTab('more')">
+        <span class="bottom-tab-icon">✨</span>
+        <span class="bottom-tab-label">더보기</span>
+      </button>
+    </nav>
     <footer class="footer">오늘도 같이, 한 걸음씩 담아가기 ♡</footer>
   </div>
 
@@ -356,11 +423,18 @@
     function loginWithNaver() { if(window._app) window._app.loginWithNaver(); }
     function doLogout() { if(window._app) window._app.doLogout(); }
     function doEnterWithCode() { if(window._app) window._app.doEnterWithCode(); }
+    function switchBottomTab(tab) {
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.bottom-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tab)?.classList.add('active');
+      document.getElementById('btab-' + tab)?.classList.add('active');
+      window.scrollTo(0, 0);
+    }
   </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
@@ -805,19 +879,44 @@
       const el = document.getElementById("lettersList"); const badge = document.getElementById("letterCountBadge");
       el.innerHTML = "";
       if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
-      badge.textContent = `${items.length}통`;
+      const unreadCount = items.filter(i => i.readBy && !i.readBy.includes(currentUser?.uid)).length;
+      badge.textContent = unreadCount > 0 ? `${items.length}통 · 💌 ${unreadCount}개 새편지` : `${items.length}통`;
       items.forEach(item => {
-        const card = document.createElement("div"); card.className = "letter-card";
-        const header = document.createElement("div"); header.className = "letter-header";
-        const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
-        const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
-        header.appendChild(from); header.appendChild(time);
-        const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "";
-        const footer = document.createElement("div"); footer.className = "letter-footer";
-        const titleEl = document.createElement("div"); titleEl.textContent = item.title || "";
-        const mini = document.createElement("div"); mini.className = "pill-mini"; mini.textContent = "편지";
-        footer.appendChild(titleEl); footer.appendChild(mini);
-        card.appendChild(header); card.appendChild(body); card.appendChild(footer); el.appendChild(card);
+        // readBy 필드가 없는 구버전 편지는 이미 읽은 것으로 처리
+        const isRead = !item.readBy || item.readBy.includes(currentUser?.uid);
+        if (!isRead) {
+          const wrap = document.createElement("div"); wrap.className = "letter-envelope-wrap";
+          const env = document.createElement("div"); env.className = "letter-env-closed";
+          env.innerHTML = `<div class="letter-env-icon">💌</div><div class="letter-env-from"></div><div class="letter-env-time"></div><div class="letter-env-hint">톡 눌러서 열어보기 ✉️</div>`;
+          env.querySelector(".letter-env-from").textContent = `From. ${item.from || "누군가"}`;
+          env.querySelector(".letter-env-time").textContent = formatTimestamp(item.createdAt);
+          wrap.appendChild(env);
+          wrap.addEventListener("click", async () => {
+            if (env.classList.contains("letter-env-opening")) return;
+            env.classList.add("letter-env-opening");
+            await new Promise(r => setTimeout(r, 420));
+            if (currentUser && currentCoupleCode) {
+              await updateDoc(doc(db, "couples", currentCoupleCode, "letters", item.id), { readBy: arrayUnion(currentUser.uid) });
+            }
+          });
+          el.appendChild(wrap);
+        } else {
+          const card = document.createElement("div"); card.className = "letter-card";
+          const header = document.createElement("div"); header.className = "letter-header";
+          const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
+          const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
+          header.appendChild(from); header.appendChild(time);
+          const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "";
+          const footer = document.createElement("div"); footer.className = "letter-footer";
+          const titleEl = document.createElement("div"); titleEl.textContent = item.title || "";
+          const rightGroup = document.createElement("div"); rightGroup.style.cssText = "display:flex;align-items:center;gap:6px;";
+          const readBadge = document.createElement("div"); readBadge.className = "letter-read-badge"; readBadge.textContent = "읽음 ✓";
+          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+          btnDel.addEventListener("click", async () => { if (!confirm("편지를 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id)); });
+          rightGroup.appendChild(readBadge); rightGroup.appendChild(btnDel);
+          footer.appendChild(titleEl); footer.appendChild(rightGroup);
+          card.appendChild(header); card.appendChild(body); card.appendChild(footer); el.appendChild(card);
+        }
       });
     }
 
@@ -919,7 +1018,7 @@
       const body = document.getElementById("textareaLetterBody").value.trim();
       if (!from || !body) { alert("작성자와 내용을 입력해주세요."); return; }
       const status = document.getElementById("letterStatus"); status.textContent = "보내는 중…";
-      await addDoc(collection(db,"couples",currentCoupleCode,"letters"), { from, title: title || "", body, createdAt: serverTimestamp() });
+      await addDoc(collection(db,"couples",currentCoupleCode,"letters"), { from, title: title || "", body, createdAt: serverTimestamp(), readBy: currentUser ? [currentUser.uid] : [] });
       document.getElementById("textareaLetterBody").value = ""; document.getElementById("inputLetterTitle").value = "";
       status.textContent = "편지가 도착했어요 💌"; setTimeout(() => status.textContent = "", 2500);
     });
