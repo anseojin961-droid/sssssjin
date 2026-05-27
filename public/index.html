@@ -2294,6 +2294,11 @@
     function applyCoverName(num, name) {
       const el = document.getElementById('coverName' + num);
       if (el) el.textContent = name || (num === 1 ? '나' : '상대방');
+      // 홈 무드 카드 별명 반영
+      const moodEl = document.getElementById(num === 1 ? 'homeMoodMeName' : 'homeMoodPartnerName');
+      if (moodEl) moodEl.textContent = num === 1
+        ? `${name || '나'} · HIM`
+        : `${name || '상대방'} · HER`;
     }
 
     // 이름 입력 이벤트
