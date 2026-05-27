@@ -102,31 +102,34 @@
     .section-description { font-size:13px; opacity:0.9; margin-bottom:14px; }
     .pill-label { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:10px; background:rgba(228,183,185,0.19); border:1px dashed rgba(223,160,165,0.7); margin-left:auto; }
     /* 더보기 */
-    .more-section-header { text-align:center; padding:8px 0 20px; }
-    .more-section-header h2 { font-size:22px; margin:0 0 4px; color:#3c2f2a; }
-    .more-section-header p { font-size:12px; opacity:0.6; margin:0; }
-    .more-account-card { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 16px; padding:13px 14px; border-radius:16px; background:rgba(255,255,255,0.78); border:1px solid rgba(231,180,190,0.4); box-shadow:0 4px 18px rgba(200,130,150,0.08); }
-    .more-account-label { font-size:10px; color:#b07a8a; margin-bottom:3px; }
-    .more-account-code { font-size:13px; color:#4a3b35; font-weight:500; letter-spacing:0.03em; }
-    .more-logout-btn { padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(224,198,185,0.9); color:#8a6660; font-size:11px; white-space:nowrap; }
-    .more-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .more-card { border-radius:20px; padding:18px 14px 14px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; cursor:pointer; transition:transform 0.18s,box-shadow 0.22s; position:relative; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
-    .more-card::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.45) 0%,transparent 60%); pointer-events:none; border-radius:20px; }
-    .more-card:active { transform:scale(0.95); box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-    .more-card-icon { font-size:30px; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12)); }
-    .more-card-title { font-size:14px; font-weight:700; color:var(--ink); font-family:var(--font-kr); margin-top:2px; }
+    .more-section-header { padding:4px 0 18px; }
+    .more-section-header h2 { font-size:20px; margin:0 0 2px; color:var(--ink); }
+    .more-section-header p { font-size:12px; opacity:0.5; margin:0; }
+    .more-account-card { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 20px; padding:14px 16px; border-radius:18px; background:rgba(255,255,255,0.82); border:1px solid rgba(231,180,190,0.3); }
+    .more-account-label { font-size:10px; color:#b07a8a; margin-bottom:3px; letter-spacing:0.02em; }
+    .more-account-code { font-size:15px; color:var(--ink); font-weight:500; letter-spacing:0.05em; }
+    .more-logout-btn { padding:7px 14px; border-radius:999px; background:#fff; border:1px solid rgba(224,198,185,0.9); color:#8a6660; font-size:11px; white-space:nowrap; }
+    .more-section-label { font-size:13px; font-weight:600; color:var(--ink); margin:0 0 12px; }
+    .more-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+    .more-card { border-radius:22px; padding:16px 14px 14px; display:flex; flex-direction:column; align-items:flex-start; cursor:pointer; transition:transform 0.15s; position:relative; overflow:hidden; min-height:128px; }
+    .more-card:active { transform:scale(0.94); }
+    .more-card-badge { position:absolute; top:11px; right:11px; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,0.82); color:var(--ink-2); letter-spacing:0.01em; }
+    .more-card-icon { width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; margin-bottom:10px; flex-shrink:0; }
+    .more-card-icon svg { width:20px; height:20px; }
+    .more-card-title { font-size:14px; font-weight:700; color:var(--ink); margin-bottom:3px; }
     .more-card-desc { font-size:11px; color:var(--ink-3); line-height:1.4; }
-    .more-card-arrow { position:absolute; right:12px; bottom:12px; font-size:18px; opacity:0.3; font-weight:300; }
-    .more-card-wide { grid-column:1 / -1; flex-direction:row; align-items:center; gap:14px; padding:16px 18px; }
-    .more-card-wide .more-card-icon { font-size:32px; }
-    .more-card-wide .more-card-texts { display:flex; flex-direction:column; gap:2px; }
-    .more-card-wide .more-card-arrow { top:50%; bottom:auto; transform:translateY(-50%); right:16px; }
-    .more-card.c1 { background:linear-gradient(145deg,#FFE8EE,#F9C2D0); }
-    .more-card.c2 { background:linear-gradient(145deg,#E2EFE4,#C2D6BC); }
-    .more-card.c3 { background:linear-gradient(145deg,#FFF3CC,#F5DC9A); }
-    .more-card.c4 { background:linear-gradient(145deg,#E8DEFF,#D0BCFF); }
-    .more-card.c5 { background:linear-gradient(145deg,#E2EFF4,#BCC9D8); }
-    .more-card.c6 { background:linear-gradient(145deg,#FFE8D6,#F9C4A0); }
+    .more-card.c1 { background:#FFE8EE; }
+    .more-card.c2 { background:#E2EFE4; }
+    .more-card.c3 { background:#FFF3CC; }
+    .more-card.c4 { background:#E8DEFF; }
+    .more-card.c5 { background:#E2EFF4; }
+    .more-card.c6 { background:#FFE8D6; }
+    /* 설정 리스트 */
+    .more-settings-list { background:rgba(255,255,255,0.82); border-radius:18px; overflow:hidden; border:1px solid rgba(231,180,190,0.25); }
+    .more-settings-item { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid rgba(231,180,190,0.2); cursor:pointer; font-size:13px; color:var(--ink); transition:background 0.12s; }
+    .more-settings-item:last-child { border-bottom:none; }
+    .more-settings-item:active { background:rgba(244,194,205,0.12); }
+    .more-settings-arrow { font-size:16px; opacity:0.3; font-weight:300; }
     /* 커플 게임 */
     .game-header { text-align:center; padding:4px 0 18px; position:relative; }
     .game-back-btn { position:absolute; left:0; top:4px; background:none; border:none; font-size:15px; color:var(--rose-deep); font-family:inherit; padding:4px 8px; cursor:pointer; }
@@ -367,18 +370,29 @@
     .weather-tint-sunny { background:linear-gradient(180deg,rgba(255,220,80,0.08) 0%,transparent 40%) !important; }
 
     /* ── 커플 통계 대시보드 ── */
-    .stats-dashboard { padding:18px 18px 16px; }
-    .stats-dashboard-title { font-size:11px; opacity:0.55; margin-bottom:14px; letter-spacing:0.04em; text-transform:uppercase; font-family:var(--font-en); }
+    .stats-dashboard { padding:16px 16px 14px; }
+    .stats-dashboard-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .stats-dashboard-title { font-size:14px; font-weight:600; color:var(--ink); }
+    .stats-dashboard-link { font-size:11px; color:var(--wine); opacity:0.7; background:none; border:none; font-family:inherit; padding:0; cursor:pointer; }
     .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-    .stat-item { display:flex; flex-direction:column; align-items:center; gap:5px; border-radius:16px; padding:12px 4px 10px; position:relative; overflow:hidden; transition:transform 0.15s; }
-    .stat-item:active { transform:scale(0.94); }
-    .stat-item:nth-child(1) { background:linear-gradient(145deg,#ffd6e4,#ffb3cb); }
-    .stat-item:nth-child(2) { background:linear-gradient(145deg,#ffd6e4,#ffb3cb); }
-    .stat-item:nth-child(3) { background:linear-gradient(145deg,#d4f4e0,#a8e8c0); }
-    .stat-item:nth-child(4) { background:linear-gradient(145deg,#d4e8ff,#a8ccff); }
-    .stat-item:nth-child(5) { background:linear-gradient(145deg,#ead4ff,#d0a8ff); }
-    .stat-num { font-size:22px; font-weight:500; color:#3c2f2a; font-family:var(--font-display); font-style:italic; line-height:1; }
-    .stat-label { font-size:9px; color:#3c2f2a; opacity:0.65; text-align:center; line-height:1.3; }
+    .stat-item { display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:18px; padding:14px 4px 11px; position:relative; overflow:hidden; transition:transform 0.15s; cursor:pointer; }
+    .stat-item:active { transform:scale(0.93); }
+    .stat-item:nth-child(1) { background:#FFE8EE; }
+    .stat-item:nth-child(2) { background:#FFE8EE; }
+    .stat-item:nth-child(3) { background:#E2EFE4; }
+    .stat-item:nth-child(4) { background:#E2EFF4; }
+    .stat-item:nth-child(5) { background:#E8DEFF; }
+    .stat-item svg { width:22px; height:22px; margin-bottom:2px; }
+    .stat-num { position:absolute; top:5px; right:5px; min-width:17px; height:17px; padding:0 4px; border-radius:999px; background:rgba(255,255,255,0.88); font-size:9.5px; font-weight:700; color:var(--wine); display:flex; align-items:center; justify-content:center; }
+    .stat-label { font-size:9px; color:var(--ink-3); text-align:center; line-height:1.3; }
+    /* ── 홈 무드 미리보기 ── */
+    .home-mood-card { border-radius:14px; padding:12px 12px 10px; display:flex; flex-direction:column; gap:3px; }
+    .home-mood-card.me { background:rgba(255,232,238,0.85); border:1px solid rgba(244,194,205,0.5); }
+    .home-mood-card.partner { background:rgba(232,222,255,0.85); border:1px solid rgba(208,188,255,0.5); }
+    .home-mood-who { font-size:9.5px; opacity:0.5; letter-spacing:0.04em; font-family:var(--font-en); text-transform:uppercase; }
+    .home-mood-emoji { font-size:26px; line-height:1.2; margin:4px 0 2px; }
+    .home-mood-text { font-size:12px; font-weight:500; color:var(--ink-2); }
+    .home-mood-time { font-size:10px; opacity:0.4; margin-top:1px; }
 
     /* ── 오늘의 무드 ── */
     .mood-date { font-size:12px; opacity:0.55; margin-bottom:14px; }
@@ -728,60 +742,85 @@
           </div>
         </div>
 
-        <div id="homeCover" style="position:relative;width:100%;min-height:320px;border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(150deg,#f4c2cd 0%,#e79aa8 50%,#c8728a 100%);display:flex;align-items:flex-end;box-shadow:0 8px 32px rgba(107,39,55,0.22);">
-          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(255,230,210,0.35),transparent 60%);pointer-events:none;z-index:0;"></div>
+        <!-- 홈 히어로 -->
+        <div id="homeCover" style="position:relative;width:100%;border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(160deg,#fce8e2 0%,#f8d8d0 50%,#f4ccc5 100%);box-shadow:0 4px 24px rgba(107,39,55,0.10);">
           <img id="homeBgImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;" />
-          <div id="stickerLayer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px;z-index:2;"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(30,0,10,0.55) 0%,rgba(30,0,10,0.1) 50%,transparent 100%);pointer-events:none;z-index:1;"></div>
-          <div style="position:relative;padding:16px 20px 22px;width:100%;box-sizing:border-box;">
-            <!-- 커플 프로필 행 -->
-            <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-                <div id="coverAvatar1" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 6px 20px rgba(0,0,0,0.25);overflow:hidden;flex-shrink:0;">♥</div>
-                <div id="coverName1" style="font-size:12px;color:rgba(255,255,255,0.95);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:0.02em;">나</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-                <div style="font-size:22px;color:rgba(255,255,255,0.95);text-shadow:0 2px 8px rgba(0,0,0,0.3);">♥</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-                <div id="coverAvatar2" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 6px 20px rgba(0,0,0,0.25);overflow:hidden;flex-shrink:0;">♥</div>
-                <div id="coverName2" style="font-size:12px;color:rgba(255,255,255,0.95);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:0.02em;">상대방</div>
+          <div id="stickerLayer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:24px;z-index:2;"></div>
+          <div style="position:relative;padding:30px 24px 28px;text-align:center;z-index:3;">
+            <!-- 겹치는 아바타 원 -->
+            <div style="display:flex;justify-content:center;align-items:center;margin-bottom:16px;">
+              <div style="position:relative;width:88px;height:58px;">
+                <div id="coverAvatar1" style="position:absolute;left:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#d88090,#c0607a);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:2;flex-shrink:0;">♥</div>
+                <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:var(--wine);">♥</div>
+                <div id="coverAvatar2" style="position:absolute;right:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#c0607a,#a84868);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:1;flex-shrink:0;">♥</div>
               </div>
             </div>
-            <!-- D-day + 꾸미기 버튼 -->
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-              <div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.08em;text-transform:uppercase;font-family:var(--font-en);margin-bottom:2px;">together</div>
-                <div id="homeDday" style="font-size:68px;font-weight:400;color:#fff;font-family:var(--font-display);font-style:italic;line-height:0.95;letter-spacing:-0.02em;text-shadow:0 2px 12px rgba(0,0,0,0.25);">D+0</div>
-                <div id="homeStartDate" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:6px;font-family:var(--font-en);letter-spacing:0.03em;"></div>
-              </div>
-              <button onclick="switchTabBar('customize')" style="background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.5);border-radius:999px;padding:6px 14px;font-size:12px;color:#fff;touch-action:manipulation;z-index:3;position:relative;">✏️ 꾸미기</button>
+            <!-- 이름 표시 -->
+            <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px;font-size:12px;color:var(--ink-3);">
+              <span id="coverName1">나</span>
+              <span style="opacity:0.4;">·</span>
+              <span id="coverName2">상대방</span>
             </div>
+            <!-- OUR DAYS TOGETHER 레이블 -->
+            <div style="font-size:10px;color:var(--wine);letter-spacing:0.15em;text-transform:uppercase;font-family:var(--font-en);font-weight:600;opacity:0.65;margin-bottom:6px;">OUR DAYS TOGETHER</div>
+            <!-- D+day 카운터 -->
+            <div id="homeDday" style="font-size:76px;font-weight:400;color:var(--wine);font-family:var(--font-display);font-style:italic;line-height:1;letter-spacing:-0.02em;">D+0</div>
+            <div id="homeStartDate" style="font-size:12px;color:var(--ink-3);margin-top:8px;font-family:var(--font-kr);letter-spacing:0.01em;opacity:0.8;"></div>
           </div>
+          <button onclick="switchTabBar('customize')" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.85);border-radius:999px;padding:5px 12px;font-size:11px;color:var(--wine);touch-action:manipulation;z-index:4;">✏️ 꾸미기</button>
         </div>
         <!-- 커플 통계 대시보드 -->
         <div class="card stats-dashboard" style="margin:0 0 12px;">
-          <div class="stats-dashboard-title">📊 우리의 기록</div>
+          <div class="stats-dashboard-header">
+            <span class="stats-dashboard-title">우리의 기록</span>
+            <button class="stats-dashboard-link" onclick="switchTabBar('photos')">전체보기 ›</button>
+          </div>
           <div class="stats-grid">
-            <div class="stat-item">
+            <div class="stat-item" onclick="switchTabBar('photos')">
               <div class="stat-num" id="statPhotos">0</div>
-              <div class="stat-label">📸 사진</div>
+              <svg fill="none" stroke="#c06070" stroke-width="1.8" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <div class="stat-label">사진첩</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" onclick="switchTabBar('letters')">
               <div class="stat-num" id="statLetters">0</div>
-              <div class="stat-label">💌 편지</div>
+              <svg fill="none" stroke="#c06070" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+              <div class="stat-label">편지함</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" onclick="switchTabBar('bucket')">
               <div class="stat-num" id="statBucket">0</div>
-              <div class="stat-label">✅ 버킷</div>
+              <svg fill="none" stroke="#4a8a60" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              <div class="stat-label">버킷</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" onclick="switchTabBar('calendar')">
               <div class="stat-num" id="statSchedules">0</div>
-              <div class="stat-label">📅 일정</div>
+              <svg fill="none" stroke="#4a70aa" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <div class="stat-label">일정</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" onclick="switchTabBar('map')">
               <div class="stat-num" id="statPlaces">0</div>
-              <div class="stat-label">📍 장소</div>
+              <svg fill="none" stroke="#7060aa" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="stat-label">장소</div>
+            </div>
+          </div>
+        </div>
+        <!-- 오늘의 무드 미리보기 -->
+        <div class="card" style="margin:0 0 12px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:14px;font-weight:600;color:var(--ink);">오늘의 무드</span>
+            <button onclick="switchTabBar('mood')" style="font-size:11px;color:var(--wine);background:none;border:none;font-family:inherit;opacity:0.75;cursor:pointer;padding:0;">기록하기 ›</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="home-mood-card me">
+              <div class="home-mood-who" id="homeMoodMeName">나 · HIM</div>
+              <div class="home-mood-emoji" id="homeMoodMeEmoji">😶</div>
+              <div class="home-mood-text" id="homeMoodMeText">아직 기록 안 함</div>
+              <div class="home-mood-time" id="homeMoodMeTime"></div>
+            </div>
+            <div class="home-mood-card partner">
+              <div class="home-mood-who" id="homeMoodPartnerName">상대방 · HER</div>
+              <div class="home-mood-emoji" id="homeMoodPartnerEmoji">😶</div>
+              <div class="home-mood-text" id="homeMoodPartnerText">아직 기록 안 함</div>
+              <div class="home-mood-time" id="homeMoodPartnerTime"></div>
             </div>
           </div>
         </div>
@@ -1111,80 +1150,124 @@
           </div>
           <button id="btnLogout" class="more-logout-btn">로그아웃</button>
         </div>
+        <!-- 우리만의 공간 -->
+        <div class="more-section-label">우리만의 공간</div>
         <div class="more-grid">
-          <div class="more-card c5" onclick="switchTabBar('customize')">
-            <span class="more-card-icon">🎨</span>
-            <span class="more-card-title">공간 꾸미기</span>
-            <span class="more-card-desc">배경·프로필·테마 설정</span>
-            <span class="more-card-arrow">›</span>
+          <!-- 타임캡슐 -->
+          <div class="more-card c4" onclick="switchTabBar('capsule')">
+            <div class="more-card-badge" id="moreBadgeCapsule"></div>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#7060aa" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 3h14l1 7H4L5 3z"/><path d="M4 10s0 9 8 9 8-9 8-9"/><line x1="12" y1="10" x2="12" y2="19"/></svg>
+            </div>
+            <div class="more-card-title">타임캡슐</div>
+            <div class="more-card-desc">미래에 열어볼 편지</div>
           </div>
-          <div class="more-card c6" onclick="switchTabBar('capsule')">
-            <span class="more-card-icon">⏳</span>
-            <span class="more-card-title">타임캡슐</span>
-            <span class="more-card-desc">미래에 열어볼 편지</span>
-            <span class="more-card-arrow">›</span>
-          </div>
-          <div class="more-card c1" onclick="switchTabBar('dday')">
-            <span class="more-card-icon">💕</span>
-            <span class="more-card-title">D-day 카운터</span>
-            <span class="more-card-desc">우리가 함께한 날들</span>
-            <span class="more-card-arrow">›</span>
-          </div>
-          <div class="more-card c2" onclick="switchTabBar('bucket')">
-            <span class="more-card-icon">✅</span>
-            <span class="more-card-title">버킷리스트</span>
-            <span class="more-card-desc">함께 이루고 싶은 것들</span>
-            <span class="more-card-arrow">›</span>
-          </div>
-          <div class="more-card c3" onclick="switchTabBar('gifts')">
-            <span class="more-card-icon">🎁</span>
-            <span class="more-card-title">선물 리스트</span>
-            <span class="more-card-desc">받고 싶은 선물 힌트</span>
-            <span class="more-card-arrow">›</span>
-          </div>
-          <div class="more-card c4" onclick="switchTabBar('ai')">
-            <span class="more-card-icon">🤖</span>
-            <span class="more-card-title">AI 기능</span>
-            <span class="more-card-desc">AI가 도와줄게요</span>
-            <span class="more-card-arrow">›</span>
-          </div>
+          <!-- 커플 게임 -->
           <div class="more-card c6" onclick="switchTabBar('games')">
-            <span class="more-card-icon">🎮</span>
-            <span class="more-card-title">커플 게임</span>
-            <span class="more-card-desc">애정도·두더지·이심전심</span>
-            <span class="more-card-arrow">›</span>
+            <div class="more-card-badge">NEW</div>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#a06030" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="5"/><path d="M6 12h4M8 10v4M15 11h.01M17 13h.01"/></svg>
+            </div>
+            <div class="more-card-title">커플 게임</div>
+            <div class="more-card-desc">애정도·두더지·이심전심</div>
           </div>
-          <div class="more-card c5" onclick="switchTabBar('map')">
-            <span class="more-card-icon">🗺️</span>
-            <span class="more-card-title">우리 흔적 지도</span>
-            <span class="more-card-desc">함께 간 곳 기록</span>
-            <span class="more-card-arrow">›</span>
+          <!-- 발자국 지도 -->
+          <div class="more-card c2" onclick="switchTabBar('map')">
+            <div class="more-card-badge" id="moreBadgePlaces"></div>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#4a8060" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+            </div>
+            <div class="more-card-title">발자국 지도</div>
+            <div class="more-card-desc">함께 간 곳 <span id="morePlacesCount">-</span></div>
           </div>
+          <!-- 위시리스트 -->
+          <div class="more-card c3" onclick="switchTabBar('gifts')">
+            <div class="more-card-badge" id="moreBadgeGifts"></div>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#907030" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18"/><path d="M8 8a4 4 0 000-4c-1 0-5 1-5 4h5zM16 8a4 4 0 010-4c1 0 5 1 5 4h-5z"/></svg>
+            </div>
+            <div class="more-card-title">위시리스트</div>
+            <div class="more-card-desc">받고 싶은 선물 힌트</div>
+          </div>
+          <!-- 버킷리스트 -->
+          <div class="more-card c1" onclick="switchTabBar('bucket')">
+            <div class="more-card-badge" id="moreBadgeBucket"></div>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#b04060" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </div>
+            <div class="more-card-title">버킷리스트</div>
+            <div class="more-card-desc">함께 이루고 싶은 일</div>
+          </div>
+          <!-- 공유 메모장 -->
+          <div class="more-card c5" onclick="switchTabBar('memo')">
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#305080" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            </div>
+            <div class="more-card-title">공유 메모장</div>
+            <div class="more-card-desc">같이 쓰는 메모</div>
+          </div>
+          <!-- 오늘의 무드 -->
           <div class="more-card c1" onclick="switchTabBar('mood')">
-            <span class="more-card-icon">🌈</span>
-            <span class="more-card-title">오늘의 무드</span>
-            <span class="more-card-desc">서로의 기분 공유</span>
-            <span class="more-card-arrow">›</span>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#b04060" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div class="more-card-title">오늘의 무드</div>
+            <div class="more-card-desc">서로의 기분 공유</div>
           </div>
-          <div class="more-card c3" onclick="switchTabBar('memo')">
-            <span class="more-card-icon">📝</span>
-            <span class="more-card-title">공유 메모장</span>
-            <span class="more-card-desc">같이 쓰는 메모</span>
-            <span class="more-card-arrow">›</span>
-          </div>
+          <!-- 오늘의 질문 -->
           <div class="more-card c2" onclick="switchTabBar('question')">
-            <span class="more-card-icon">💬</span>
-            <span class="more-card-title">오늘의 질문</span>
-            <span class="more-card-desc">매일 새로운 커플 질문</span>
-            <span class="more-card-arrow">›</span>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#4a8060" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div class="more-card-title">오늘의 질문</div>
+            <div class="more-card-desc">매일 새로운 커플 질문</div>
           </div>
+          <!-- 커플 투표 -->
           <div class="more-card c4" onclick="switchTabBar('vote')">
-            <span class="more-card-icon">🗳️</span>
-            <span class="more-card-title">커플 투표</span>
-            <span class="more-card-desc">같이 결정해봐요</span>
-            <span class="more-card-arrow">›</span>
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#7060aa" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <div class="more-card-title">커플 투표</div>
+            <div class="more-card-desc">같이 결정해봐요</div>
+          </div>
+          <!-- D-day -->
+          <div class="more-card c3" onclick="switchTabBar('dday')">
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#907030" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+            </div>
+            <div class="more-card-title">D-day 카운터</div>
+            <div class="more-card-desc">우리가 함께한 날들</div>
+          </div>
+          <!-- AI -->
+          <div class="more-card c6" onclick="switchTabBar('ai')">
+            <div class="more-card-icon">
+              <svg fill="none" stroke="#a06030" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <div class="more-card-title">AI 기능</div>
+            <div class="more-card-desc">AI가 도와줄게요</div>
           </div>
         </div>
+        <!-- 설정 -->
+        <div class="more-section-label">설정</div>
+        <div class="more-settings-list">
+          <div class="more-settings-item" onclick="switchTabBar('customize')">
+            <span>공간 꾸미기 · 배경 · 테마</span>
+            <span class="more-settings-arrow">›</span>
+          </div>
+          <div class="more-settings-item" onclick="switchTabBar('home');document.getElementById('notificationOptIn').scrollIntoView({behavior:'smooth'})">
+            <span>알림 설정</span>
+            <span class="more-settings-arrow">›</span>
+          </div>
+          <div class="more-settings-item">
+            <span>백업 · 동기화</span>
+            <span class="more-settings-arrow">›</span>
+          </div>
+          <div class="more-settings-item" onclick="document.getElementById('displayCoupleCode').parentElement.parentElement.scrollIntoView({behavior:'smooth'})">
+            <span>계정 · 커플 코드 <span id="displayCoupleCodeSettings" style="opacity:0.45;font-size:11px;"></span></span>
+            <span class="more-settings-arrow">›</span>
+          </div>
+        </div>
+        <div style="height:16px;"></div>
       </section>
 
       <!-- 오늘의 질문 섹션 -->
@@ -2378,6 +2461,16 @@
     function updateStat(id, val) {
       const el = document.getElementById(id);
       if (el) el.textContent = val;
+      // 더보기 배지 연동
+      const badgeMap = { statPlaces: 'moreBadgePlaces', statBucket: 'moreBadgeBucket', statLetters: 'moreBadgeLetters' };
+      if (badgeMap[id]) {
+        const badge = document.getElementById(badgeMap[id]);
+        if (badge) badge.textContent = val > 0 ? val : '';
+      }
+      if (id === 'statPlaces') {
+        const cnt = document.getElementById('morePlacesCount');
+        if (cnt) cnt.textContent = val;
+      }
     }
 
     // ── 오늘의 무드 ──
@@ -2425,6 +2518,11 @@
           document.getElementById('moodMySavedEmoji').textContent = myData.emoji || MOOD_MAP[myData.mood] || '';
           document.getElementById('moodMySavedText').textContent = `오늘 기분: ${myData.mood} (저장됨 ✓)`;
           savedBox.classList.remove('hidden');
+          // 홈 무드 카드 업데이트
+          const e1 = document.getElementById('homeMoodMeEmoji');
+          const t1 = document.getElementById('homeMoodMeText');
+          if (e1) e1.textContent = myData.emoji || MOOD_MAP[myData.mood] || '😊';
+          if (t1) t1.textContent = myData.mood;
         }
         // 상대방 기분
         const partnerEntry = Object.entries(data).find(([k]) => k !== currentUser.uid);
@@ -2432,6 +2530,11 @@
         if (partnerEntry) {
           const [, pd] = partnerEntry;
           display.innerHTML = `<div class="mood-partner-content"><span class="mood-partner-emoji">${pd.emoji || MOOD_MAP[pd.mood] || '😶'}</span><div class="mood-partner-info"><div class="mood-partner-name">${pd.mood}</div><div class="mood-partner-time">오늘 기록함</div></div></div>`;
+          // 홈 파트너 무드 카드
+          const e2 = document.getElementById('homeMoodPartnerEmoji');
+          const t2 = document.getElementById('homeMoodPartnerText');
+          if (e2) e2.textContent = pd.emoji || MOOD_MAP[pd.mood] || '😶';
+          if (t2) t2.textContent = pd.mood;
         } else {
           display.innerHTML = '<div class="mood-partner-empty">아직 기분을 기록하지 않았어요 🕐</div>';
         }
@@ -2581,6 +2684,8 @@
       clearUnsubscribers();
       showView("appView");
       document.getElementById("displayCoupleCode").textContent = code;
+      const settingsCode = document.getElementById("displayCoupleCodeSettings");
+      if (settingsCode) settingsCode.textContent = code;
       setRealtimeStatus(true);
       updateHomeWeather();
       updatePartnerStatus(code);
