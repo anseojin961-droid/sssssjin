@@ -290,14 +290,19 @@
     .bucket-title { font-size:13px; flex:1; }
     .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
     input[type="checkbox"] { accent-color:#d27990; }
-    .letters-list { display:flex; flex-direction:column; gap:12px; max-height:280px; overflow-y:auto; padding-right:4px; }
-    .letter-card { padding:12px 14px; border-radius:16px; background:linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,248,244,0.96)); border:1px solid rgba(226,195,186,0.9); box-shadow:0 4px 14px rgba(190,147,135,0.14); position:relative; overflow:hidden; }
-    .letter-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--rose-200),var(--rose-400)); opacity:0.6; border-radius:16px 16px 0 0; }
-    .letter-header { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:5px; }
-    .letter-from { font-size:12px; font-weight:600; color:var(--wine); font-family:var(--font-display); font-style:italic; }
-    .letter-time { font-size:10px; opacity:0.6; }
-    .letter-body { font-size:13px; white-space:pre-wrap; line-height:1.65; color:var(--ink-2); }
-    .letter-footer { margin-top:7px; font-size:10px; opacity:0.65; display:flex; justify-content:space-between; align-items:center; }
+    .letters-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; padding-right:2px; }
+    .letter-card { border-radius:16px; background:rgba(255,255,255,0.97); border:1px solid rgba(226,195,186,0.8); overflow:visible; transition:box-shadow 0.15s; }
+    .letter-card-header { display:flex; align-items:center; gap:8px; padding:12px 14px; cursor:pointer; user-select:none; }
+    .letter-from { font-size:13px; font-weight:600; color:var(--wine); flex:1; }
+    .letter-time { font-size:10px; color:var(--ink-4); white-space:nowrap; }
+    .letter-toggle { width:26px; height:26px; border-radius:50%; background:rgba(244,194,205,0.25); border:none; display:flex; align-items:center; justify-content:center; color:var(--wine); font-size:13px; flex-shrink:0; transition:transform 0.2s,background 0.15s; cursor:pointer; }
+    .letter-card.open .letter-toggle { transform:rotate(180deg); background:rgba(244,194,205,0.5); }
+    .letter-body-wrap { display:none; padding:0 14px 12px; }
+    .letter-card.open .letter-body-wrap { display:block; }
+    .letter-body { font-size:13px; white-space:pre-wrap; line-height:1.7; color:var(--ink-2); padding:10px 12px; background:rgba(253,248,243,0.8); border-radius:10px; }
+    .letter-title-badge { display:inline-block; font-size:10px; color:var(--ink-3); margin-bottom:6px; opacity:0.75; }
+    .letter-footer { display:flex; justify-content:flex-end; align-items:center; margin-top:8px; gap:8px; }
+    .letter-read-badge { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(94,194,127,0.12); border:1px solid rgba(94,194,127,0.35); color:#437f57; }
     .pill-mini { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(244,194,205,0.26); border:1px solid rgba(244,194,205,0.7); }
     .dday-main { display:flex; flex-direction:column; gap:10px; }
     .dday-display { display:flex; flex-direction:column; gap:4px; padding:14px 16px; border-radius:var(--radius-md); background:linear-gradient(135deg,rgba(244,194,205,0.3),rgba(253,248,243,0.95)); border:1px solid rgba(244,194,205,0.7); }
@@ -3332,20 +3337,26 @@
           el.appendChild(wrap);
         } else {
           const card = document.createElement("div"); card.className = "letter-card";
-          const header = document.createElement("div"); header.className = "letter-header";
+          // 헤더 (항상 표시)
+          const cardHeader = document.createElement("div"); cardHeader.className = "letter-card-header";
           const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
           const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
-          const headerBtns = document.createElement("div"); headerBtns.style.cssText = "display:flex;gap:4px;margin-left:auto;";
-          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.title = "삭제";
-          btnDel.addEventListener("click", async () => { if (!confirm("편지를 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id)); });
-          headerBtns.appendChild(btnDel);
-          header.appendChild(from); header.appendChild(time); header.appendChild(headerBtns);
-          const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "";
+          const toggle = document.createElement("button"); toggle.className = "letter-toggle"; toggle.innerHTML = "∨"; toggle.title = "펼치기";
+          cardHeader.appendChild(from); cardHeader.appendChild(time); cardHeader.appendChild(toggle);
+          // 본문 (접힌 상태)
+          const bodyWrap = document.createElement("div"); bodyWrap.className = "letter-body-wrap";
+          if (item.title) { const titleEl = document.createElement("div"); titleEl.className = "letter-title-badge"; titleEl.textContent = `📌 ${item.title}`; bodyWrap.appendChild(titleEl); }
+          const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "(내용 없음)";
           const footer = document.createElement("div"); footer.className = "letter-footer";
-          const titleEl = document.createElement("div"); titleEl.textContent = item.title || "";
           const readBadge = document.createElement("div"); readBadge.className = "letter-read-badge"; readBadge.textContent = "읽음 ✓";
-          footer.appendChild(titleEl); footer.appendChild(readBadge);
-          card.appendChild(header); card.appendChild(body); card.appendChild(footer); el.appendChild(card);
+          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "🗑️"; btnDel.title = "삭제"; btnDel.style.fontSize = "13px";
+          btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("편지를 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id)); });
+          footer.appendChild(readBadge); footer.appendChild(btnDel);
+          bodyWrap.appendChild(body); bodyWrap.appendChild(footer);
+          card.appendChild(cardHeader); card.appendChild(bodyWrap);
+          // 토글 클릭
+          cardHeader.addEventListener("click", () => { card.classList.toggle("open"); });
+          el.appendChild(card);
         }
       });
     }
