@@ -335,6 +335,13 @@
     .sticker-item { position:absolute; font-size:28px; cursor:move; user-select:none; pointer-events:all; line-height:1; touch-action:none; z-index:5; }
     .sticker-del { position:absolute; top:-8px; right:-8px; width:18px; height:18px; border-radius:50%; background:#ff5f57; color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer; pointer-events:all; touch-action:manipulation; z-index:6; opacity:0; transition:opacity 0.15s; }
     .sticker-item:hover .sticker-del, .sticker-item.sticker-selected .sticker-del { opacity:1; }
+    .sticker-resize { position:absolute; bottom:-9px; right:-9px; width:18px; height:18px; border-radius:50%; background:var(--wine); color:#fff; font-size:11px; display:none; align-items:center; justify-content:center; cursor:se-resize; pointer-events:all; touch-action:none; z-index:7; }
+    .sticker-item:hover .sticker-resize, .sticker-item.sticker-selected .sticker-resize { display:flex; }
+    .cover-elem { position:absolute; cursor:default; user-select:none; touch-action:none; transform-origin:center center; z-index:2; }
+    .cover-editing .cover-elem { cursor:move; }
+    .cover-editing .cover-elem::after { content:''; position:absolute; inset:-5px; border:1.5px dashed rgba(215,120,135,0.5); border-radius:8px; pointer-events:none; }
+    .cover-elem-resize { position:absolute; bottom:-10px; right:-10px; width:18px; height:18px; border-radius:50%; background:var(--wine); color:#fff; font-size:11px; display:none; align-items:center; justify-content:center; cursor:se-resize; touch-action:none; z-index:10; pointer-events:all; }
+    .cover-editing .cover-elem-resize { display:flex; }
     @keyframes unlockPop { 0%{transform:scale(0.6) rotate(-20deg);opacity:0;} 60%{transform:scale(1.3) rotate(10deg);} 100%{transform:scale(1) rotate(0deg);opacity:1;} }
     .app-theme-peach { --rose:#ffb347; --rose-deep:#e65100; --rose-soft:#ffdab9; --bg:#fffaf0; --border-soft:#ffe0b2; --card-bg:#ffffff; --text-main:#4a3b35; }
     .app-theme-lavender { --rose:#9c7bb5; --rose-deep:#7b5ea7; --rose-soft:#d8c7e8; --bg:#f8f4fc; --border-soft:#e0d0f0; --card-bg:#ffffff; --text-main:#3a2f4a; }
@@ -746,6 +753,7 @@
               <input type="file" id="inputStickerImg" accept="image/*" style="display:none;" />
             </label>
             <button onclick="clearStickers()" style="padding:7px 14px;border-radius:999px;background:none;border:1px solid rgba(224,198,185,0.9);font-size:12px;color:#aaa;cursor:pointer;touch-action:manipulation;">전체삭제</button>
+            <button onclick="resetCoverLayout()" style="padding:7px 14px;border-radius:999px;background:none;border:1px solid rgba(224,198,185,0.9);font-size:12px;color:#aaa;cursor:pointer;touch-action:manipulation;">위치초기화</button>
           </div>
 
           <!-- 앱 전체 테마 -->
@@ -801,29 +809,41 @@
         </div>
 
         <!-- 홈 히어로 -->
-        <div id="homeCover" style="position:relative;width:100%;border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(160deg,#fce8e2 0%,#f8d8d0 50%,#f4ccc5 100%);box-shadow:0 4px 24px rgba(107,39,55,0.10);">
+        <div id="homeCover" style="position:relative;width:100%;border-radius:24px;overflow:hidden;margin-bottom:14px;min-height:260px;background:linear-gradient(160deg,#fce8e2 0%,#f8d8d0 50%,#f4ccc5 100%);box-shadow:0 4px 24px rgba(107,39,55,0.10);">
           <img id="homeBgImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;" />
-          <div id="stickerLayer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:24px;z-index:2;"></div>
-          <div style="position:relative;padding:30px 24px 28px;text-align:center;z-index:3;">
-            <!-- 겹치는 아바타 원 -->
-            <div style="display:flex;justify-content:center;align-items:center;margin-bottom:16px;">
-              <div style="position:relative;width:88px;height:58px;">
-                <div id="coverAvatar1" style="position:absolute;left:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#d88090,#c0607a);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:2;flex-shrink:0;">♥</div>
-                <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:var(--wine);">♥</div>
-                <div id="coverAvatar2" style="position:absolute;right:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#c0607a,#a84868);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:1;flex-shrink:0;">♥</div>
-              </div>
+          <div id="stickerLayer" style="position:absolute;inset:0;pointer-events:none;overflow:visible;border-radius:24px;z-index:3;"></div>
+          <!-- 겹치는 아바타 원 -->
+          <div id="coverElemAvatars" class="cover-elem" style="left:50%;top:18%;transform:translate(-50%,-50%);">
+            <div style="position:relative;width:88px;height:58px;">
+              <div id="coverAvatar1" style="position:absolute;left:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#d88090,#c0607a);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:2;flex-shrink:0;">♥</div>
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:var(--wine);">♥</div>
+              <div id="coverAvatar2" style="position:absolute;right:0;top:0;width:58px;height:58px;border-radius:50%;background:linear-gradient(145deg,#c0607a,#a84868);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.14);overflow:hidden;z-index:1;flex-shrink:0;">♥</div>
             </div>
-            <!-- 이름 표시 -->
-            <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px;font-size:12px;color:var(--ink-3);">
+            <div class="cover-elem-resize">↘</div>
+          </div>
+          <!-- 이름 표시 -->
+          <div id="coverElemNames" class="cover-elem" style="left:50%;top:36%;transform:translate(-50%,-50%);">
+            <div style="display:flex;justify-content:center;gap:6px;font-size:12px;color:var(--ink-3);white-space:nowrap;">
               <span id="coverName1">나</span>
               <span style="opacity:0.4;">·</span>
               <span id="coverName2">상대방</span>
             </div>
-            <!-- OUR DAYS TOGETHER 레이블 -->
-            <div style="font-size:10px;color:var(--wine);letter-spacing:0.15em;text-transform:uppercase;font-family:var(--font-en);font-weight:600;opacity:0.65;margin-bottom:6px;">OUR DAYS TOGETHER</div>
-            <!-- D+day 카운터 -->
-            <div id="homeDday" style="font-size:76px;font-weight:400;color:var(--wine);font-family:var(--font-display);font-style:italic;line-height:1;letter-spacing:-0.02em;">D+0</div>
-            <div id="homeStartDate" style="font-size:12px;color:var(--ink-3);margin-top:8px;font-family:var(--font-kr);letter-spacing:0.01em;opacity:0.8;"></div>
+            <div class="cover-elem-resize">↘</div>
+          </div>
+          <!-- OUR DAYS TOGETHER 레이블 -->
+          <div id="coverElemLabel" class="cover-elem" style="left:50%;top:50%;transform:translate(-50%,-50%);">
+            <div style="font-size:10px;color:var(--wine);letter-spacing:0.15em;text-transform:uppercase;font-family:var(--font-en);font-weight:600;opacity:0.65;white-space:nowrap;">OUR DAYS TOGETHER</div>
+            <div class="cover-elem-resize">↘</div>
+          </div>
+          <!-- D+day 카운터 -->
+          <div id="coverElemDday" class="cover-elem" style="left:50%;top:65%;transform:translate(-50%,-50%);">
+            <div id="homeDday" style="font-size:76px;font-weight:400;color:var(--wine);font-family:var(--font-display);font-style:italic;line-height:1;letter-spacing:-0.02em;white-space:nowrap;">D+0</div>
+            <div class="cover-elem-resize">↘</div>
+          </div>
+          <!-- 시작 날짜 -->
+          <div id="coverElemDate" class="cover-elem" style="left:50%;top:84%;transform:translate(-50%,-50%);">
+            <div id="homeStartDate" style="font-size:12px;color:var(--ink-3);font-family:var(--font-kr);letter-spacing:0.01em;opacity:0.8;white-space:nowrap;"></div>
+            <div class="cover-elem-resize">↘</div>
           </div>
           <button onclick="switchTabBar('customize')" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.85);border-radius:999px;padding:5px 12px;font-size:11px;color:var(--wine);touch-action:manipulation;z-index:4;">✏️ 꾸미기</button>
         </div>
@@ -1649,6 +1669,7 @@
     function applyAppFont(f) { if(window.applyAppFont) window.applyAppFont(f); }
     function addSticker(e) { if(window.addSticker) window.addSticker(e); }
     function clearStickers() { if(window.clearStickers) window.clearStickers(); }
+    function resetCoverLayout() { if(window.resetCoverLayout) window.resetCoverLayout(); }
     function resetHomeBg() { if(window.resetHomeBg) window.resetHomeBg(); }
     function savePendingDeco() { if(window.savePendingDeco) window.savePendingDeco(); }
   </script>
@@ -2350,7 +2371,7 @@
     let stickerData = [];
 
     window.addSticker = (emoji) => {
-      const s = { id: Date.now(), type: 'emoji', content: emoji, x: Math.random()*60+10, y: Math.random()*50+10 };
+      const s = { id: Date.now(), type: 'emoji', content: emoji, x: Math.random()*60+10, y: Math.random()*50+10, scale: 1 };
       stickerData.push(s);
       renderSticker(s);
       saveStickers();
@@ -2361,7 +2382,7 @@
       const r = storageRef(storage, `couples/${currentCoupleCode}/stickers/${Date.now()}_${file.name}`);
       await uploadBytes(r, file);
       const url = await getDownloadURL(r);
-      const s = { id: Date.now(), type: 'img', content: url, x: Math.random()*50+10, y: Math.random()*40+10 };
+      const s = { id: Date.now(), type: 'img', content: url, x: Math.random()*50+10, y: Math.random()*40+10, scale: 1 };
       stickerData.push(s);
       renderSticker(s);
       saveStickers();
@@ -2374,54 +2395,92 @@
       const el = document.createElement('div');
       el.className = 'sticker-item';
       el.id = 'sticker-' + s.id;
-      el.style.cssText = `left:${s.x}%;top:${s.y}%;font-size:${s.type==='img'?'0':'28px'};`;
+      const sc = s.scale || 1;
+      el.style.left = s.x + '%';
+      el.style.top  = s.y + '%';
       if (s.type === 'img') {
-        el.innerHTML = `<img src="${s.content}" style="width:56px;height:56px;object-fit:contain;border-radius:8px;" />`;
+        const imgSz = Math.round(56 * sc);
+        const img = document.createElement('img');
+        img.src = s.content;
+        img.style.cssText = `width:${imgSz}px;height:${imgSz}px;object-fit:contain;border-radius:8px;display:block;`;
+        el.appendChild(img);
       } else {
-        el.textContent = s.content;
+        el.style.fontSize = Math.round(28 * sc) + 'px';
+        const span = document.createElement('span');
+        span.textContent = s.content;
+        el.appendChild(span);
       }
       const del = document.createElement('span');
       del.className = 'sticker-del';
       del.textContent = '✕';
       del.addEventListener('click', (e) => { e.stopPropagation(); removeSticker(s.id); });
       el.appendChild(del);
-      makeDraggable(el, s);
+      const resize = document.createElement('div');
+      resize.className = 'sticker-resize';
+      resize.textContent = '↘';
+      el.appendChild(resize);
+      makeStickerInteractive(el, s, resize);
       layer.appendChild(el);
     }
 
-    function makeDraggable(el, s) {
-      let startX, startY, startL, startT;
+    function makeStickerInteractive(el, s, resizeHandle) {
+      let startX, startY, startL, startT, startScale, isResizing = false;
       const onMove = (e) => {
         const t = e.touches ? e.touches[0] : e;
+        if (e.cancelable) e.preventDefault();
         const cover = document.getElementById('homeCover');
         if (!cover) return;
         const rect = cover.getBoundingClientRect();
-        s.x = Math.max(0, Math.min(90, startL + (t.clientX - startX) / rect.width * 100));
-        s.y = Math.max(0, Math.min(85, startT + (t.clientY - startY) / rect.height * 100));
-        el.style.left = s.x + '%';
-        el.style.top = s.y + '%';
+        const dx = t.clientX - startX, dy = t.clientY - startY;
+        if (isResizing) {
+          const dist = Math.sqrt(dx*dx + dy*dy) * ((dx + dy) >= 0 ? 1 : -1) / 60;
+          s.scale = Math.max(0.3, Math.min(5, startScale + dist));
+          if (s.type === 'img') {
+            const imgSz = Math.round(56 * s.scale);
+            const img = el.querySelector('img');
+            if (img) { img.style.width = imgSz + 'px'; img.style.height = imgSz + 'px'; }
+          } else {
+            el.style.fontSize = Math.round(28 * s.scale) + 'px';
+          }
+        } else {
+          s.x = Math.max(0, Math.min(90, startL + dx / rect.width * 100));
+          s.y = Math.max(0, Math.min(90, startT + dy / rect.height * 100));
+          el.style.left = s.x + '%';
+          el.style.top  = s.y + '%';
+        }
       };
       const onEnd = () => {
+        isResizing = false;
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onEnd);
         document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onEnd);
         saveStickers();
       };
+      resizeHandle.addEventListener('mousedown', (e) => {
+        e.stopPropagation(); e.preventDefault();
+        isResizing = true; startX = e.clientX; startY = e.clientY; startScale = s.scale || 1;
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+      });
+      resizeHandle.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+        isResizing = true; const t = e.touches[0]; startX = t.clientX; startY = t.clientY; startScale = s.scale || 1;
+        document.addEventListener('touchmove', onMove, { passive:false });
+        document.addEventListener('touchend', onEnd);
+      }, { passive:true });
       el.addEventListener('mousedown', (e) => {
-        if (e.target.classList.contains('sticker-del')) return;
-        startX=e.clientX; startY=e.clientY; startL=s.x; startT=s.y;
+        if (e.target.classList.contains('sticker-del') || e.target.classList.contains('sticker-resize')) return;
+        isResizing = false; startX = e.clientX; startY = e.clientY; startL = s.x; startT = s.y;
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
         e.preventDefault();
       });
       el.addEventListener('touchstart', (e) => {
-        if (e.target.classList.contains('sticker-del')) return;
-        // 탭 시 X 버튼 토글 (모바일)
-        document.querySelectorAll('.sticker-item.sticker-selected').forEach(s => s.classList.remove('sticker-selected'));
+        if (e.target.classList.contains('sticker-del') || e.target.classList.contains('sticker-resize')) return;
+        document.querySelectorAll('.sticker-item.sticker-selected').forEach(i => i.classList.remove('sticker-selected'));
         el.classList.add('sticker-selected');
-        const t = e.touches[0];
-        startX=t.clientX; startY=t.clientY; startL=s.x; startT=s.y;
+        isResizing = false; const t = e.touches[0]; startX = t.clientX; startY = t.clientY; startL = s.x; startT = s.y;
         document.addEventListener('touchmove', onMove, { passive:false });
         document.addEventListener('touchend', onEnd);
         e.stopPropagation();
@@ -2463,6 +2522,99 @@
         arr.forEach(s => { stickerData.push(s); renderSticker(s); });
       } catch(e) {}
     }
+
+    // ── 커버 요소 위치/크기 ──
+    const COVER_LAYOUT_DEFAULTS = {
+      avatars: { cx:50, cy:18, scale:1 },
+      names:   { cx:50, cy:36, scale:1 },
+      label:   { cx:50, cy:50, scale:1 },
+      dday:    { cx:50, cy:65, scale:1 },
+      date:    { cx:50, cy:84, scale:1 }
+    };
+    let coverLayout = JSON.parse(JSON.stringify(COVER_LAYOUT_DEFAULTS));
+    const COVER_ELEM_IDS = { avatars:'coverElemAvatars', names:'coverElemNames', label:'coverElemLabel', dday:'coverElemDday', date:'coverElemDate' };
+
+    function applyCoverLayout() {
+      Object.keys(COVER_ELEM_IDS).forEach(k => {
+        const el = document.getElementById(COVER_ELEM_IDS[k]);
+        if (!el) return;
+        const { cx, cy, scale } = coverLayout[k];
+        el.style.left = cx + '%';
+        el.style.top  = cy + '%';
+        el.style.transform = `translate(-50%,-50%) scale(${scale})`;
+      });
+    }
+
+    async function saveCoverLayout() {
+      if (!currentCoupleCode) return;
+      await updateDoc(doc(db,'couples',currentCoupleCode), { coverLayout: JSON.stringify(coverLayout) });
+    }
+
+    window.resetCoverLayout = async () => {
+      coverLayout = JSON.parse(JSON.stringify(COVER_LAYOUT_DEFAULTS));
+      applyCoverLayout();
+      await saveCoverLayout();
+    };
+
+    function makeCoverElemInteractive(key) {
+      const el = document.getElementById(COVER_ELEM_IDS[key]);
+      if (!el) return;
+      const resizeHandle = el.querySelector('.cover-elem-resize');
+      let startX, startY, startCX, startCY, startScale, isResizing = false;
+      const getRect = () => document.getElementById('homeCover')?.getBoundingClientRect();
+      const onMove = (e) => {
+        const t = e.touches ? e.touches[0] : e;
+        if (e.cancelable) e.preventDefault();
+        const rect = getRect(); if (!rect) return;
+        const dx = t.clientX - startX, dy = t.clientY - startY;
+        if (isResizing) {
+          const dist = Math.sqrt(dx*dx + dy*dy) * ((dx+dy) >= 0 ? 1 : -1) / 60;
+          coverLayout[key].scale = Math.max(0.2, Math.min(4, startScale + dist));
+        } else {
+          coverLayout[key].cx = Math.max(5, Math.min(95, startCX + dx / rect.width * 100));
+          coverLayout[key].cy = Math.max(3, Math.min(97, startCY + dy / rect.height * 100));
+        }
+        applyCoverLayout();
+      };
+      const onEnd = () => {
+        isResizing = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onEnd);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onEnd);
+        saveCoverLayout();
+      };
+      if (resizeHandle) {
+        resizeHandle.addEventListener('mousedown', (e) => {
+          e.stopPropagation(); e.preventDefault();
+          isResizing = true; startX = e.clientX; startY = e.clientY; startScale = coverLayout[key].scale;
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onEnd);
+        });
+        resizeHandle.addEventListener('touchstart', (e) => {
+          e.stopPropagation();
+          isResizing = true; const t = e.touches[0]; startX = t.clientX; startY = t.clientY; startScale = coverLayout[key].scale;
+          document.addEventListener('touchmove', onMove, { passive:false });
+          document.addEventListener('touchend', onEnd);
+        }, { passive:true });
+      }
+      el.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('cover-elem-resize')) return;
+        isResizing = false; startX = e.clientX; startY = e.clientY; startCX = coverLayout[key].cx; startCY = coverLayout[key].cy;
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        e.preventDefault();
+      });
+      el.addEventListener('touchstart', (e) => {
+        if (e.target.classList.contains('cover-elem-resize')) return;
+        isResizing = false; const t = e.touches[0]; startX = t.clientX; startY = t.clientY; startCX = coverLayout[key].cx; startCY = coverLayout[key].cy;
+        document.addEventListener('touchmove', onMove, { passive:false });
+        document.addEventListener('touchend', onEnd);
+        e.stopPropagation();
+      }, { passive:true });
+    }
+
+    Object.keys(COVER_ELEM_IDS).forEach(k => makeCoverElemInteractive(k));
 
     // 앱 전체 테마
     const APP_THEMES = ['app-theme-peach','app-theme-lavender','app-theme-mint','app-theme-sky','app-theme-forest'];
@@ -2734,6 +2886,15 @@
       }
       updateGameNameLabels();
       if (data.stickers) loadStickers(data.stickers);
+      if (data.coverLayout) {
+        try {
+          const parsed = JSON.parse(data.coverLayout);
+          Object.keys(COVER_LAYOUT_DEFAULTS).forEach(k => {
+            if (parsed[k]) coverLayout[k] = { ...COVER_LAYOUT_DEFAULTS[k], ...parsed[k] };
+          });
+          applyCoverLayout();
+        } catch(e) {}
+      }
       if (data.appTheme) { APP_THEMES.forEach(c => document.body.classList.remove(c)); if(data.appTheme) document.body.classList.add(data.appTheme); }
       if (data.appFont) applyFontToDOM(data.appFont);
       if (data.weatherTheme) {
@@ -3670,6 +3831,7 @@
       const workspace = document.getElementById('customizeWorkspace');
       const panel = document.getElementById('customizePanel');
       if (!homeCover || !previewHost || !workspace || !panel) return;
+      homeCover.classList.toggle('cover-editing', active);
       if (active) {
         if (!_homeCoverPlaceholder) {
           _homeCoverPlaceholder = document.createComment('home-cover-position');
