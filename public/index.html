@@ -455,6 +455,59 @@
     .photo-grid-caption { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(to top,rgba(0,0,0,0.6),transparent); color:#fff; font-size:10px; padding:6px 6px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .photo-grid-del { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,0.5); color:#fff; border:none; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s; }
     .photo-grid-item:hover .photo-grid-del { opacity:1; }
+    /* ── Memories (사진) 섹션 ── */
+    .mem-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .mem-title { font-size:30px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
+    .mem-header-btns { display:flex; gap:8px; }
+    .mem-header-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(224,198,185,0.5); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:var(--wine); font-weight:500; }
+    .mem-upload-banner { display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:16px; border:2px dashed rgba(231,154,168,0.45); background:rgba(255,240,244,0.5); cursor:pointer; margin-bottom:14px; }
+    .mem-upload-icon { width:38px; height:38px; border-radius:11px; background:rgba(231,154,168,0.15); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .mem-upload-text { flex:1; }
+    .mem-upload-title { font-size:13px; font-weight:500; color:var(--ink-2); }
+    .mem-upload-sub { font-size:11px; color:var(--ink-4); margin-top:1px; }
+    .mem-upload-plus { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.9); border:1.5px solid rgba(231,154,168,0.5); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--wine); flex-shrink:0; }
+    .mem-month-header { margin:14px 0 8px; display:flex; align-items:baseline; gap:8px; }
+    .mem-month-name { font-size:26px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
+    .mem-month-meta { font-size:11px; color:var(--ink-4); }
+    .mem-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:4px; }
+    .mem-grid-item { aspect-ratio:1; border-radius:12px; overflow:hidden; position:relative; background:#f5e1dc; cursor:pointer; }
+    .mem-grid-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.2s; }
+    .mem-grid-item:active img { transform:scale(1.04); }
+    .mem-grid-date { position:absolute; bottom:5px; left:6px; font-size:9px; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.5); letter-spacing:0.02em; }
+    .mem-grid-del { position:absolute; top:5px; right:5px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,0.45); color:#fff; border:none; font-size:10px; cursor:pointer; display:none; align-items:center; justify-content:center; }
+    .mem-grid-item:hover .mem-grid-del { display:flex; }
+    /* ── Calendar 섹션 ── */
+    .cal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .cal-title { font-size:30px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); }
+    .cal-month-hero { background:rgba(244,194,205,0.18); border-radius:18px; padding:16px 18px 14px; margin-bottom:14px; }
+    .cal-month-hero-top { display:flex; justify-content:space-between; align-items:flex-start; }
+    .cal-month-name { font-size:32px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
+    .cal-month-info { font-size:12px; color:var(--ink-3); margin-top:4px; }
+    .cal-nav-row { display:flex; gap:8px; margin-top:10px; }
+    .cal-nav-btn { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(224,198,185,0.5); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--wine); cursor:pointer; }
+    .cal-grid-card { background:#fff; border-radius:18px; padding:12px; margin-bottom:14px; border:1px solid rgba(224,198,185,0.3); }
+    .cal-day-headers { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px; }
+    .cal-day-lbl { text-align:center; font-size:9.5px; font-weight:600; padding:3px 0; letter-spacing:0.04em; color:var(--ink-4); font-family:var(--font-en); }
+    .cal-day-lbl.sun { color:#e79aa8; }
+    .cal-day-lbl.sat { color:#7aabe7; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .cal-cell { display:flex; flex-direction:column; align-items:center; padding:2px 0; cursor:pointer; border-radius:8px; min-height:38px; }
+    .cal-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--ink-2); margin-top:1px; }
+    .cal-num.today { background:var(--wine); color:#fff; font-weight:700; }
+    .cal-num.has-event { background:rgba(244,194,205,0.4); color:var(--wine); font-weight:600; }
+    .cal-dot { width:4px; height:4px; border-radius:50%; background:var(--wine); opacity:0.55; margin-top:2px; }
+    .cal-upcoming-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .cal-upcoming-title { font-size:14px; font-weight:600; color:var(--ink); }
+    .cal-upcoming-all { font-size:11px; color:var(--wine); opacity:0.75; cursor:pointer; background:none; border:none; font-family:inherit; padding:0; }
+    .cal-event-card { display:flex; align-items:flex-start; gap:14px; padding:13px 14px; background:rgba(255,255,255,0.9); border:1px solid rgba(224,198,185,0.35); border-radius:16px; margin-bottom:9px; cursor:pointer; }
+    .cal-event-date { display:flex; flex-direction:column; align-items:center; min-width:34px; padding-top:2px; }
+    .cal-event-day { font-size:24px; font-weight:600; color:var(--wine); font-family:var(--font-display); line-height:1; }
+    .cal-event-mon { font-size:9px; color:var(--ink-4); text-transform:uppercase; letter-spacing:0.06em; font-family:var(--font-en); margin-top:2px; }
+    .cal-event-info { flex:1; min-width:0; }
+    .cal-event-title { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:5px; }
+    .cal-event-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .cal-event-type { font-size:10px; padding:2px 8px; border-radius:999px; background:rgba(244,194,205,0.3); border:1px solid rgba(244,194,205,0.7); color:var(--wine); }
+    .cal-event-dday { font-size:10px; color:var(--ink-3); }
 
     /* Confetti */
     @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1;} 100%{transform:translateY(105vh) rotate(720deg);opacity:0;} }
@@ -996,27 +1049,28 @@
         </div>
       </section>
       <div class="grid-2col">
-        <section id="section-calendar" class="tab-section hidden card">
-          <div class="card-header"><h2>기념일 · 데이트 달력</h2><span>작은 일정까지 같이 기록하기</span></div>
-          <p class="section-description">기념일, 데이트, 여행 계획을 날짜와 함께 남겨두면 나중에 둘이 돌아보기 좋아요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 120px;"><label class="field-label">날짜</label><input id="inputScheduleDate" type="date" /></div>
-            <div class="field-group" style="flex:2 1 150px;"><label class="field-label">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
+        <section id="section-calendar" class="tab-section hidden" style="padding:4px 2px 20px;">
+          <div class="cal-header">
+            <div class="cal-title">Calendar</div>
+            <button class="mem-header-btn" onclick="var p=document.getElementById('scheduleAddForm');p.style.display=p.style.display==='none'?'block':'none'">+</button>
           </div>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 120px;">
-              <label class="field-label">종류</label>
-              <select id="selectScheduleType" style="padding:6px 12px;border-radius:999px;border:1px solid #e0c7ba;font-size:12px;">
-                <option value="anniversary">기념일</option><option value="date">데이트</option><option value="trip">여행</option><option value="etc">기타</option>
-              </select>
+          <div id="scheduleAddForm" style="display:none;background:rgba(255,255,255,0.9);border-radius:16px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(224,198,185,0.4);">
+            <div class="field-row">
+              <div class="field-group" style="flex:1 1 120px;"><label class="field-label">날짜</label><input id="inputScheduleDate" type="date" /></div>
+              <div class="field-group" style="flex:2 1 150px;"><label class="field-label">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
             </div>
-            <button id="btnAddSchedule" class="btn-primary" style="margin-top:18px;">달력에 추가</button>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">달력</span><span class="badge-soft" id="scheduleCountBadge">0개 일정</span>
+            <div class="field-row">
+              <div class="field-group" style="flex:1;">
+                <label class="field-label">종류</label>
+                <select id="selectScheduleType" style="padding:6px 12px;border-radius:999px;border:1px solid #e0c7ba;font-size:12px;">
+                  <option value="anniversary">기념일</option><option value="date">데이트</option><option value="trip">여행</option><option value="etc">기타</option>
+                </select>
+              </div>
+              <button id="btnAddSchedule" class="btn-primary" style="margin-top:18px;white-space:nowrap;">달력에 추가</button>
+            </div>
           </div>
           <div id="scheduleList" class="schedule-list"></div>
+          <div style="display:none;"><span id="scheduleCountBadge"></span></div>
         </section>
         <section id="section-bucket" class="tab-section hidden card">
           <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
@@ -1034,27 +1088,32 @@
         </section>
       </div>
       <div class="grid-2col">
-        <section id="section-photos" class="tab-section hidden card">
-          <div class="card-header"><h2>추억 사진첩</h2><span>함께 담은 장면들</span></div>
-          <p class="section-description">사진을 업로드하거나 URL을 붙여넣으면 실시간으로 공유돼요.</p>
-          <div class="field-group"><label class="field-label">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" multiple style="font-size:11px;" /><span class="muted small">- 여러 장 동시에 선택 가능해요 📸</span></div>
-          <div class="field-row">
-            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">또는 사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://..." /></div>
-            <div class="field-group" style="flex:1 1 150px;"><label class="field-label">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
-          </div>
-          <div class="field-row" style="margin-top:4px;">
-            <button id="btnAddPhoto" class="btn-primary">사진 추가</button>
-            <span id="photoUploadStatus" class="small muted"></span>
-          </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span class="small muted" id="photoViewLabel">월별 타임라인</span>
-              <button id="btnPhotoGridToggle" onclick="togglePhotoGridView()" style="padding:3px 10px;border-radius:999px;font-size:11px;background:rgba(244,194,205,0.2);border:1px solid rgba(244,194,205,0.8);color:#b07a8a;cursor:pointer;">⊞ 그리드</button>
+        <section id="section-photos" class="tab-section hidden" style="padding:4px 2px 20px;">
+          <div class="mem-header">
+            <div class="mem-title">Memories</div>
+            <div class="mem-header-btns">
+              <button id="btnPhotoGridToggle" class="mem-header-btn" onclick="togglePhotoGridView()" title="뷰 전환">⊞</button>
+              <button class="mem-header-btn" onclick="var p=document.getElementById('photoUploadPanel');p.style.display=p.style.display==='none'?'block':'none'">+</button>
             </div>
-            <span class="badge-soft" id="photoCountBadge">0장</span>
           </div>
-          <div id="photoList" style="display:flex;flex-direction:column;max-height:600px;overflow-y:scroll;padding-right:4px;"></div>
+          <div id="photoUploadPanel" style="display:none;background:rgba(255,255,255,0.9);border-radius:16px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(224,198,185,0.4);">
+            <div class="field-group"><label class="field-label">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" multiple style="font-size:11px;" /><span class="muted small">- 여러 장 동시에 선택 가능해요 📸</span></div>
+            <div class="field-row">
+              <div class="field-group" style="flex:1;"><label class="field-label">사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://..." /></div>
+              <div class="field-group" style="flex:1;"><label class="field-label">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
+            </div>
+            <div class="field-row" style="margin-top:4px;"><button id="btnAddPhoto" class="btn-primary">사진 추가</button><span id="photoUploadStatus" class="small muted"></span></div>
+          </div>
+          <div class="mem-upload-banner" onclick="document.getElementById('inputPhotoFile').click()">
+            <div class="mem-upload-icon">📷</div>
+            <div class="mem-upload-text">
+              <div class="mem-upload-title">오늘 찍은 사진 올리기</div>
+              <div class="mem-upload-sub">탭 한 번으로 둘에게 동시에 저장돼요</div>
+            </div>
+            <div class="mem-upload-plus">+</div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:6px;"><span class="badge-soft" id="photoCountBadge">0장</span></div>
+          <div id="photoList"></div>
         </section>
         <section id="section-letters" class="tab-section hidden card">
           <div class="card-header"><h2>서로에게 쓰는 편지함</h2><span>짧은 메모도 괜찮아요</span></div>
@@ -3055,49 +3114,94 @@
         scheduleList.innerHTML = "";
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
-        const header = document.createElement("div"); header.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
-        const btnPrev = document.createElement("button"); btnPrev.className = "btn-icon"; btnPrev.innerHTML = "◀";
-        btnPrev.addEventListener("click", () => { month--; if (month < 0) { month = 11; year--; } renderCalendar(); });
-        const btnNext = document.createElement("button"); btnNext.className = "btn-icon"; btnNext.innerHTML = "▶";
-        btnNext.addEventListener("click", () => { month++; if (month > 11) { month = 0; year++; } renderCalendar(); });
-        const title = document.createElement("div"); title.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; title.textContent = `${year}년 ${month+1}월`;
-        header.appendChild(btnPrev); header.appendChild(title); header.appendChild(btnNext);
-        scheduleList.appendChild(header);
-        const dayRow = document.createElement("div"); dayRow.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px;";
-        ["일","월","화","수","목","금","토"].forEach((d, i) => { const cell = document.createElement("div"); cell.style.cssText = `font-size:10px;padding:4px 0;color:${i===0?"#e79aa8":i===6?"#7aabe7":"#9a8a84"};`; cell.textContent = d; dayRow.appendChild(cell); });
-        scheduleList.appendChild(dayRow);
-        const grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;";
+        const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const MONTHS_EN_SHORT = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
         const scheduleMap = {};
         (items || []).forEach(item => { if (!scheduleMap[item.date]) scheduleMap[item.date] = []; scheduleMap[item.date].push(item); });
-        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
+        const monthEventsCount = Object.keys(scheduleMap).filter(k => k.startsWith(`${year}-${String(month+1).padStart(2,"0")}`)).reduce((acc,k) => acc + scheduleMap[k].length, 0);
+        // 월 히어로 카드
+        const hero = document.createElement("div"); hero.className = "cal-month-hero";
+        const heroTop = document.createElement("div"); heroTop.className = "cal-month-hero-top";
+        const heroLeft = document.createElement("div");
+        const monthName = document.createElement("div"); monthName.className = "cal-month-name"; monthName.textContent = MONTHS_EN[month];
+        const monthInfo = document.createElement("div"); monthInfo.className = "cal-month-info"; monthInfo.textContent = `${year} · ${monthEventsCount}개 일정`;
+        heroLeft.appendChild(monthName); heroLeft.appendChild(monthInfo);
+        const navRow = document.createElement("div"); navRow.className = "cal-nav-row";
+        const btnPrev = document.createElement("button"); btnPrev.className = "cal-nav-btn"; btnPrev.textContent = "‹";
+        btnPrev.addEventListener("click", () => { month--; if (month < 0) { month = 11; year--; } renderCalendar(); });
+        const btnNext = document.createElement("button"); btnNext.className = "cal-nav-btn"; btnNext.textContent = "›";
+        btnNext.addEventListener("click", () => { month++; if (month > 11) { month = 0; year++; } renderCalendar(); });
+        navRow.appendChild(btnPrev); navRow.appendChild(btnNext);
+        heroTop.appendChild(heroLeft); heroTop.appendChild(navRow);
+        hero.appendChild(heroTop);
+        scheduleList.appendChild(hero);
+        // 달력 그리드 카드
+        const gridCard = document.createElement("div"); gridCard.className = "cal-grid-card";
+        const dayHeaders = document.createElement("div"); dayHeaders.className = "cal-day-headers";
+        [["SUN","sun"],["MON",""],["TUE",""],["WED",""],["THU",""],["FRI",""],["SAT","sat"]].forEach(([txt,cls]) => {
+          const lbl = document.createElement("div"); lbl.className = `cal-day-lbl ${cls}`; lbl.textContent = txt; dayHeaders.appendChild(lbl);
+        });
+        gridCard.appendChild(dayHeaders);
+        const grid = document.createElement("div"); grid.className = "cal-grid";
+        for (let i = 0; i < firstDay; i++) { const empty = document.createElement("div"); grid.appendChild(empty); }
         for (let d = 1; d <= lastDate; d++) {
           const dateKey = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-          const cell = document.createElement("div");
+          const cell = document.createElement("div"); cell.className = "cal-cell";
           const isToday = (d === now.getDate() && month === now.getMonth() && year === now.getFullYear());
           const hasEvent = scheduleMap[dateKey];
-          cell.style.cssText = `min-height:36px;padding:3px;border-radius:8px;cursor:pointer;text-align:center;background:${isToday?"rgba(231,154,168,0.15)":"transparent"};`;
           const numEl = document.createElement("div");
-          numEl.style.cssText = `font-size:12px;width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto;text-align:center;background:${isToday?"#e79aa8":"transparent"};color:${isToday?"#fff":"#4a3b35"};position:relative;`;
-          if (hasEvent) {
-            numEl.innerHTML = `<span style="position:relative;z-index:1;">${d}</span><svg viewBox="0 0 26 24" style="position:absolute;inset:0;width:26px;height:26px;z-index:0;" xmlns="http://www.w3.org/2000/svg"><path d="M13 21C13 21 2 14 2 7.5C2 5 4 3 6.5 3C8.5 3 10.5 4.5 13 7C15.5 4.5 17.5 3 19.5 3C22 3 24 5 24 7.5C24 14 13 21 13 21Z" fill="rgba(231,154,168,0.25)" stroke="#e79aa8" stroke-width="1.2"/></svg>`;
-          } else { numEl.textContent = d; }
+          numEl.className = `cal-num${isToday?" today":hasEvent?" has-event":""}`;
+          numEl.textContent = d;
           cell.appendChild(numEl);
+          if (hasEvent && !isToday) { const dot = document.createElement("div"); dot.className = "cal-dot"; cell.appendChild(dot); }
           cell.addEventListener("click", () => {
             if (!hasEvent) return;
             const popup = document.getElementById("calPopup"); if (popup) popup.remove();
             const box = document.createElement("div"); box.id = "calPopup";
-            box.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #f0e0d6;border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:220px;max-width:80vw;";
+            box.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #f0e0d6;border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:220px;max-width:85vw;";
             const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.style.cssText = "float:right;margin-left:8px;"; closeBtn.addEventListener("click", () => box.remove());
             box.appendChild(closeBtn);
             const dateTitle = document.createElement("div"); dateTitle.style.cssText = "font-size:12px;color:#b07a8a;margin-bottom:8px;font-weight:500;"; dateTitle.textContent = `${year}년 ${month+1}월 ${d}일`;
             box.appendChild(dateTitle);
-            hasEvent.forEach(e => { const item = document.createElement("div"); item.style.cssText = "font-size:12px;padding:4px 0;border-bottom:1px solid #f5e8e0;color:#4a3b35;"; item.textContent = `💗 ${e.title} · ${{ anniversary:"기념일", date:"데이트", trip:"여행", etc:"기타" }[e.type || "etc"]}`; box.appendChild(item); });
+            hasEvent.forEach(e => { const row = document.createElement("div"); row.style.cssText = "font-size:12px;padding:4px 0;border-bottom:1px solid #f5e8e0;color:#4a3b35;"; row.textContent = `💗 ${e.title} · ${{anniversary:"기념일",date:"데이트",trip:"여행",etc:"기타"}[e.type||"etc"]}`; box.appendChild(row); });
             document.body.appendChild(box);
             setTimeout(() => { document.addEventListener("click", () => box.remove(), { once: true }); }, 100);
           });
           grid.appendChild(cell);
         }
-        scheduleList.appendChild(grid);
+        gridCard.appendChild(grid);
+        scheduleList.appendChild(gridCard);
+        // 다가오는 기념일
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+        const upcoming = (items||[]).filter(i => i.date >= todayStr).sort((a,b) => a.date.localeCompare(b.date)).slice(0,5);
+        if (upcoming.length > 0) {
+          const upcomingHeader = document.createElement("div"); upcomingHeader.className = "cal-upcoming-header";
+          const upTitle = document.createElement("div"); upTitle.className = "cal-upcoming-title"; upTitle.textContent = "다가오는 기념일";
+          const upAll = document.createElement("button"); upAll.className = "cal-upcoming-all"; upAll.textContent = "전체보기 ›";
+          upAll.addEventListener("click", () => scheduleCountBadge.click());
+          upcomingHeader.appendChild(upTitle); upcomingHeader.appendChild(upAll);
+          scheduleList.appendChild(upcomingHeader);
+          upcoming.forEach(item => {
+            const dateParts = item.date.split("-");
+            const itemDate = new Date(item.date);
+            const diffDays = Math.round((itemDate - new Date(todayStr)) / 86400000);
+            const typeLabel = {anniversary:"기념일",date:"데이트",trip:"여행",etc:"기타"}[item.type||"etc"];
+            const card = document.createElement("div"); card.className = "cal-event-card";
+            const dateCol = document.createElement("div"); dateCol.className = "cal-event-date";
+            const dayEl = document.createElement("div"); dayEl.className = "cal-event-day"; dayEl.textContent = dateParts[2];
+            const monEl = document.createElement("div"); monEl.className = "cal-event-mon"; monEl.textContent = MONTHS_EN_SHORT[parseInt(dateParts[1])-1];
+            dateCol.appendChild(dayEl); dateCol.appendChild(monEl);
+            const infoCol = document.createElement("div"); infoCol.className = "cal-event-info";
+            const titleEl = document.createElement("div"); titleEl.className = "cal-event-title"; titleEl.textContent = item.title;
+            const metaRow = document.createElement("div"); metaRow.className = "cal-event-meta";
+            const typeEl = document.createElement("div"); typeEl.className = "cal-event-type"; typeEl.textContent = typeLabel;
+            const ddayEl = document.createElement("div"); ddayEl.className = "cal-event-dday"; ddayEl.textContent = diffDays === 0 ? "오늘!" : `D-${diffDays}`;
+            metaRow.appendChild(typeEl); metaRow.appendChild(ddayEl);
+            infoCol.appendChild(titleEl); infoCol.appendChild(metaRow);
+            card.appendChild(dateCol); card.appendChild(infoCol);
+            scheduleList.appendChild(card);
+          });
+        }
         scheduleCountBadge.style.cursor = "pointer";
         scheduleCountBadge.onclick = () => {
           const existing = document.getElementById("scheduleListPopup"); if (existing) { existing.remove(); return; }
@@ -3213,16 +3317,18 @@
       photoList.innerHTML = "";
       if (!items || !items.length) { photoList.innerHTML = '<div style="text-align:center;padding:24px 0;"><div style="font-size:36px;margin-bottom:8px;">📷</div><div class="muted small">아직 올라온 사진이 없어요.<br>첫 번째 추억을 남겨봐요!</div></div>'; badge.textContent = "0장"; return; }
       badge.textContent = `${items.length}장`;
+      const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      function openPhotoOverlay(url) {
+        const overlay = document.createElement('div'); overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+        const fi = document.createElement('img'); fi.src = url; fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;';
+        overlay.appendChild(fi); overlay.addEventListener('click', () => overlay.remove()); document.body.appendChild(overlay);
+      }
       if (_photoGridMode) {
         const grid = document.createElement('div'); grid.className = 'photo-grid-wrap';
         items.forEach(item => {
           const cell = document.createElement('div'); cell.className = 'photo-grid-item';
           const img = document.createElement('img'); img.src = item.url; img.alt = item.caption || '';
-          img.addEventListener('click', () => {
-            const overlay = document.createElement('div'); overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-            const fi = document.createElement('img'); fi.src = item.url; fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;';
-            overlay.appendChild(fi); overlay.addEventListener('click', () => overlay.remove()); document.body.appendChild(overlay);
-          });
+          img.addEventListener('click', () => openPhotoOverlay(item.url));
           if (item.caption) { const cap = document.createElement('div'); cap.className = 'photo-grid-caption'; cap.textContent = item.caption; cell.appendChild(cap); }
           const delBtn = document.createElement('button'); delBtn.className = 'photo-grid-del'; delBtn.textContent = '✕';
           delBtn.addEventListener('click', async (e) => { e.stopPropagation(); if (!confirm('삭제할까요?')) return; await deleteDoc(doc(db,'couples',currentCoupleCode,'photos',item.id)); });
@@ -3231,81 +3337,32 @@
         photoList.appendChild(grid);
         return;
       }
-      badge.textContent = `${items.length}장`;
       const groups = {};
       items.forEach(item => {
         const d = item.createdAt ? (item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt)) : new Date();
-        const key = `${d.getFullYear()}년 ${d.getMonth()+1}월`;
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(item);
+        const key = `${d.getFullYear()}-${d.getMonth()}`;
+        if (!groups[key]) groups[key] = { year: d.getFullYear(), month: d.getMonth(), photos: [] };
+        groups[key].photos.push({ ...item, _date: d });
       });
-      Object.entries(groups).forEach(([month, photos], idx) => {
-        const section = document.createElement("div");
-        section.style.cssText = "margin-bottom:10px;border-radius:14px;overflow:hidden;border:1px solid rgba(224,198,185,0.9);";
-        const header = document.createElement("div");
-        header.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(244,194,205,0.2);cursor:pointer;";
-        const monthTitle = document.createElement("div");
-        monthTitle.style.cssText = "font-size:13px;font-weight:500;color:#b07a8a;";
-        monthTitle.innerHTML = `<span style="border-left:3px solid #e79aa8;padding-left:8px;">${month}</span>`;
-        const countBadge = document.createElement("div");
-        countBadge.style.cssText = "display:flex;align-items:center;gap:6px;";
-        const arrowId = `photo_arrow_${idx}`;
-        countBadge.innerHTML = `<span style="font-size:11px;color:#b07a8a;">${photos.length}장</span><span id="${arrowId}" style="font-size:11px;color:#e79aa8;">▼</span>`;
-        header.appendChild(monthTitle); header.appendChild(countBadge);
-        const body = document.createElement("div");
-        body.style.cssText = "display:none;flex-direction:column;padding:8px;gap:8px;background:#fff;max-height:400px;overflow-y:auto;";
+      Object.values(groups).forEach(({ year: y, month: m, photos }) => {
+        const monthHeader = document.createElement("div"); monthHeader.className = "mem-month-header";
+        const monthName = document.createElement("div"); monthName.className = "mem-month-name"; monthName.textContent = MONTHS_EN[m];
+        const monthMeta = document.createElement("div"); monthMeta.className = "mem-month-meta"; monthMeta.textContent = `${y} · ${photos.length}장의 추억`;
+        monthHeader.appendChild(monthName); monthHeader.appendChild(monthMeta);
+        photoList.appendChild(monthHeader);
+        const grid = document.createElement("div"); grid.className = "mem-grid";
         photos.forEach(item => {
-          const row = document.createElement("div");
-          row.style.cssText = "display:flex;gap:10px;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.96);border:1px solid rgba(224,198,185,0.6);border-radius:12px;cursor:pointer;";
-          const thumb = document.createElement("div"); thumb.style.cssText = "width:60px;height:60px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f5e1dc;";
-          const img = document.createElement("img"); img.src = item.url; img.alt = ""; img.style.cssText = "width:100%;height:100%;object-fit:cover;"; thumb.appendChild(img);
-          const info = document.createElement("div"); info.style.flex = "1";
-          const cap = document.createElement("div"); cap.style.cssText = "font-size:13px;font-weight:500;color:#4a3b35;"; cap.textContent = item.caption || "(캡션 없음)";
-          const date = document.createElement("div"); date.style.cssText = "font-size:10px;opacity:0.6;margin-top:3px;"; date.textContent = formatTimestamp(item.createdAt);
-          info.appendChild(cap); info.appendChild(date);
-          const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️"; btnEdit.style.flexShrink = "0"; btnEdit.title = "수정";
-          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.style.flexShrink = "0";
-          btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"photos",item.id)); });
-          row.addEventListener("click", (e) => {
-            if (e.target.closest(".btn-icon") || e.target.closest(".photo-edit-mode")) return;
-            const overlay = document.createElement("div"); overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;";
-            const fullImg = document.createElement("img"); fullImg.src = item.url; fullImg.style.cssText = "max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;";
-            overlay.appendChild(fullImg); overlay.addEventListener("click", () => overlay.remove()); document.body.appendChild(overlay);
-          });
-          const viewWrapper = document.createElement("div"); viewWrapper.style.cssText = "display:flex;gap:10px;align-items:center;width:100%;";
-          viewWrapper.appendChild(thumb); viewWrapper.appendChild(info); viewWrapper.appendChild(btnEdit); viewWrapper.appendChild(btnDel);
-          const editMode = document.createElement("div"); editMode.className = "photo-edit-mode"; editMode.style.cssText = "display:none;flex-direction:column;gap:6px;padding:4px 0;width:100%;";
-          const editCap = document.createElement("input"); editCap.type = "text"; editCap.value = item.caption || ""; editCap.placeholder = "캡션 입력"; editCap.style.cssText = "font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;";
-          const editBtns = document.createElement("div"); editBtns.style.cssText = "display:flex;gap:6px;justify-content:flex-end;";
-          const btnSave = document.createElement("button"); btnSave.className = "btn-primary"; btnSave.style.cssText = "font-size:11px;padding:5px 12px;"; btnSave.textContent = "저장";
-          const btnCancel = document.createElement("button"); btnCancel.className = "btn-outline"; btnCancel.style.cssText = "font-size:11px;padding:5px 12px;"; btnCancel.textContent = "취소";
-          btnSave.addEventListener("click", async (e) => {
-            e.stopPropagation();
-            const nc = editCap.value.trim();
-            await updateDoc(doc(db,"couples",currentCoupleCode,"photos",item.id), { caption: nc });
-            cap.textContent = nc || "(캡션 없음)";
-            editMode.style.display = "none"; viewWrapper.style.display = "flex";
-          });
-          btnCancel.addEventListener("click", (e) => { e.stopPropagation(); editMode.style.display = "none"; viewWrapper.style.display = "flex"; });
-          editBtns.appendChild(btnCancel); editBtns.appendChild(btnSave);
-          editMode.appendChild(editCap); editMode.appendChild(editBtns);
-          btnEdit.addEventListener("click", (e) => { e.stopPropagation(); viewWrapper.style.display = "none"; editMode.style.display = "flex"; });
-          row.style.flexDirection = "column"; row.style.alignItems = "stretch";
-          row.appendChild(viewWrapper); row.appendChild(editMode);
-          body.appendChild(row);
+          const cell = document.createElement("div"); cell.className = "mem-grid-item";
+          const img = document.createElement("img"); img.src = item.url; img.alt = item.caption || ""; img.loading = "lazy";
+          img.addEventListener("click", () => openPhotoOverlay(item.url));
+          const dateLabel = document.createElement("div"); dateLabel.className = "mem-grid-date";
+          const d2 = item._date; dateLabel.textContent = `${d2.getFullYear()}.${String(d2.getMonth()+1).padStart(2,"0")}.${String(d2.getDate()).padStart(2,"0")}`;
+          const delBtn = document.createElement("button"); delBtn.className = "mem-grid-del"; delBtn.textContent = "✕";
+          delBtn.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"photos",item.id)); });
+          cell.appendChild(img); cell.appendChild(dateLabel); cell.appendChild(delBtn);
+          grid.appendChild(cell);
         });
-        if (idx === 0) {
-          body.style.display = "flex";
-          setTimeout(() => { const a = document.getElementById(arrowId); if(a) a.style.transform = "rotate(180deg)"; }, 0);
-        }
-        header.addEventListener("click", () => {
-          const isOpen = body.style.display === "flex";
-          body.style.display = isOpen ? "none" : "flex";
-          const a = document.getElementById(arrowId);
-          if(a) a.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
-        });
-        section.appendChild(header); section.appendChild(body);
-        photoList.appendChild(section);
+        photoList.appendChild(grid);
       });
     }
 
