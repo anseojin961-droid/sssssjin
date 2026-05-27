@@ -93,12 +93,12 @@
     .status-dot.offline { background:#c86a6a; box-shadow:0 0 0 3px rgba(200,106,106,0.35); }
     .main-content { flex:1; padding:24px 14px 40px; max-width:1100px; margin:0 auto; width:100%; }
     @media (min-width:768px) { .navbar { padding:10px 40px; } .main-content { padding:32px 26px 60px; } }
-    .card { background:rgba(255,251,248,0.82); backdrop-filter:blur(16px) saturate(160%); -webkit-backdrop-filter:blur(16px) saturate(160%); border-radius:var(--radius-lg); box-shadow:var(--sh-1); padding:20px 18px 18px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.7); position:relative; overflow:hidden; }
-    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--rose-200),var(--rose-400),var(--wine),var(--rose-400),var(--rose-200)); opacity:0.5; border-radius:var(--radius-lg) var(--radius-lg) 0 0; }
+    .card { background:rgba(255,251,248,0.85); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border-radius:var(--r-lg); box-shadow:var(--sh-1); padding:20px 18px 18px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.75); position:relative; overflow:hidden; }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--rose-300),var(--wine),var(--rose-300),transparent); opacity:0.45; border-radius:var(--r-lg) var(--r-lg) 0 0; }
     @media (min-width:768px) { .card { padding:24px 22px 20px; margin-bottom:22px; } }
-    .card-header { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+    .card-header { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
     .card-header h2 { font-size:20px; margin:0; }
-    .card-header span { font-size:11px; opacity:0.7; }
+    .card-header span { font-size:11px; opacity:0.65; font-family:var(--font-en); }
     .section-description { font-size:13px; opacity:0.9; margin-bottom:14px; }
     .pill-label { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:10px; background:rgba(228,183,185,0.19); border:1px dashed rgba(223,160,165,0.7); margin-left:auto; }
     /* 더보기 */
@@ -287,18 +287,19 @@
     .bucket-title { font-size:13px; flex:1; }
     .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
     input[type="checkbox"] { accent-color:#d27990; }
-    .letters-list { display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; padding-right:4px; }
-    .letter-card { padding:9px 11px; border-radius:14px; background:rgba(255,255,255,0.96); border:1px solid rgba(226,195,186,0.95); box-shadow:0 3px 8px rgba(190,147,135,0.15); }
-    .letter-header { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:4px; }
-    .letter-from { font-size:12px; font-weight:500; }
-    .letter-time { font-size:10px; opacity:0.7; }
-    .letter-body { font-size:12px; white-space:pre-wrap; }
-    .letter-footer { margin-top:5px; font-size:10px; opacity:0.7; display:flex; justify-content:space-between; align-items:center; }
+    .letters-list { display:flex; flex-direction:column; gap:12px; max-height:280px; overflow-y:auto; padding-right:4px; }
+    .letter-card { padding:12px 14px; border-radius:16px; background:linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,248,244,0.96)); border:1px solid rgba(226,195,186,0.9); box-shadow:0 4px 14px rgba(190,147,135,0.14); position:relative; overflow:hidden; }
+    .letter-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--rose-200),var(--rose-400)); opacity:0.6; border-radius:16px 16px 0 0; }
+    .letter-header { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:5px; }
+    .letter-from { font-size:12px; font-weight:600; color:var(--wine); font-family:var(--font-display); font-style:italic; }
+    .letter-time { font-size:10px; opacity:0.6; }
+    .letter-body { font-size:13px; white-space:pre-wrap; line-height:1.65; color:var(--ink-2); }
+    .letter-footer { margin-top:7px; font-size:10px; opacity:0.65; display:flex; justify-content:space-between; align-items:center; }
     .pill-mini { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(244,194,205,0.26); border:1px solid rgba(244,194,205,0.7); }
     .dday-main { display:flex; flex-direction:column; gap:10px; }
-    .dday-display { display:flex; flex-direction:column; gap:4px; padding:12px 14px; border-radius:var(--radius-md); background:linear-gradient(to right,rgba(244,194,205,0.25),rgba(253,248,243,0.9)); border:1px solid rgba(244,194,205,0.7); }
-    .dday-count { font-size:20px; font-weight:700; }
-    .dday-sub { font-size:12px; opacity:0.8; }
+    .dday-display { display:flex; flex-direction:column; gap:4px; padding:14px 16px; border-radius:var(--radius-md); background:linear-gradient(135deg,rgba(244,194,205,0.3),rgba(253,248,243,0.95)); border:1px solid rgba(244,194,205,0.7); }
+    .dday-count { font-size:24px; font-weight:500; font-family:var(--font-display); font-style:italic; color:var(--wine); }
+    .dday-sub { font-size:12px; opacity:0.75; }
     ::-webkit-scrollbar { width:6px; }
     ::-webkit-scrollbar-track { background:rgba(248,237,230,0.8); border-radius:999px; }
     ::-webkit-scrollbar-thumb { background:rgba(214,166,160,0.8); border-radius:999px; }
@@ -366,17 +367,18 @@
     .weather-tint-sunny { background:linear-gradient(180deg,rgba(255,220,80,0.08) 0%,transparent 40%) !important; }
 
     /* ── 커플 통계 대시보드 ── */
-    .stats-dashboard { padding:16px 18px 14px; }
-    .stats-dashboard-title { font-size:11px; opacity:0.6; margin-bottom:12px; }
+    .stats-dashboard { padding:18px 18px 16px; }
+    .stats-dashboard-title { font-size:11px; opacity:0.55; margin-bottom:14px; letter-spacing:0.04em; text-transform:uppercase; font-family:var(--font-en); }
     .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-    .stat-item { display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:14px; padding:10px 4px 8px; position:relative; overflow:hidden; }
+    .stat-item { display:flex; flex-direction:column; align-items:center; gap:5px; border-radius:16px; padding:12px 4px 10px; position:relative; overflow:hidden; transition:transform 0.15s; }
+    .stat-item:active { transform:scale(0.94); }
     .stat-item:nth-child(1) { background:linear-gradient(145deg,#ffd6e4,#ffb3cb); }
     .stat-item:nth-child(2) { background:linear-gradient(145deg,#ffd6e4,#ffb3cb); }
     .stat-item:nth-child(3) { background:linear-gradient(145deg,#d4f4e0,#a8e8c0); }
     .stat-item:nth-child(4) { background:linear-gradient(145deg,#d4e8ff,#a8ccff); }
     .stat-item:nth-child(5) { background:linear-gradient(145deg,#ead4ff,#d0a8ff); }
-    .stat-num { font-size:20px; font-weight:800; color:#3c2f2a; font-family:'Playfair Display',serif; line-height:1; }
-    .stat-label { font-size:9.5px; color:#3c2f2a; opacity:0.7; text-align:center; line-height:1.3; }
+    .stat-num { font-size:22px; font-weight:500; color:#3c2f2a; font-family:var(--font-display); font-style:italic; line-height:1; }
+    .stat-label { font-size:9px; color:#3c2f2a; opacity:0.65; text-align:center; line-height:1.3; }
 
     /* ── 오늘의 무드 ── */
     .mood-date { font-size:12px; opacity:0.55; margin-bottom:14px; }
@@ -442,7 +444,7 @@
     .confetti-modal-box { background:#fff; border-radius:24px; padding:28px 24px; text-align:center; max-width:300px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1); }
     @keyframes pop-in { from{transform:scale(0.6);opacity:0;} to{transform:scale(1);opacity:1;} }
     .confetti-modal-emoji { font-size:52px; display:block; margin-bottom:10px; }
-    .confetti-modal-title { font-family:"Playfair Display",serif; font-size:22px; color:#4a3b35; margin:0 0 6px; }
+    .confetti-modal-title { font-family:var(--font-display); font-size:22px; color:#4a3b35; margin:0 0 6px; }
     .confetti-modal-sub { font-size:13px; color:#9a7a7a; margin:0 0 18px; line-height:1.6; }
 
     /* 오늘의 질문 */
@@ -726,28 +728,32 @@
           </div>
         </div>
 
-        <div id="homeCover" style="position:relative;width:100%;min-height:280px;border-radius:20px;overflow:hidden;margin-bottom:14px;background:linear-gradient(135deg,#f4c2cd,#e79aa8);display:flex;align-items:flex-end;">
+        <div id="homeCover" style="position:relative;width:100%;min-height:320px;border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(150deg,#f4c2cd 0%,#e79aa8 50%,#c8728a 100%);display:flex;align-items:flex-end;box-shadow:0 8px 32px rgba(107,39,55,0.22);">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(255,230,210,0.35),transparent 60%);pointer-events:none;z-index:0;"></div>
           <img id="homeBgImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;" />
           <div id="stickerLayer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px;z-index:2;"></div>
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45),transparent);pointer-events:none;z-index:1;"></div>
-          <div style="position:relative;padding:16px 20px 20px;width:100%;box-sizing:border-box;">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(30,0,10,0.55) 0%,rgba(30,0,10,0.1) 50%,transparent 100%);pointer-events:none;z-index:1;"></div>
+          <div style="position:relative;padding:16px 20px 22px;width:100%;box-sizing:border-box;">
             <!-- 커플 프로필 행 -->
-            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                <div id="coverAvatar1" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;border:2.5px solid rgba(255,255,255,0.8);box-shadow:0 4px 12px rgba(0,0,0,0.2);overflow:hidden;flex-shrink:0;">♥</div>
-                <div id="coverName1" style="font-size:12px;color:#fff;font-weight:500;text-shadow:0 1px 4px rgba(0,0,0,0.4);">나</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <div id="coverAvatar1" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 6px 20px rgba(0,0,0,0.25);overflow:hidden;flex-shrink:0;">♥</div>
+                <div id="coverName1" style="font-size:12px;color:rgba(255,255,255,0.95);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:0.02em;">나</div>
               </div>
-              <div style="font-size:20px;color:rgba(255,255,255,0.9);text-shadow:0 2px 6px rgba(0,0,0,0.3);">♥</div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                <div id="coverAvatar2" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;border:2.5px solid rgba(255,255,255,0.8);box-shadow:0 4px 12px rgba(0,0,0,0.2);overflow:hidden;flex-shrink:0;">♥</div>
-                <div id="coverName2" style="font-size:12px;color:#fff;font-weight:500;text-shadow:0 1px 4px rgba(0,0,0,0.4);">상대방</div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                <div style="font-size:22px;color:rgba(255,255,255,0.95);text-shadow:0 2px 8px rgba(0,0,0,0.3);">♥</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <div id="coverAvatar2" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffe7ee,#e79aa8);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 6px 20px rgba(0,0,0,0.25);overflow:hidden;flex-shrink:0;">♥</div>
+                <div id="coverName2" style="font-size:12px;color:rgba(255,255,255,0.95);font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:0.02em;">상대방</div>
               </div>
             </div>
             <!-- D-day + 꾸미기 버튼 -->
             <div style="display:flex;justify-content:space-between;align-items:flex-end;">
               <div>
-                <div id="homeDday" style="font-size:42px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;line-height:1;">D+0</div>
-                <div id="homeStartDate" style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px;"></div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.08em;text-transform:uppercase;font-family:var(--font-en);margin-bottom:2px;">together</div>
+                <div id="homeDday" style="font-size:68px;font-weight:400;color:#fff;font-family:var(--font-display);font-style:italic;line-height:0.95;letter-spacing:-0.02em;text-shadow:0 2px 12px rgba(0,0,0,0.25);">D+0</div>
+                <div id="homeStartDate" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:6px;font-family:var(--font-en);letter-spacing:0.03em;"></div>
               </div>
               <button onclick="switchTabBar('customize')" style="background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.5);border-radius:999px;padding:6px 14px;font-size:12px;color:#fff;touch-action:manipulation;z-index:3;position:relative;">✏️ 꾸미기</button>
             </div>
@@ -3595,7 +3601,7 @@
           const diffH = Math.floor((diffMs % (1000*60*60*24)) / (1000*60*60));
           const diffM = Math.floor((diffMs % (1000*60*60)) / (1000*60));
           const countdown = document.createElement("div"); countdown.style.cssText = "display:flex;align-items:baseline;gap:6px;padding:3px 0 4px;";
-          const ddNum = document.createElement("span"); ddNum.style.cssText = "font-size:16px;font-weight:700;color:#7a5aa8;font-family:'Playfair Display',serif;";
+          const ddNum = document.createElement("span"); ddNum.style.cssText = "font-size:16px;font-weight:600;color:#7a5aa8;font-family:'Fraunces',serif;font-style:italic;";
           ddNum.textContent = diffD > 0 ? `D-${diffD}` : `${diffH}h ${diffM}m`;
           const ddSub = document.createElement("span"); ddSub.style.cssText = "font-size:10px;color:#9a7a9a;";
           ddSub.textContent = diffD > 0 ? `${diffH}시간 ${diffM}분 남았어요` : "곧 열려요!";
