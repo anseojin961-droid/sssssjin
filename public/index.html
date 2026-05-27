@@ -988,6 +988,7 @@
               <span class="mood-emoji">😤</span><span>힘들어</span>
             </div>
           </div>
+          <input id="moodCaption" type="text" maxlength="30" placeholder="나 지금 뭐하는 중… (선택)" style="width:100%;box-sizing:border-box;margin-top:12px;padding:10px 14px;border-radius:999px;border:1px solid rgba(224,198,185,0.9);font-size:13px;font-family:inherit;outline:none;background:rgba(255,251,248,0.9);color:var(--ink);" />
           <div id="moodMySaved" class="mood-my-saved hidden">
             <span id="moodMySavedEmoji" class="mood-my-saved-emoji"></span>
             <span id="moodMySavedText" class="mood-my-saved-text"></span>
@@ -2554,11 +2555,12 @@
       const today = new Date().toISOString().slice(0,10);
       const ref = doc(db, 'couples', currentCoupleCode, 'moods', today);
       try {
-        await setDoc(ref, { [`${currentUser.uid}`]: { mood: _selectedMood, emoji: MOOD_MAP[_selectedMood], updatedAt: serverTimestamp() } }, { merge: true });
-        sendPushToPartner("🌈 상대방이 오늘 기분을 기록했어요!", `오늘 기분: ${MOOD_MAP[_selectedMood]} ${_selectedMood}`);
+        const caption = (document.getElementById('moodCaption')?.value || '').trim();
+        await setDoc(ref, { [`${currentUser.uid}`]: { mood: _selectedMood, emoji: MOOD_MAP[_selectedMood], caption, updatedAt: serverTimestamp() } }, { merge: true });
+        sendPushToPartner("🌈 상대방이 오늘 기분을 기록했어요!", `${MOOD_MAP[_selectedMood]} ${caption || _selectedMood}`);
         const savedBox = document.getElementById('moodMySaved');
         document.getElementById('moodMySavedEmoji').textContent = MOOD_MAP[_selectedMood];
-        document.getElementById('moodMySavedText').textContent = `오늘 기분: ${_selectedMood} (저장됨 ✓)`;
+        document.getElementById('moodMySavedText').textContent = caption ? `"${caption}" (저장됨 ✓)` : `오늘 기분: ${_selectedMood} (저장됨 ✓)`;
         savedBox.classList.remove('hidden');
       } catch(e) { alert('저장 중 오류가 생겼어요.'); }
     };
@@ -2586,7 +2588,10 @@
           const e1 = document.getElementById('homeMoodMeEmoji');
           const t1 = document.getElementById('homeMoodMeText');
           if (e1) e1.textContent = myData.emoji || MOOD_MAP[myData.mood] || '😊';
-          if (t1) t1.textContent = myData.mood;
+          if (t1) t1.textContent = myData.caption || myData.mood;
+          // 캡션 입력 복원
+          const captionInput = document.getElementById('moodCaption');
+          if (captionInput && myData.caption) captionInput.value = myData.caption;
         }
         // 상대방 기분
         const partnerEntry = Object.entries(data).find(([k]) => k !== currentUser.uid);
@@ -2598,7 +2603,7 @@
           const e2 = document.getElementById('homeMoodPartnerEmoji');
           const t2 = document.getElementById('homeMoodPartnerText');
           if (e2) e2.textContent = pd.emoji || MOOD_MAP[pd.mood] || '😶';
-          if (t2) t2.textContent = pd.mood;
+          if (t2) t2.textContent = pd.caption || pd.mood;
         } else {
           display.innerHTML = '<div class="mood-partner-empty">아직 기분을 기록하지 않았어요 🕐</div>';
         }
