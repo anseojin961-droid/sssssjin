@@ -290,20 +290,28 @@
     .bucket-title { font-size:13px; flex:1; }
     .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
     input[type="checkbox"] { accent-color:#d27990; }
-    .letters-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; padding-right:2px; }
-    .letter-card { border-radius:16px; background:rgba(255,255,255,0.97); border:1px solid rgba(226,195,186,0.8); overflow:visible; transition:box-shadow 0.15s; }
-    .letter-card-header { display:flex; align-items:center; gap:8px; padding:12px 14px; cursor:pointer; user-select:none; }
-    .letter-from { font-size:13px; font-weight:600; color:var(--wine); flex:1; }
-    .letter-time { font-size:10px; color:var(--ink-4); white-space:nowrap; }
-    .letter-toggle { width:26px; height:26px; border-radius:50%; background:rgba(244,194,205,0.25); border:none; display:flex; align-items:center; justify-content:center; color:var(--wine); font-size:13px; flex-shrink:0; transition:transform 0.2s,background 0.15s; cursor:pointer; }
-    .letter-card.open .letter-toggle { transform:rotate(180deg); background:rgba(244,194,205,0.5); }
-    .letter-body-wrap { display:none; padding:0 14px 12px; }
-    .letter-card.open .letter-body-wrap { display:block; }
-    .letter-body { font-size:13px; white-space:pre-wrap; line-height:1.7; color:var(--ink-2); padding:10px 12px; background:rgba(253,248,243,0.8); border-radius:10px; }
-    .letter-title-badge { display:inline-block; font-size:10px; color:var(--ink-3); margin-bottom:6px; opacity:0.75; }
-    .letter-footer { display:flex; justify-content:flex-end; align-items:center; margin-top:8px; gap:8px; }
-    .letter-read-badge { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(94,194,127,0.12); border:1px solid rgba(94,194,127,0.35); color:#437f57; }
-    .pill-mini { font-size:9px; padding:2px 7px; border-radius:999px; background:rgba(244,194,205,0.26); border:1px solid rgba(244,194,205,0.7); }
+    .letters-list { display:flex; flex-direction:column; gap:10px; }
+    .ltr-card { border-radius:20px; background:linear-gradient(150deg,rgba(252,235,228,0.98),rgba(247,218,210,0.95)); border:1px solid rgba(228,185,172,0.55); padding:16px; cursor:pointer; transition:transform 0.12s; position:relative; overflow:hidden; }
+    .ltr-card:active { transform:scale(0.985); }
+    .ltr-card-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .ltr-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(145deg,#b06070,#844055); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ltr-meta { flex:1; min-width:0; }
+    .ltr-sender { font-size:13px; font-weight:700; color:var(--wine); }
+    .ltr-date { font-size:10px; color:var(--ink-4); margin-top:1px; }
+    .ltr-title { font-size:15px; font-weight:700; color:var(--ink-1); margin-bottom:5px; line-height:1.35; }
+    .ltr-preview { font-size:12.5px; color:var(--ink-3); line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .ltr-bottom-row { display:flex; align-items:center; margin-top:10px; gap:8px; }
+    .ltr-new-pill { font-size:9px; font-weight:800; color:#72243e; background:rgba(200,80,100,0.14); border:1px solid rgba(200,80,100,0.28); padding:2px 9px; border-radius:999px; letter-spacing:0.04em; flex-shrink:0; }
+    .ltr-read-pill { font-size:9px; color:#6a9a7a; background:rgba(100,180,130,0.12); border:1px solid rgba(100,180,130,0.3); padding:2px 9px; border-radius:999px; flex-shrink:0; }
+    .ltr-hint { font-size:11px; color:var(--wine); flex:1; text-align:right; opacity:0.65; }
+    .ltr-chevron { font-size:22px; color:var(--wine); line-height:1; margin-left:2px; opacity:0.75; transition:transform 0.2s; }
+    .ltr-card.ltr-open .ltr-chevron { transform:rotate(90deg); }
+    .ltr-expand { display:none; margin-top:14px; padding-top:12px; border-top:1px solid rgba(200,155,140,0.25); }
+    .ltr-card.ltr-open .ltr-expand { display:block; }
+    .ltr-expand-title { font-size:11px; color:var(--ink-4); margin-bottom:6px; opacity:0.75; }
+    .ltr-expand-body { font-size:13px; white-space:pre-wrap; line-height:1.75; color:var(--ink-2); }
+    .ltr-expand-actions { display:flex; justify-content:flex-end; align-items:center; margin-top:10px; gap:8px; }
+    .ltr-del-btn { background:none; border:1px solid rgba(210,160,150,0.5); border-radius:999px; padding:3px 10px; font-size:11px; color:var(--ink-4); cursor:pointer; }
     .dday-main { display:flex; flex-direction:column; gap:10px; }
     .dday-display { display:flex; flex-direction:column; gap:4px; padding:14px 16px; border-radius:var(--radius-md); background:linear-gradient(135deg,rgba(244,194,205,0.3),rgba(253,248,243,0.95)); border:1px solid rgba(244,194,205,0.7); }
     .dday-count { font-size:24px; font-weight:500; font-family:var(--font-display); font-style:italic; color:var(--wine); }
@@ -3539,57 +3547,88 @@
 
     function renderLetters(items) {
       updateStat('statLetters', items ? items.length : 0);
-      const el = document.getElementById("lettersList"); const badge = document.getElementById("letterCountBadge");
+      const el = document.getElementById("lettersList");
+      const badge = document.getElementById("letterCountBadge");
       el.innerHTML = "";
-      if (!items || !items.length) { el.innerHTML = '<div class="muted small">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
+      if (!items || !items.length) { el.innerHTML = '<div class="muted small" style="text-align:center;padding:20px 0;">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
       const unreadCount = items.filter(i => i.readBy && !i.readBy.includes(currentUser?.uid)).length;
-      badge.textContent = unreadCount > 0 ? `${items.length}통 · 💌 ${unreadCount}개 새편지` : `${items.length}통`;
+      badge.textContent = unreadCount > 0 ? `${items.length}통 · 읽지 않음 ${unreadCount}` : `${items.length}통`;
+
       items.forEach(item => {
-        // readBy 없는 구버전 편지는 읽은 것으로 처리
         const isRead = !item.readBy || item.readBy.includes(currentUser?.uid);
+        const senderInitial = (item.from || '?').charAt(0).toUpperCase();
+        const preview = (item.body || '').slice(0, 80) + ((item.body || '').length > 80 ? '...' : '');
+
+        const card = document.createElement("div");
+        card.className = "ltr-card";
+
+        // 헤더: 아바타 + 이름 + 날짜
+        const head = document.createElement("div"); head.className = "ltr-card-head";
+        const avatar = document.createElement("div"); avatar.className = "ltr-avatar"; avatar.textContent = senderInitial;
+        const meta = document.createElement("div"); meta.className = "ltr-meta";
+        const senderEl = document.createElement("div"); senderEl.className = "ltr-sender"; senderEl.textContent = item.from || "누군가";
+        const dateEl = document.createElement("div"); dateEl.className = "ltr-date"; dateEl.textContent = formatTimestamp(item.createdAt);
+        meta.appendChild(senderEl); meta.appendChild(dateEl);
+        head.appendChild(avatar); head.appendChild(meta);
+        card.appendChild(head);
+
+        // 제목
+        if (item.title) {
+          const titleEl = document.createElement("div"); titleEl.className = "ltr-title"; titleEl.textContent = item.title;
+          card.appendChild(titleEl);
+        }
+
+        // 미리보기
+        const previewEl = document.createElement("div"); previewEl.className = "ltr-preview"; previewEl.textContent = preview;
+        card.appendChild(previewEl);
+
+        // 하단 행: 배지 + 힌트 + 화살표
+        const bottomRow = document.createElement("div"); bottomRow.className = "ltr-bottom-row";
         if (!isRead) {
-          const wrap = document.createElement("div"); wrap.className = "letter-envelope-wrap";
-          const env = document.createElement("div"); env.className = "letter-env-closed";
-          env.innerHTML = `<div class="letter-env-icon">💌</div><div class="letter-env-from"></div><div class="letter-env-time"></div><div class="letter-env-hint">톡 눌러서 열어보기 ✉️</div>`;
-          env.querySelector(".letter-env-from").textContent = `From. ${item.from || "누군가"}`;
-          env.querySelector(".letter-env-time").textContent = formatTimestamp(item.createdAt);
-          wrap.appendChild(env);
-          wrap.addEventListener("click", async () => {
-            if (env.classList.contains("letter-env-opening")) return;
-            env.classList.add("letter-env-opening");
-            await new Promise(r => setTimeout(r, 420));
+          const newPill = document.createElement("div"); newPill.className = "ltr-new-pill"; newPill.textContent = "NEW";
+          bottomRow.appendChild(newPill);
+        } else {
+          const readPill = document.createElement("div"); readPill.className = "ltr-read-pill"; readPill.textContent = "읽음";
+          bottomRow.appendChild(readPill);
+        }
+        const hint = document.createElement("div"); hint.className = "ltr-hint";
+        hint.textContent = isRead ? "" : "탭해서 열어보기";
+        const chevron = document.createElement("div"); chevron.className = "ltr-chevron"; chevron.textContent = "›";
+        bottomRow.appendChild(hint); bottomRow.appendChild(chevron);
+        card.appendChild(bottomRow);
+
+        // 펼침 영역
+        const expand = document.createElement("div"); expand.className = "ltr-expand";
+        if (item.title) {
+          const expTitle = document.createElement("div"); expTitle.className = "ltr-expand-title"; expTitle.textContent = item.title;
+          expand.appendChild(expTitle);
+        }
+        const body = document.createElement("div"); body.className = "ltr-expand-body"; body.textContent = item.body || "(내용 없음)";
+        const actions = document.createElement("div"); actions.className = "ltr-expand-actions";
+        const btnDel = document.createElement("button"); btnDel.className = "ltr-del-btn"; btnDel.textContent = "삭제";
+        btnDel.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (!confirm("편지를 삭제할까요?")) return;
+          await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id));
+        });
+        actions.appendChild(btnDel);
+        expand.appendChild(body); expand.appendChild(actions);
+        card.appendChild(expand);
+
+        // 탭 동작
+        card.addEventListener("click", async () => {
+          const isOpen = card.classList.contains("ltr-open");
+          card.classList.toggle("ltr-open", !isOpen);
+          hint.textContent = "";
+          if (!isRead && !card._markingRead) {
+            card._markingRead = true;
             if (currentUser && currentCoupleCode) {
               await updateDoc(doc(db,"couples",currentCoupleCode,"letters",item.id), { readBy: arrayUnion(currentUser.uid) });
             }
-          });
-          el.appendChild(wrap);
-        } else {
-          const card = document.createElement("div"); card.className = "letter-card";
-          // 헤더 (항상 표시)
-          const cardHeader = document.createElement("div"); cardHeader.className = "letter-card-header";
-          const from = document.createElement("div"); from.className = "letter-from"; from.textContent = item.from || "누군가";
-          const time = document.createElement("div"); time.className = "letter-time"; time.textContent = formatTimestamp(item.createdAt);
-          const toggle = document.createElement("button"); toggle.className = "letter-toggle"; toggle.innerHTML = "∨"; toggle.title = "펼치기";
-          cardHeader.appendChild(from); cardHeader.appendChild(time); cardHeader.appendChild(toggle);
-          // 본문 (접힌 상태)
-          const bodyWrap = document.createElement("div"); bodyWrap.className = "letter-body-wrap";
-          if (item.title) { const titleEl = document.createElement("div"); titleEl.className = "letter-title-badge"; titleEl.textContent = `📌 ${item.title}`; bodyWrap.appendChild(titleEl); }
-          const body = document.createElement("div"); body.className = "letter-body"; body.textContent = item.body || "(내용 없음)";
-          const footer = document.createElement("div"); footer.className = "letter-footer";
-          const readBadge = document.createElement("div"); readBadge.className = "letter-read-badge"; readBadge.textContent = "읽음 ✓";
-          const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "🗑️"; btnDel.title = "삭제"; btnDel.style.fontSize = "13px";
-          btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("편지를 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id)); });
-          footer.appendChild(readBadge); footer.appendChild(btnDel);
-          bodyWrap.appendChild(body); bodyWrap.appendChild(footer);
-          card.appendChild(cardHeader); card.appendChild(bodyWrap);
-          // 토글 클릭
-          cardHeader.addEventListener("click", () => {
-            const isOpen = bodyWrap.style.display === 'block';
-            bodyWrap.style.display = isOpen ? 'none' : 'block';
-            toggle.innerHTML = isOpen ? '∨' : '∧';
-          });
-          el.appendChild(card);
-        }
+          }
+        });
+
+        el.appendChild(card);
       });
     }
 
