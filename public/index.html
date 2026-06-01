@@ -1790,7 +1790,7 @@
       if (!currentUser || !currentCoupleCode) return;
       const noticeKey = `app-open-notice:${currentUser.uid}:${currentCoupleCode}`;
       if (sessionStorage.getItem(noticeKey)) return;
-      const senderName = currentUser.displayName || "상대방";
+      const senderName = getSenderName();
       const sentCount = await sendPushToPartner(`${senderName}님이 앱에 들어왔어요 💗`, "우리 공간을 보고 있어요.");
       if (sentCount > 0) sessionStorage.setItem(noticeKey, "sent");
     }
@@ -1812,9 +1812,17 @@
     // ── 커플 이름 전역 상태 ──
     let _myDisplayName = '나';
     let _partnerDisplayName = '상대방';
+    let _senderNames = {}; // uid -> 별명 (알림 발신자 표시용)
 
     function getMyName() { return _myDisplayName || '나'; }
     function getPartnerName() { return _partnerDisplayName || '상대방'; }
+
+    // 알림에 표시할 발신자(현재 사용자) 이름
+    // senderNames(uid별 '내 이름')이 가장 정확. 없으면 가입 시 displayName, 그래도 없으면 '상대방'.
+    function getSenderName() {
+      if (currentUser && _senderNames[currentUser.uid]) return _senderNames[currentUser.uid];
+      return (currentUser && currentUser.displayName) || '상대방';
+    }
 
     // '나'/'상대방' 내부값을 실제 이름으로 변환
     function mapChoiceToName(choice) {
@@ -2339,6 +2347,8 @@
       applyCoverName(1, name);
       updateGameNameLabels();
       pendingDeco.avatarName1 = name;
+      // '내 이름'을 현재 사용자 uid에 연결 → 알림 발신자 이름으로 사용
+      if (currentUser) { _senderNames[currentUser.uid] = name; pendingDeco['senderNames.' + currentUser.uid] = name; }
       markDecoUnsaved();
     });
     document.getElementById('inputAvatarName2') && document.getElementById('inputAvatarName2').addEventListener('input', (e) => {
@@ -2724,7 +2734,7 @@
       try {
         const caption = (document.getElementById('moodCaption')?.value || '').trim();
         await setDoc(ref, { [`${currentUser.uid}`]: { mood: _selectedMood, emoji: MOOD_MAP[_selectedMood], caption, updatedAt: serverTimestamp() } }, { merge: true });
-        sendPushToPartner("🌈 상대방이 오늘 기분을 기록했어요!", `${MOOD_MAP[_selectedMood]} ${caption || _selectedMood}`);
+        sendPushToPartner(`🌈 ${getSenderName()}님이 오늘 기분을 기록했어요!`, `${MOOD_MAP[_selectedMood]} ${caption || _selectedMood}`);
         const savedBox = document.getElementById('moodMySaved');
         document.getElementById('moodMySavedEmoji').textContent = MOOD_MAP[_selectedMood];
         document.getElementById('moodMySavedText').textContent = caption ? `"${caption}" (저장됨 ✓)` : `오늘 기분: ${_selectedMood} (저장됨 ✓)`;
@@ -2860,7 +2870,7 @@
             title, content, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), lastEditBy: currentUser.uid
           });
         }
-        sendPushToPartner("📝 공유 메모장이 업데이트됐어요!", `"${title || '(제목 없음)'}"`);
+        sendPushToPartner(`📝 ${getSenderName()}님이 메모장을 수정했어요!`, `"${title || '(제목 없음)'}"`);
         statusEl.textContent = '✓ 저장됨!';
         setTimeout(() => window.closeMemoEditor(), 600);
       } catch(e) { statusEl.textContent = '⚠ 저장 실패'; }
@@ -2882,6 +2892,7 @@
       }
       if (data.avatar1) { applyAvatarUI(1, data.avatar1); applyCoverAvatar(1, data.avatar1); }
       if (data.avatar2) { applyAvatarUI(2, data.avatar2); applyCoverAvatar(2, data.avatar2); }
+      if (data.senderNames) _senderNames = { ..._senderNames, ...data.senderNames };
       if (data.avatarName1) {
         _myDisplayName = data.avatarName1;
         const inp = document.getElementById('inputAvatarName1');
@@ -3067,7 +3078,7 @@
       const snap = await getDoc(qRef);
       if (snap.exists()) await updateDoc(qRef, { [`ans_${currentUser.uid}`]: text });
       else await setDoc(qRef, { question: _currentQuestionText, [`ans_${currentUser.uid}`]: text, createdAt: serverTimestamp() });
-      sendPushToPartner('💬 오늘의 질문 답변이 도착했어요!', `"${_currentQuestionText.slice(0,30)}"에 답변했어요`);
+      sendPushToPartner(`💬 ${getSenderName()}님이 오늘의 질문에 답했어요!`, `"${_currentQuestionText.slice(0,30)}"에 답변했어요`);
       document.getElementById('questionAnswerInput').value = '';
     };
 
@@ -3094,7 +3105,7 @@
       await addDoc(collection(db,'couples',currentCoupleCode,'votes'), {
         topic, optA, optB, votes: {}, createdAt: serverTimestamp(), createdBy: currentUser.uid
       });
-      sendPushToPartner('🗳️ 투표가 생성됐어요!', `"${topic}" - 참여해봐요!`);
+      sendPushToPartner(`🗳️ ${getSenderName()}님이 투표를 만들었어요!`, `"${topic}" - 참여해봐요!`);
       document.getElementById('inputVoteTopic').value=''; document.getElementById('inputVoteA').value=''; document.getElementById('inputVoteB').value='';
     };
 
@@ -3147,7 +3158,7 @@
     window.castVote = async (voteId, choice) => {
       if (!currentCoupleCode || !currentUser) return;
       await updateDoc(doc(db,'couples',currentCoupleCode,'votes',voteId), { [`votes.${currentUser.uid}`]: choice });
-      sendPushToPartner('🗳️ 상대방이 투표했어요!', '결과를 확인해봐요!');
+      sendPushToPartner(`🗳️ ${getSenderName()}님이 투표했어요!`, '결과를 확인해봐요!');
     };
 
     window.deleteVote = async (voteId) => {
@@ -3445,7 +3456,7 @@
         const checkbox = document.createElement("input"); checkbox.type = "checkbox"; checkbox.checked = !!item.completed;
         checkbox.addEventListener("change", async () => {
           await updateDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id), { completed: checkbox.checked });
-          if (checkbox.checked) sendPushToPartner("🎉 버킷리스트 달성!", `"${item.title}" 완료했어요!`);
+          if (checkbox.checked) sendPushToPartner(`🎉 ${getSenderName()}님이 버킷리스트를 달성했어요!`, `"${item.title}" 완료했어요!`);
         });
         const info = document.createElement("div"); info.style.flex = "1";
         const title = document.createElement("div"); title.className = "bucket-title"; title.textContent = item.title || "";
@@ -3751,7 +3762,7 @@
       const type = document.getElementById("selectScheduleType").value;
       if (!date || !title) { alert("날짜와 제목을 입력해주세요."); return; }
       await addDoc(collection(db,"couples",currentCoupleCode,"schedules"), { date, title, type, createdAt: serverTimestamp() });
-      sendPushToPartner("📅 새 일정이 추가됐어요!", `${title} (${date})`);
+      sendPushToPartner(`📅 ${getSenderName()}님이 일정을 추가했어요!`, `${title} (${date})`);
       document.getElementById("inputScheduleTitle").value = "";
     });
 
@@ -3761,7 +3772,7 @@
       const tag = document.getElementById("inputBucketTag").value.trim();
       if (!title) { alert("내용을 입력해주세요."); return; }
       await addDoc(collection(db,"couples",currentCoupleCode,"bucket"), { title, tag: tag || null, completed: false, createdAt: serverTimestamp() });
-      sendPushToPartner("✅ 버킷리스트가 추가됐어요!", `"${title}" 항목이 추가됐어요`);
+      sendPushToPartner(`✅ ${getSenderName()}님이 버킷리스트를 추가했어요!`, `"${title}" 항목이 추가됐어요`);
       document.getElementById("inputBucketTitle").value = ""; document.getElementById("inputBucketTag").value = "";
     });
 
@@ -3783,10 +3794,10 @@
             const photoCaption = files.length === 1 ? (caption || "") : (caption ? `${caption} (${i+1})` : "");
             await addDoc(collection(db,"couples",currentCoupleCode,"photos"), { url: finalUrl, caption: photoCaption, createdAt: serverTimestamp() });
           }
-          sendPushToPartner("📸 추억 사진첩에 사진이 추가됐어요!", files.length > 1 ? `${files.length}장의 사진이 올라왔어요 👀` : (caption ? `"${caption}"` : "새 사진이 올라왔어요 👀"));
+          sendPushToPartner(`📸 ${getSenderName()}님이 사진을 추가했어요!`, files.length > 1 ? `${files.length}장의 사진이 올라왔어요 👀` : (caption ? `"${caption}"` : "새 사진이 올라왔어요 👀"));
         } else {
           await addDoc(collection(db,"couples",currentCoupleCode,"photos"), { url, caption: caption || "", createdAt: serverTimestamp() });
-          sendPushToPartner("📸 추억 사진첩에 사진이 추가됐어요!", caption ? `"${caption}"` : "새 사진이 올라왔어요 👀");
+          sendPushToPartner(`📸 ${getSenderName()}님이 사진을 추가했어요!`, caption ? `"${caption}"` : "새 사진이 올라왔어요 👀");
         }
         document.getElementById("inputPhotoFile").value = ""; document.getElementById("inputPhotoUrl").value = ""; document.getElementById("inputPhotoCaption").value = "";
         status.textContent = files.length > 1 ? `${files.length}장 추가됐어요! 🎉` : "추가됐어요!";
@@ -3802,7 +3813,7 @@
       if (!from || !body) { alert("작성자와 내용을 입력해주세요."); return; }
       const status = document.getElementById("letterStatus"); status.textContent = "보내는 중…";
       await addDoc(collection(db,"couples",currentCoupleCode,"letters"), { from, title: title || "", body, createdAt: serverTimestamp(), readBy: currentUser ? [currentUser.uid] : [] });
-      sendPushToPartner("💌 편지함에 편지가 도착했어요!", `${from}이(가) 편지를 보냈어요`);
+      sendPushToPartner(`💌 ${from || getSenderName()}님이 편지를 보냈어요!`, title ? `"${title}"` : "새 편지가 도착했어요 💗");
       document.getElementById("textareaLetterBody").value = ""; document.getElementById("inputLetterTitle").value = "";
       status.textContent = "편지가 도착했어요 💌"; setTimeout(() => status.textContent = "", 2500);
     });
@@ -3814,7 +3825,7 @@
       const link = document.getElementById("inputGiftLink").value.trim();
       if (!title) { alert("선물 이름을 입력해주세요."); return; }
       await addDoc(collection(db,"couples",currentCoupleCode,"gifts"), { from: from || "", title, link: link || "", received: false, createdAt: serverTimestamp() });
-      sendPushToPartner("🎁 선물 리스트에 새 항목이 추가됐어요!", `"${title}" 받고 싶대요 👀`);
+      sendPushToPartner(`🎁 ${getSenderName()}님이 선물 위시리스트를 추가했어요!`, `"${title}" 받고 싶대요 👀`);
       document.getElementById("inputGiftFrom").value = ""; document.getElementById("inputGiftTitle").value = ""; document.getElementById("inputGiftLink").value = "";
     });
 
@@ -3835,7 +3846,7 @@
           btn.addEventListener("click", async () => {
             const memo = document.getElementById("inputPlaceMemo").value.trim();
             await addDoc(collection(db,"couples",currentCoupleCode,"places"), { name: place.place_name, address: place.address_name, lat: parseFloat(place.y), lng: parseFloat(place.x), memo: memo || "", createdAt: serverTimestamp() });
-            sendPushToPartner("🗺️ 우리 흔적 지도에 장소가 추가됐어요!", `📍 ${place.place_name}`);
+            sendPushToPartner(`🗺️ ${getSenderName()}님이 지도에 장소를 추가했어요!`, `📍 ${place.place_name}`);
             document.getElementById("inputPlaceName").value = ""; document.getElementById("inputPlaceMemo").value = ""; mapSearchResults.innerHTML = "";
           });
           mapSearchResults.appendChild(btn);
@@ -4035,7 +4046,7 @@
       btn.disabled = true; btn.textContent = "봉인 중…";
       try {
         await addDoc(collection(db,"couples",currentCoupleCode,"timeCapsules"), { from, title, body, unlockDatetime, createdAt: serverTimestamp() });
-        sendPushToPartner("⏳ 타임캡슐이 봉인됐어요!", `"${title}" — ${unlockDatetime} 개봉 예정`);
+        sendPushToPartner(`⏳ ${from || getSenderName()}님이 타임캡슐을 봉인했어요!`, `"${title}" — ${unlockDatetime} 개봉 예정`);
         document.getElementById("inputCapsuleFrom").value = "";
         document.getElementById("inputCapsuleTitle").value = "";
         document.getElementById("inputCapsuleBody").value = "";
