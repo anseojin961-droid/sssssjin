@@ -473,18 +473,23 @@
     /* ── Memories (사진) 섹션 ── */
     .mem-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
     .mem-title { font-size:30px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
-    .mem-header-btns { display:flex; gap:8px; }
-    .mem-header-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(224,198,185,0.5); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:var(--wine); font-weight:500; }
+    .mem-header-btns { display:flex; gap:8px; align-items:center; }
+    .mem-header-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(224,198,185,0.5); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:var(--wine); font-weight:500; white-space:nowrap; flex-shrink:0; }
+    .mem-add-btn { display:flex; align-items:center; gap:5px; height:36px; padding:0 14px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); border:none; color:#fff; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; box-shadow:0 3px 10px rgba(215,120,135,0.35); white-space:nowrap; flex-shrink:0; }
+    .mem-add-btn svg { width:16px; height:16px; }
     .mem-upload-banner { display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:16px; border:2px dashed rgba(231,154,168,0.45); background:rgba(255,240,244,0.5); cursor:pointer; margin-bottom:14px; }
     .mem-upload-icon { width:38px; height:38px; border-radius:11px; background:rgba(231,154,168,0.15); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
     .mem-upload-text { flex:1; }
     .mem-upload-title { font-size:13px; font-weight:500; color:var(--ink-2); }
     .mem-upload-sub { font-size:11px; color:var(--ink-4); margin-top:1px; }
     .mem-upload-plus { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.9); border:1.5px solid rgba(231,154,168,0.5); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--wine); flex-shrink:0; }
-    .mem-month-header { margin:14px 0 8px; display:flex; align-items:baseline; gap:8px; }
+    .mem-month-header { margin:14px 0 8px; display:flex; align-items:baseline; gap:8px; cursor:pointer; user-select:none; }
     .mem-month-name { font-size:26px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
     .mem-month-meta { font-size:11px; color:var(--ink-4); }
-    .mem-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:4px; }
+    .mem-month-chevron { margin-left:auto; align-self:center; font-size:13px; color:var(--ink-4); transition:transform 0.22s; }
+    .mem-month-header.collapsed .mem-month-chevron { transform:rotate(-90deg); }
+    .mem-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:4px; overflow:hidden; }
+    .mem-grid.collapsed { display:none; }
     .mem-grid-item { aspect-ratio:1; border-radius:12px; overflow:hidden; position:relative; background:#f5e1dc; cursor:pointer; }
     .mem-grid-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.2s; }
     .mem-grid-item:active img { transform:scale(1.04); }
@@ -1124,7 +1129,10 @@
             <div class="mem-title">Memories</div>
             <div class="mem-header-btns">
               <button id="btnPhotoGridToggle" class="mem-header-btn" onclick="togglePhotoGridView()" title="뷰 전환">⊞</button>
-              <button class="mem-header-btn" onclick="var p=document.getElementById('photoUploadPanel');p.style.display=p.style.display==='none'?'block':'none'">+</button>
+              <button class="mem-add-btn" onclick="var p=document.getElementById('photoUploadPanel');p.style.display=p.style.display==='none'?'block':'none';if(p.style.display==='block')p.scrollIntoView({behavior:'smooth',block:'nearest'})">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                사진 추가
+              </button>
             </div>
           </div>
           <div id="photoUploadPanel" style="display:none;background:rgba(255,255,255,0.9);border-radius:16px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(224,198,185,0.4);">
@@ -3474,12 +3482,11 @@
 
     let _photoGridMode = false;
     let _lastPhotoItems = [];
+    const _collapsedMonths = new Set();
     window.togglePhotoGridView = function() {
       _photoGridMode = !_photoGridMode;
       const btn = document.getElementById('btnPhotoGridToggle');
-      const label = document.getElementById('photoViewLabel');
-      if (btn) btn.textContent = _photoGridMode ? '☰ 리스트' : '⊞ 그리드';
-      if (label) label.textContent = _photoGridMode ? '그리드 뷰' : '월별 타임라인';
+      if (btn) { btn.textContent = _photoGridMode ? '☰' : '⊞'; btn.title = _photoGridMode ? '월별 보기' : '그리드 보기'; }
       renderPhotos(_lastPhotoItems);
     };
 
@@ -3517,13 +3524,21 @@
         if (!groups[key]) groups[key] = { year: d.getFullYear(), month: d.getMonth(), photos: [] };
         groups[key].photos.push({ ...item, _date: d });
       });
-      Object.values(groups).forEach(({ year: y, month: m, photos }) => {
-        const monthHeader = document.createElement("div"); monthHeader.className = "mem-month-header";
+      Object.entries(groups).forEach(([key, { year: y, month: m, photos }]) => {
+        const isCollapsed = _collapsedMonths.has(key);
+        const monthHeader = document.createElement("div"); monthHeader.className = "mem-month-header" + (isCollapsed ? " collapsed" : "");
         const monthName = document.createElement("div"); monthName.className = "mem-month-name"; monthName.textContent = MONTHS_EN[m];
         const monthMeta = document.createElement("div"); monthMeta.className = "mem-month-meta"; monthMeta.textContent = `${y} · ${photos.length}장의 추억`;
-        monthHeader.appendChild(monthName); monthHeader.appendChild(monthMeta);
+        const chevron = document.createElement("div"); chevron.className = "mem-month-chevron"; chevron.textContent = "▼";
+        monthHeader.appendChild(monthName); monthHeader.appendChild(monthMeta); monthHeader.appendChild(chevron);
         photoList.appendChild(monthHeader);
-        const grid = document.createElement("div"); grid.className = "mem-grid";
+        const grid = document.createElement("div"); grid.className = "mem-grid" + (isCollapsed ? " collapsed" : "");
+        monthHeader.addEventListener("click", () => {
+          const nowCollapsed = !grid.classList.contains("collapsed");
+          grid.classList.toggle("collapsed", nowCollapsed);
+          monthHeader.classList.toggle("collapsed", nowCollapsed);
+          if (nowCollapsed) _collapsedMonths.add(key); else _collapsedMonths.delete(key);
+        });
         photos.forEach(item => {
           const cell = document.createElement("div"); cell.className = "mem-grid-item";
           const img = document.createElement("img"); img.src = item.url; img.alt = item.caption || ""; img.loading = "lazy";
