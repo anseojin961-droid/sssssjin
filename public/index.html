@@ -290,27 +290,45 @@
     .bucket-title { font-size:13px; flex:1; }
     .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
     input[type="checkbox"] { accent-color:#d27990; }
-    .letters-list { display:flex; flex-direction:column; gap:10px; }
-    .ltr-card { border-radius:20px; background:linear-gradient(150deg,rgba(252,235,228,0.98),rgba(247,218,210,0.95)); border:1px solid rgba(228,185,172,0.55); padding:16px; cursor:pointer; transition:transform 0.12s; position:relative; overflow:hidden; }
+    /* ── Love Letters (편지) 섹션 ── */
+    .ltr-page-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px; }
+    .ltr-page-title { font-size:30px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
+    .ltr-page-sub { font-size:12px; color:var(--ink-3); margin-top:6px; }
+    .ltr-write-toggle { display:flex; align-items:center; gap:5px; height:36px; padding:0 15px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); border:none; color:#fff; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; box-shadow:0 3px 10px rgba(215,120,135,0.35); white-space:nowrap; flex-shrink:0; }
+    /* 편지지 작성 패널 */
+    .ltr-compose { position:relative; border-radius:20px; padding:18px 18px 16px; margin-bottom:18px; overflow:hidden;
+      background:linear-gradient(rgba(255,250,247,0.97),rgba(255,250,247,0.97)),
+        repeating-linear-gradient(transparent, transparent 30px, rgba(215,120,135,0.10) 31px, rgba(215,120,135,0.10) 32px);
+      border:1px solid rgba(228,185,172,0.6); box-shadow:0 6px 20px rgba(150,80,90,0.07); }
+    .ltr-compose::after { content:'💌'; position:absolute; top:10px; right:16px; font-size:26px; opacity:0.3; transform:rotate(10deg); pointer-events:none; }
+    .ltr-compose-head { font-size:16px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); margin-bottom:12px; }
+    .ltr-list-meta { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; padding:0 2px; }
+    .ltr-list-meta-title { font-size:14px; font-weight:700; color:var(--ink-1); }
+    .ltr-list-meta-count { font-size:11px; color:var(--ink-3); }
+    .letters-list { display:flex; flex-direction:column; gap:11px; }
+    .ltr-card { position:relative; border-radius:18px; padding:15px 16px 13px 18px; cursor:pointer; overflow:hidden; transition:transform 0.12s, box-shadow 0.2s;
+      background:linear-gradient(150deg,#fff7f4,#fdeae4); border:1px solid rgba(228,185,172,0.6); box-shadow:0 3px 14px rgba(150,80,90,0.06); }
+    .ltr-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(180deg,var(--rose),var(--rose-deep)); }
     .ltr-card:active { transform:scale(0.985); }
+    .ltr-card.ltr-unread { background:linear-gradient(150deg,#ffeef1,#fbdde3); border-color:rgba(220,120,140,0.5); box-shadow:0 4px 18px rgba(200,90,110,0.13); }
     .ltr-card-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .ltr-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(145deg,#b06070,#844055); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ltr-stamp { width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e58aa0, #a8425c); color:#fff; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 6px rgba(150,60,80,0.25); }
     .ltr-meta { flex:1; min-width:0; }
     .ltr-sender { font-size:13px; font-weight:700; color:var(--wine); }
     .ltr-date { font-size:10px; color:var(--ink-4); margin-top:1px; }
     .ltr-title { font-size:15px; font-weight:700; color:var(--ink-1); margin-bottom:5px; line-height:1.35; }
-    .ltr-preview { font-size:12.5px; color:var(--ink-3); line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .ltr-bottom-row { display:flex; align-items:center; margin-top:10px; gap:8px; }
-    .ltr-new-pill { font-size:9px; font-weight:800; color:#72243e; background:rgba(200,80,100,0.14); border:1px solid rgba(200,80,100,0.28); padding:2px 9px; border-radius:999px; letter-spacing:0.04em; flex-shrink:0; }
+    .ltr-preview { font-size:12.5px; color:var(--ink-3); line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .ltr-bottom-row { display:flex; align-items:center; margin-top:11px; gap:8px; }
+    .ltr-new-pill { font-size:9px; font-weight:800; color:#fff; background:linear-gradient(135deg,#e06a82,#b8324f); padding:3px 10px; border-radius:999px; letter-spacing:0.06em; flex-shrink:0; box-shadow:0 2px 6px rgba(200,80,110,0.3); }
     .ltr-read-pill { font-size:9px; color:#6a9a7a; background:rgba(100,180,130,0.12); border:1px solid rgba(100,180,130,0.3); padding:2px 9px; border-radius:999px; flex-shrink:0; }
-    .ltr-hint { font-size:11px; color:var(--wine); flex:1; text-align:right; opacity:0.65; }
+    .ltr-hint { font-size:11px; color:var(--wine); flex:1; text-align:right; opacity:0.7; }
     .ltr-chevron { font-size:22px; color:var(--wine); line-height:1; margin-left:2px; opacity:0.75; transition:transform 0.2s; }
     .ltr-card.ltr-open .ltr-chevron { transform:rotate(90deg); }
-    .ltr-expand { display:none; margin-top:14px; padding-top:12px; }
+    .ltr-expand { display:none; margin-top:13px; padding-top:13px; border-top:1px dashed rgba(200,140,130,0.3); }
     .ltr-card.ltr-open .ltr-expand { display:block; }
-    .ltr-expand-title { font-size:11px; color:var(--ink-4); margin-bottom:6px; opacity:0.75; }
-    .ltr-expand-body { font-size:13px; white-space:pre-wrap; line-height:1.75; color:var(--ink-2); }
-    .ltr-expand-actions { display:flex; justify-content:flex-end; align-items:center; margin-top:10px; gap:8px; }
+    .ltr-expand-body { font-size:13.5px; white-space:pre-wrap; line-height:1.85; color:var(--ink-2); font-family:var(--font-display); }
+    .ltr-expand-sign { font-size:12px; color:var(--wine); text-align:right; margin-top:12px; font-family:var(--font-display); font-style:italic; opacity:0.85; }
+    .ltr-expand-actions { display:flex; justify-content:flex-end; align-items:center; margin-top:8px; gap:8px; }
     .ltr-del-btn { background:none; border:1px solid rgba(210,160,150,0.5); border-radius:999px; padding:3px 10px; font-size:11px; color:var(--ink-4); cursor:pointer; }
     .dday-main { display:flex; flex-direction:column; gap:10px; }
     .dday-display { display:flex; flex-direction:column; gap:4px; padding:14px 16px; border-radius:var(--radius-md); background:linear-gradient(135deg,rgba(244,194,205,0.3),rgba(253,248,243,0.95)); border:1px solid rgba(244,194,205,0.7); }
@@ -1146,21 +1164,29 @@
           <div style="display:flex;justify-content:flex-end;margin-bottom:6px;"><span class="badge-soft" id="photoCountBadge">0장</span></div>
           <div id="photoList"></div>
         </section>
-        <section id="section-letters" class="tab-section hidden card">
-          <div class="card-header"><h2>서로에게 쓰는 편지함</h2><span>짧은 메모도 괜찮아요</span></div>
-          <p class="section-description">오늘 전하고 싶은 말을 짧게라도 남겨보세요.</p>
-          <div class="field-row">
-            <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">작성자</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-            <div class="field-group" style="flex:1 1 140px;"><label class="field-label">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
+        <section id="section-letters" class="tab-section hidden" style="padding:4px 2px 20px;">
+          <div class="ltr-page-header">
+            <div>
+              <div class="ltr-page-title">Love Letters</div>
+              <div class="ltr-page-sub">서로에게 전하는 마음 💌</div>
+            </div>
+            <button class="ltr-write-toggle" onclick="var p=document.getElementById('letterComposePanel');var open=p.style.display!=='none';p.style.display=open?'none':'block';if(!open)p.scrollIntoView({behavior:'smooth',block:'nearest'})">✍️ 편지 쓰기</button>
           </div>
-          <div class="field-group"><label class="field-label">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;">
-            <button id="btnSendLetter" class="btn-primary">편지 보내기</button>
-            <span id="letterStatus" class="small muted"></span>
+          <div id="letterComposePanel" class="ltr-compose">
+            <div class="ltr-compose-head">오늘의 한 줄</div>
+            <div class="field-row">
+              <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">From.</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+              <div class="field-group" style="flex:1 1 140px;"><label class="field-label">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
+            </div>
+            <div class="field-group"><label class="field-label">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
+            <div class="field-row" style="justify-content:space-between;align-items:center;">
+              <button id="btnSendLetter" class="btn-primary">💌 편지 보내기</button>
+              <span id="letterStatus" class="small muted"></span>
+            </div>
           </div>
-          <div class="divider"></div>
-          <div class="field-row" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="small muted">새로 작성된 편지는 위쪽에 쌓여요.</span><span class="badge-soft" id="letterCountBadge">0통</span>
+          <div class="ltr-list-meta">
+            <span class="ltr-list-meta-title">받은 편지함</span>
+            <span class="ltr-list-meta-count" id="letterCountBadge">0통</span>
           </div>
           <div id="lettersList" class="letters-list"></div>
         </section>
@@ -3579,19 +3605,20 @@
 
       items.forEach(item => {
         const isRead = !item.readBy || item.readBy.includes(currentUser?.uid);
-        const senderInitial = (item.from || '?').charAt(0).toUpperCase();
+        const senderName = item.from || "누군가";
         const preview = (item.body || '').slice(0, 80) + ((item.body || '').length > 80 ? '...' : '');
 
         const card = document.createElement("div");
-        card.className = "ltr-card";
+        card.className = "ltr-card" + (isRead ? "" : " ltr-unread");
 
-        // 헤더: 이름 + 날짜
+        // 헤더: 하트 스탬프 + From.이름 + 날짜
         const head = document.createElement("div"); head.className = "ltr-card-head";
+        const stamp = document.createElement("div"); stamp.className = "ltr-stamp"; stamp.textContent = isRead ? "♡" : "💌";
         const meta = document.createElement("div"); meta.className = "ltr-meta";
-        const senderEl = document.createElement("div"); senderEl.className = "ltr-sender"; senderEl.textContent = item.from || "누군가";
+        const senderEl = document.createElement("div"); senderEl.className = "ltr-sender"; senderEl.textContent = `From. ${senderName}`;
         const dateEl = document.createElement("div"); dateEl.className = "ltr-date"; dateEl.textContent = formatTimestamp(item.createdAt);
         meta.appendChild(senderEl); meta.appendChild(dateEl);
-        head.appendChild(meta);
+        head.appendChild(stamp); head.appendChild(meta);
         card.appendChild(head);
 
         // 제목
@@ -3621,11 +3648,10 @@
 
         // 펼침 영역
         const expand = document.createElement("div"); expand.className = "ltr-expand";
-        if (item.title) {
-          const expTitle = document.createElement("div"); expTitle.className = "ltr-expand-title"; expTitle.textContent = item.title;
-          expand.appendChild(expTitle);
-        }
         const body = document.createElement("div"); body.className = "ltr-expand-body"; body.textContent = item.body || "(내용 없음)";
+        expand.appendChild(body);
+        const sign = document.createElement("div"); sign.className = "ltr-expand-sign"; sign.textContent = `— ${senderName} 💗`;
+        expand.appendChild(sign);
         const actions = document.createElement("div"); actions.className = "ltr-expand-actions";
         const btnDel = document.createElement("button"); btnDel.className = "ltr-del-btn"; btnDel.textContent = "삭제";
         btnDel.addEventListener("click", async (e) => {
@@ -3634,7 +3660,7 @@
           await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id));
         });
         actions.appendChild(btnDel);
-        expand.appendChild(body); expand.appendChild(actions);
+        expand.appendChild(actions);
         card.appendChild(expand);
 
         // 탭 동작
