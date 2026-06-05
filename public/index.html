@@ -374,9 +374,11 @@
     .app-theme-forest { --rose:#66bb6a; --rose-deep:#388e3c; --rose-soft:#c8e6c9; --bg:#f1f8f1; --border-soft:#c8e6c9; --card-bg:#ffffff; --text-main:#1a3a1a; }
 
     /* ── 배경 패턴 ── */
-    body.bg-dots::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(circle, rgba(165,115,105,0.13) 11px, transparent 12px); background-size:72px 72px; background-position:0 0; }
-    body.bg-hearts::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(circle at 30% 35%, rgba(200,110,125,0.16) 5px, transparent 6px), radial-gradient(circle at 70% 35%, rgba(200,110,125,0.16) 5px, transparent 6px), radial-gradient(circle at 50% 62%, rgba(200,110,125,0.16) 7px, transparent 8px); background-size:64px 64px; background-position:0 0; }
-    body.bg-grid::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(165,115,105,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(165,115,105,0.10) 1px, transparent 1px); background-size:34px 34px; }
+    body.bg-dots::before, body.bg-hearts::before, body.bg-paw::before, body.bg-grid::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; }
+    body.bg-dots::before { background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%20viewBox='0%200%20140%20140'%20fill='%23a57369'%20fill-opacity='0.15'%3E%3Ccircle%20cx='18'%20cy='22'%20r='6'/%3E%3Ccircle%20cx='70'%20cy='14'%20r='3.5'/%3E%3Ccircle%20cx='110'%20cy='30'%20r='5'/%3E%3Ccircle%20cx='40'%20cy='55'%20r='2.5'/%3E%3Ccircle%20cx='92'%20cy='62'%20r='6.5'/%3E%3Ccircle%20cx='16'%20cy='92'%20r='4'/%3E%3Ccircle%20cx='60'%20cy='84'%20r='3'/%3E%3Ccircle%20cx='120'%20cy='96'%20r='5.5'/%3E%3Ccircle%20cx='36'%20cy='120'%20r='6'/%3E%3Ccircle%20cx='86'%20cy='118'%20r='3.5'/%3E%3Ccircle%20cx='128'%20cy='58'%20r='2.5'/%3E%3C/svg%3E"); background-size:140px 140px; }
+    body.bg-hearts::before { background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%20viewBox='0%200%20140%20140'%20fill='%23c86e7d'%20fill-opacity='0.17'%3E%3Cg%20transform='translate(24,30)%20rotate(-18)%20scale(1.0)%20translate(-12,-12)'%3E%3Cpath%20d='M12%2021s-7-4.35-7-9a4%204%200%200%201%207-2.5A4%204%200%200%201%2019%2012c0%204.65-7%209-7%209z'/%3E%3C/g%3E%3Cg%20transform='translate(96,54)%20rotate(14)%20scale(0.68)%20translate(-12,-12)'%3E%3Cpath%20d='M12%2021s-7-4.35-7-9a4%204%200%200%201%207-2.5A4%204%200%200%201%2019%2012c0%204.65-7%209-7%209z'/%3E%3C/g%3E%3Cg%20transform='translate(58,104)%20rotate(-6)%20scale(1.3)%20translate(-12,-12)'%3E%3Cpath%20d='M12%2021s-7-4.35-7-9a4%204%200%200%201%207-2.5A4%204%200%200%201%2019%2012c0%204.65-7%209-7%209z'/%3E%3C/g%3E%3Cg%20transform='translate(120,118)%20rotate(22)%20scale(0.55)%20translate(-12,-12)'%3E%3Cpath%20d='M12%2021s-7-4.35-7-9a4%204%200%200%201%207-2.5A4%204%200%200%201%2019%2012c0%204.65-7%209-7%209z'/%3E%3C/g%3E%3C/svg%3E"); background-size:140px 140px; }
+    body.bg-paw::before { background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%20viewBox='0%200%20140%20140'%20fill='%23a57369'%20fill-opacity='0.17'%3E%3Cg%20transform='translate(28,34)%20rotate(-12)%20scale(1.0)%20translate(-12,-11)'%3E%3Cellipse%20cx='12'%20cy='15.5'%20rx='6.2'%20ry='5'/%3E%3Cellipse%20cx='5.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3Cellipse%20cx='10'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='14.5'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='18.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3C/g%3E%3Cg%20transform='translate(104,50)%20rotate(18)%20scale(0.7)%20translate(-12,-11)'%3E%3Cellipse%20cx='12'%20cy='15.5'%20rx='6.2'%20ry='5'/%3E%3Cellipse%20cx='5.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3Cellipse%20cx='10'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='14.5'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='18.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3C/g%3E%3Cg%20transform='translate(64,108)%20rotate(-4)%20scale(1.25)%20translate(-12,-11)'%3E%3Cellipse%20cx='12'%20cy='15.5'%20rx='6.2'%20ry='5'/%3E%3Cellipse%20cx='5.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3Cellipse%20cx='10'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='14.5'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='18.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3C/g%3E%3Cg%20transform='translate(126,120)%20rotate(30)%20scale(0.5)%20translate(-12,-11)'%3E%3Cellipse%20cx='12'%20cy='15.5'%20rx='6.2'%20ry='5'/%3E%3Cellipse%20cx='5.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3Cellipse%20cx='10'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='14.5'%20cy='5'%20rx='2.4'%20ry='3.2'/%3E%3Cellipse%20cx='18.5'%20cy='8.5'%20rx='2.4'%20ry='3'/%3E%3C/g%3E%3C/svg%3E"); background-size:140px 140px; }
+    body.bg-grid::before { background-image:linear-gradient(rgba(165,115,105,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(165,115,105,0.10) 1px, transparent 1px); background-size:34px 34px; }
 
     /* ── 날씨 테마 레이어 ── */
     .weather-layer { position:fixed; inset:0; pointer-events:none; z-index:6; overflow:hidden; }
@@ -806,11 +808,12 @@
 
           <!-- 배경 패턴 -->
           <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">배경 패턴</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;">
-            <button onclick="applyBgPattern('')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">없음</button>
-            <button onclick="applyBgPattern('bg-dots')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:radial-gradient(circle,rgba(165,115,105,0.3) 4px,#fff 5px);background-size:14px 14px;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">⚬ 도트</button>
-            <button onclick="applyBgPattern('bg-hearts')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">♥ 하트</button>
-            <button onclick="applyBgPattern('bg-grid')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:linear-gradient(rgba(165,115,105,0.25) 1px,#fff 1px),linear-gradient(90deg,rgba(165,115,105,0.25) 1px,#fff 1px);background-size:8px 8px;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">▦ 그리드</button>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:18px;">
+            <button onclick="applyBgPattern('')" style="padding:8px 4px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">없음</button>
+            <button onclick="applyBgPattern('bg-dots')" style="padding:8px 4px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">⚬ 도트</button>
+            <button onclick="applyBgPattern('bg-hearts')" style="padding:8px 4px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">♥ 하트</button>
+            <button onclick="applyBgPattern('bg-paw')" style="padding:8px 4px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">🐾 발바닥</button>
+            <button onclick="applyBgPattern('bg-grid')" style="padding:8px 4px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">▦ 그리드</button>
           </div>
 
           <!-- 폰트 선택 -->
@@ -2685,7 +2688,7 @@
     };
 
     // 배경 패턴
-    const BG_PATTERNS = ['bg-dots','bg-hearts','bg-grid'];
+    const BG_PATTERNS = ['bg-dots','bg-hearts','bg-paw','bg-grid'];
     window.applyBgPattern = (cls) => {
       BG_PATTERNS.forEach(c => document.body.classList.remove(c));
       if (cls) document.body.classList.add(cls);
