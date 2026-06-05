@@ -373,6 +373,11 @@
     .app-theme-sky { --rose:#4fc3f7; --rose-deep:#0288d1; --rose-soft:#b3e5fc; --bg:#f0f8ff; --border-soft:#b3d9f0; --card-bg:#ffffff; --text-main:#1a3a4a; }
     .app-theme-forest { --rose:#66bb6a; --rose-deep:#388e3c; --rose-soft:#c8e6c9; --bg:#f1f8f1; --border-soft:#c8e6c9; --card-bg:#ffffff; --text-main:#1a3a1a; }
 
+    /* ── 배경 패턴 ── */
+    body.bg-dots::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(circle, rgba(165,115,105,0.13) 11px, transparent 12px); background-size:72px 72px; background-position:0 0; }
+    body.bg-hearts::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:radial-gradient(circle at 30% 35%, rgba(200,110,125,0.16) 5px, transparent 6px), radial-gradient(circle at 70% 35%, rgba(200,110,125,0.16) 5px, transparent 6px), radial-gradient(circle at 50% 62%, rgba(200,110,125,0.16) 7px, transparent 8px); background-size:64px 64px; background-position:0 0; }
+    body.bg-grid::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(165,115,105,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(165,115,105,0.10) 1px, transparent 1px); background-size:34px 34px; }
+
     /* ── 날씨 테마 레이어 ── */
     .weather-layer { position:fixed; inset:0; pointer-events:none; z-index:6; overflow:hidden; }
 
@@ -797,6 +802,15 @@
             <button onclick="applyAppTheme('app-theme-sky')" style="padding:8px;border-radius:12px;border:1px solid #b3d9f0;background:linear-gradient(135deg,#b3e5fc,#4fc3f7);font-size:11px;color:#0288d1;cursor:pointer;touch-action:manipulation;">🩵 스카이</button>
             <button onclick="applyAppTheme('app-theme-forest')" style="padding:8px;border-radius:12px;border:1px solid #c8e6c9;background:linear-gradient(135deg,#c8e6c9,#66bb6a);font-size:11px;color:#388e3c;cursor:pointer;touch-action:manipulation;">🌲 포레스트</button>
             <button id="weatherThemeBtn" onclick="toggleWeatherTheme()" style="padding:8px;border-radius:12px;border:1px solid #aed6f1;background:linear-gradient(135deg,#d6eaf8,#7fb3d3);font-size:11px;color:#1a5276;cursor:pointer;touch-action:manipulation;">🌤️ 날씨 적용</button>
+          </div>
+
+          <!-- 배경 패턴 -->
+          <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">배경 패턴</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;">
+            <button onclick="applyBgPattern('')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">없음</button>
+            <button onclick="applyBgPattern('bg-dots')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:radial-gradient(circle,rgba(165,115,105,0.3) 4px,#fff 5px);background-size:14px 14px;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">⚬ 도트</button>
+            <button onclick="applyBgPattern('bg-hearts')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:#fff;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">♥ 하트</button>
+            <button onclick="applyBgPattern('bg-grid')" style="padding:8px 6px;border-radius:12px;border:1px solid var(--border-soft);background:linear-gradient(rgba(165,115,105,0.25) 1px,#fff 1px),linear-gradient(90deg,rgba(165,115,105,0.25) 1px,#fff 1px);background-size:8px 8px;font-size:11px;color:var(--ink-2);cursor:pointer;touch-action:manipulation;">▦ 그리드</button>
           </div>
 
           <!-- 폰트 선택 -->
@@ -1700,6 +1714,7 @@
     function toggleCustomizePanel() { if(window.toggleCustomizePanel) window.toggleCustomizePanel(); }
     function applyTheme(t,el) { if(window.applyTheme) window.applyTheme(t,el); }
     function applyAppTheme(t) { if(window.applyAppTheme) window.applyAppTheme(t); }
+    function applyBgPattern(t) { if(window.applyBgPattern) window.applyBgPattern(t); }
     function applyAppFont(f) { if(window.applyAppFont) window.applyAppFont(f); }
     function addSticker(e) { if(window.addSticker) window.addSticker(e); }
     function clearStickers() { if(window.clearStickers) window.clearStickers(); }
@@ -2669,6 +2684,15 @@
       markDecoUnsaved();
     };
 
+    // 배경 패턴
+    const BG_PATTERNS = ['bg-dots','bg-hearts','bg-grid'];
+    window.applyBgPattern = (cls) => {
+      BG_PATTERNS.forEach(c => document.body.classList.remove(c));
+      if (cls) document.body.classList.add(cls);
+      pendingDeco.bgPattern = cls;
+      markDecoUnsaved();
+    };
+
     // 앱 폰트
     function applyFontToDOM(fontName) {
       const stack = fontName === 'Noto Serif KR' ? `"Noto Serif KR",serif`
@@ -2941,6 +2965,7 @@
         } catch(e) {}
       }
       if (data.appTheme) { APP_THEMES.forEach(c => document.body.classList.remove(c)); if(data.appTheme) document.body.classList.add(data.appTheme); }
+      { BG_PATTERNS.forEach(c => document.body.classList.remove(c)); if (data.bgPattern) document.body.classList.add(data.bgPattern); }
       if (data.appFont) applyFontToDOM(data.appFont);
       if (data.weatherTheme) {
         _weatherThemeEnabled = true;
