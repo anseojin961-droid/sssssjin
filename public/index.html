@@ -89,6 +89,8 @@
     .nav-link { padding:6px 12px; border-radius:999px; font-size:12px; background:rgba(255,255,255,0.7); border:1px solid rgba(228,199,189,0.8); transition:background 0.2s,transform 0.1s,box-shadow 0.2s; box-shadow:0 2px 5px rgba(200,160,140,0.25); white-space:nowrap; }
     .nav-link:hover { background:#ffe8f0; transform:translateY(-1px); }
     .chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; background:rgba(255,255,255,0.9); border:1px solid rgba(228,199,189,0.9); font-size:10px; }
+    .header-status { display:flex; flex-direction:column; gap:5px; align-items:flex-end; }
+    .hdr-stat-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.92); border:1px solid rgba(228,199,189,0.8); font-size:11px; color:var(--ink-2); white-space:nowrap; box-shadow:0 1px 4px rgba(150,80,90,0.06); }
     .status-dot { width:7px; height:7px; border-radius:50%; background:#5ec27f; box-shadow:0 0 0 3px rgba(94,194,127,0.4); }
     .status-dot.offline { background:#c86a6a; box-shadow:0 0 0 3px rgba(200,106,106,0.35); }
     .main-content { flex:1; padding:24px 14px 40px; max-width:1100px; margin:0 auto; width:100%; }
@@ -436,6 +438,22 @@
     .home-mood-emoji { font-size:26px; line-height:1.2; margin:4px 0 2px; }
     .home-mood-text { font-size:12px; font-weight:500; color:var(--ink-2); }
     .home-mood-time { font-size:10px; opacity:0.4; margin-top:1px; }
+    /* ── 최근 활동 ── */
+    .recent-activity-list { display:flex; flex-direction:column; gap:4px; }
+    .ra-item { display:flex; align-items:center; gap:12px; padding:9px 4px; }
+    .ra-item + .ra-item { border-top:1px solid rgba(228,199,189,0.35); }
+    .ra-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ra-icon svg { width:19px; height:19px; }
+    .ra-icon.ra-letter { background:rgba(231,154,168,0.22); color:#c0607a; }
+    .ra-icon.ra-photo { background:rgba(244,180,150,0.22); color:#cc7a4a; }
+    .ra-icon.ra-bucket { background:rgba(120,190,140,0.20); color:#4a8a60; }
+    .ra-icon.ra-schedule { background:rgba(120,150,200,0.20); color:#4a70aa; }
+    .ra-icon.ra-place { background:rgba(150,120,200,0.20); color:#7060aa; }
+    .ra-icon.ra-gift { background:rgba(220,150,110,0.20); color:#c07a40; }
+    .ra-body { flex:1; min-width:0; }
+    .ra-title { font-size:13px; font-weight:600; color:var(--ink-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ra-sub { font-size:11.5px; color:var(--ink-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+    .ra-time { font-size:11px; color:var(--ink-4); flex-shrink:0; white-space:nowrap; }
 
     /* ── 오늘의 무드 ── */
     .mood-date { font-size:12px; opacity:0.55; margin-bottom:14px; }
@@ -704,8 +722,15 @@
           <div class="nav-title-sub" id="navSubtitle">같이 걷는 매일의 기록</div>
         </div>
       </div>
-      <div>
-        <div class="chip"><span id="realtimeDot" class="status-dot offline"></span><span id="realtimeText">연결 대기중</span></div>
+      <div class="header-status">
+        <div class="hdr-stat-pill" onclick="updateHomeWeather()">
+          <span id="homeWeatherIcon" style="font-size:15px;line-height:1;">⏳</span>
+          <span id="homeWeatherTemp" style="font-weight:600;">-</span>
+        </div>
+        <div class="hdr-stat-pill">
+          <span id="partnerStatusDot" style="width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0;"></span>
+          <span id="partnerStatusText">확인 중</span>
+        </div>
       </div>
     </header>
     <main class="main-content" id="mainContent" style="padding-bottom:104px;">
@@ -951,20 +976,13 @@
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-          <div class="card" style="margin:0;padding:16px;">
-            <div style="font-size:11px;opacity:0.6;margin-bottom:6px;">오늘의 날씨</div>
-            <div id="homeWeatherIcon" style="font-size:32px;line-height:1;">⏳</div>
-            <div id="homeWeatherTemp" style="font-size:18px;font-weight:500;margin-top:4px;">-</div>
-            <div id="homeWeatherDesc" style="font-size:11px;opacity:0.7;margin-top:2px;">불러오는 중...</div>
+        <!-- 최근 활동 -->
+        <div class="card" style="margin:0 0 12px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:14px;font-weight:600;color:var(--ink);">최근 활동</span>
           </div>
-          <div class="card" style="margin:0;padding:16px;">
-            <div style="font-size:11px;opacity:0.6;margin-bottom:6px;">상대방</div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-              <div id="partnerStatusDot" style="width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;"></div>
-              <div id="partnerStatusText" style="font-size:13px;">확인 중...</div>
-            </div>
-            <div id="partnerLastSeen" style="font-size:10px;opacity:0.5;margin-top:6px;"></div>
+          <div id="recentActivityList" class="recent-activity-list">
+            <div class="muted small" style="text-align:center;padding:14px 0;">아직 활동이 없어요</div>
           </div>
         </div>
         <div class="card" style="margin:0 0 12px;">
@@ -2093,12 +2111,12 @@
           const code = data.current.weather_code;
           const weatherMap = { 0:["☀️","맑음"],1:["🌤️","대체로 맑음"],2:["⛅","구름 조금"],3:["☁️","흐림"],45:["🌫️","안개"],51:["🌦️","이슬비"],61:["🌧️","비"],71:["🌨️","눈"],80:["🌦️","소나기"],95:["⛈️","천둥번개"] };
           const [icon, desc] = weatherMap[code] || ["🌡️","알 수 없음"];
-          document.getElementById("homeWeatherIcon").textContent = icon;
-          document.getElementById("homeWeatherTemp").textContent = `${temp}°C`;
-          document.getElementById("homeWeatherDesc").textContent = desc;
+          const iconEl = document.getElementById("homeWeatherIcon"); if (iconEl) iconEl.textContent = icon;
+          const tempEl = document.getElementById("homeWeatherTemp"); if (tempEl) tempEl.textContent = `${temp}°`;
+          const descEl = document.getElementById("homeWeatherDesc"); if (descEl) descEl.textContent = desc;
           _lastWeatherCode = code;
           if (_weatherThemeEnabled) applyWeatherEffect(code);
-        } catch(e) { document.getElementById("homeWeatherDesc").textContent = "날씨 불러오기 실패"; }
+        } catch(e) { const d = document.getElementById("homeWeatherTemp"); if (d) d.textContent = "–"; }
       });
     }
 
@@ -2255,19 +2273,22 @@
       // 상대방 상태 실시간 감지
       onSnapshot(collection(db, "couples", code, "presence"), snap => {
         const others = snap.docs.filter(d => d.id !== currentUser.uid);
+        const dot = document.getElementById("partnerStatusDot");
+        const txt = document.getElementById("partnerStatusText");
+        const last = document.getElementById("partnerLastSeen");
         if (!others.length) {
-          document.getElementById("partnerStatusText").textContent = "상대방 없음";
-          document.getElementById("partnerStatusDot").style.background = "#ccc";
-          document.getElementById("partnerLastSeen").textContent = "";
+          if (txt) txt.textContent = "상대방 없음";
+          if (dot) dot.style.background = "#ccc";
+          if (last) last.textContent = "";
           return;
         }
         const partner = others[0].data();
         // heartbeat 30초 + 여유 30초 = 60초 안에 갱신되면 온라인
         const isOnline = partner.online === true && partner.lastSeen &&
           (new Date() - partner.lastSeen.toDate()) < 60000;
-        document.getElementById("partnerStatusDot").style.background = isOnline ? "#5ec27f" : "#ccc";
-        document.getElementById("partnerStatusText").textContent = isOnline ? "접속 중 🟢" : "오프라인";
-        if (partner.lastSeen) {
+        if (dot) dot.style.background = isOnline ? "#5ec27f" : "#ccc";
+        if (txt) txt.textContent = isOnline ? "접속 중" : "오프라인";
+        if (last && partner.lastSeen) {
           const t = partner.lastSeen.toDate();
           const diffMin = Math.floor((new Date() - t) / 60000);
           let timeStr;
@@ -2275,7 +2296,7 @@
           else if (diffMin < 60) timeStr = `${diffMin}분 전`;
           else if (diffMin < 1440) timeStr = `${Math.floor(diffMin/60)}시간 전`;
           else timeStr = formatTimestamp(partner.lastSeen);
-          document.getElementById("partnerLastSeen").textContent = isOnline ? "" : `마지막 접속: ${timeStr}`;
+          last.textContent = isOnline ? "" : `마지막 접속: ${timeStr}`;
         }
       });
     }
@@ -2784,7 +2805,7 @@
       const ref = doc(db, 'couples', currentCoupleCode, 'moods', today);
       try {
         const caption = (document.getElementById('moodCaption')?.value || '').trim();
-        await setDoc(ref, { [`${currentUser.uid}`]: { mood: _selectedMood, emoji: MOOD_MAP[_selectedMood], caption, updatedAt: serverTimestamp() } }, { merge: true });
+        await setDoc(ref, { [`${currentUser.uid}`]: { mood: _selectedMood, emoji: MOOD_MAP[_selectedMood], caption, name: getSenderName(), updatedAt: serverTimestamp() } }, { merge: true });
         sendPushToPartner(`🌈 ${getSenderName()}님이 오늘 기분을 기록했어요!`, `${MOOD_MAP[_selectedMood]} ${caption || _selectedMood}`);
         const savedBox = document.getElementById('moodMySaved');
         document.getElementById('moodMySavedEmoji').textContent = MOOD_MAP[_selectedMood];
@@ -2801,7 +2822,9 @@
       if (_moodUnsub) _moodUnsub();
       _moodUnsub = onSnapshot(doc(db, 'couples', currentCoupleCode, 'moods', today), snap => {
         const data = snap.data() || {};
-        // 내 기분 복원
+        // 홈 무드 카드 (양쪽 기기에서 동일하게 보이도록 결정적으로 렌더)
+        updateHomeMoodCards(data);
+        // 내 기분 복원 (무드 탭 전용 — 보는 사람 기준)
         const myData = data[currentUser.uid];
         if (myData) {
           _selectedMood = myData.mood;
@@ -2812,29 +2835,115 @@
           document.getElementById('moodMySavedEmoji').textContent = myData.emoji || MOOD_MAP[myData.mood] || '';
           document.getElementById('moodMySavedText').textContent = `오늘 기분: ${myData.mood} (저장됨 ✓)`;
           savedBox.classList.remove('hidden');
-          // 홈 무드 카드 업데이트
-          const e1 = document.getElementById('homeMoodMeEmoji');
-          const t1 = document.getElementById('homeMoodMeText');
-          if (e1) e1.textContent = myData.emoji || MOOD_MAP[myData.mood] || '😊';
-          if (t1) t1.textContent = myData.caption || myData.mood;
-          // 캡션 입력 복원
           const captionInput = document.getElementById('moodCaption');
           if (captionInput && myData.caption) captionInput.value = myData.caption;
         }
-        // 상대방 기분
+        // 상대방 기분 (무드 탭 전용)
         const partnerEntry = Object.entries(data).find(([k]) => k !== currentUser.uid);
         const display = document.getElementById('moodPartnerDisplay');
-        if (partnerEntry) {
-          const [, pd] = partnerEntry;
-          display.innerHTML = `<div class="mood-partner-content"><span class="mood-partner-emoji">${pd.emoji || MOOD_MAP[pd.mood] || '😶'}</span><div class="mood-partner-info"><div class="mood-partner-name">${pd.mood}</div><div class="mood-partner-time">오늘 기록함</div></div></div>`;
-          // 홈 파트너 무드 카드
-          const e2 = document.getElementById('homeMoodPartnerEmoji');
-          const t2 = document.getElementById('homeMoodPartnerText');
-          if (e2) e2.textContent = pd.emoji || MOOD_MAP[pd.mood] || '😶';
-          if (t2) t2.textContent = pd.caption || pd.mood;
-        } else {
-          display.innerHTML = '<div class="mood-partner-empty">아직 기분을 기록하지 않았어요 🕐</div>';
+        if (display) {
+          if (partnerEntry) {
+            const [, pd] = partnerEntry;
+            display.innerHTML = `<div class="mood-partner-content"><span class="mood-partner-emoji">${pd.emoji || MOOD_MAP[pd.mood] || '😶'}</span><div class="mood-partner-info"><div class="mood-partner-name">${pd.caption || pd.mood}</div><div class="mood-partner-time">오늘 기록함</div></div></div>`;
+          } else {
+            display.innerHTML = '<div class="mood-partner-empty">아직 기분을 기록하지 않았어요 🕐</div>';
+          }
         }
+      });
+    }
+
+    // 홈 오늘의 무드 카드 — 보는 사람과 무관하게 항상 동일하게 렌더
+    // 왼쪽(Me) = avatarName1(HIM), 오른쪽(Partner) = avatarName2(HER)
+    function updateHomeMoodCards(data) {
+      const entries = Object.entries(data || {}).filter(([k, v]) => v && typeof v === 'object' && v.mood);
+      const name1 = _myDisplayName, name2 = _partnerDisplayName;
+      let himEntry = null, herEntry = null;
+      // 1차: 저장된 이름으로 매칭
+      entries.forEach(([uid, v]) => {
+        if (v.name && v.name === name1 && !himEntry) himEntry = v;
+        else if (v.name && v.name === name2 && !herEntry) herEntry = v;
+      });
+      // 2차: 매칭 안 된 항목은 uid 순서로 빈 카드에 배치 (양쪽 기기 동일 순서 보장)
+      const leftover = entries.filter(([uid, v]) => v !== himEntry && v !== herEntry)
+        .sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(e => e[1]);
+      if (!himEntry && leftover.length) himEntry = leftover.shift();
+      if (!herEntry && leftover.length) herEntry = leftover.shift();
+
+      const setCard = (who, v) => {
+        const e = document.getElementById(`homeMood${who}Emoji`);
+        const t = document.getElementById(`homeMood${who}Text`);
+        if (v) {
+          if (e) e.textContent = v.emoji || MOOD_MAP[v.mood] || '😊';
+          if (t) t.textContent = v.caption || v.mood;
+        } else {
+          if (e) e.textContent = '😶';
+          if (t) t.textContent = '아직 기록 안 함';
+        }
+      };
+      setCard('Me', himEntry);
+      setCard('Partner', herEntry);
+    }
+
+    // ── 최근 활동 ──
+    const _activity = { letters:[], photos:[], bucket:[], schedules:[], places:[], gifts:[] };
+    function _toMillis(ts) {
+      if (!ts) return 0;
+      if (ts.toMillis) return ts.toMillis();
+      if (ts.seconds) return ts.seconds * 1000;
+      const d = new Date(ts); return isNaN(d) ? 0 : d.getTime();
+    }
+    function _timeAgo(ms) {
+      if (!ms) return '';
+      const diff = Date.now() - ms;
+      const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
+      if (m < 1) return '방금';
+      if (m < 60) return `${m}분 전`;
+      if (h < 24) return `${h}시간 전`;
+      if (d === 1) return '어제';
+      if (d < 7) return `${d}일 전`;
+      const dt = new Date(ms); return `${dt.getMonth()+1}.${dt.getDate()}`;
+    }
+    const RA_ICONS = {
+      letter:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>',
+      photo:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      bucket:'<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+      schedule:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+      place:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+      gift:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4 9 8 12 8zM12 8s2-5 4.5-4S15 8 12 8z"/></svg>',
+    };
+    function renderRecentActivity() {
+      const el = document.getElementById('recentActivityList');
+      if (!el) return;
+      const acts = [];
+      _activity.letters.slice(0,5).forEach(l => acts.push({ type:'letter', t:_toMillis(l.createdAt), title:`${l.from||'누군가'}님이 편지를 보냈어요`, sub:(l.body||'').replace(/\n/g,' ').slice(0,34) }));
+      // 사진: 같은 날짜 묶어서 표시
+      const pg = {};
+      _activity.photos.forEach(p => {
+        const ms = _toMillis(p.createdAt); if (!ms) return;
+        const dt = new Date(ms); const key = `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`;
+        if (!pg[key]) pg[key] = { t:ms, count:0, caps:[] };
+        pg[key].count++; if (p.caption) pg[key].caps.push(p.caption);
+        if (ms > pg[key].t) pg[key].t = ms;
+      });
+      Object.values(pg).forEach(g => acts.push({ type:'photo', t:g.t, title:g.count>1?`새 사진 ${g.count}장이 추가됐어요`:'새 사진이 추가됐어요', sub:g.caps.slice(0,3).join(' · ') }));
+      _activity.bucket.filter(b=>b.completed).slice(0,5).forEach(b => acts.push({ type:'bucket', t:_toMillis(b.createdAt), title:'버킷 하나 완료! 🎉', sub:b.title||'' }));
+      _activity.schedules.slice(0,5).forEach(s => acts.push({ type:'schedule', t:_toMillis(s.createdAt), title:'일정을 추가했어요', sub:s.title||'' }));
+      _activity.places.slice(0,5).forEach(p => acts.push({ type:'place', t:_toMillis(p.createdAt), title:'장소를 추가했어요', sub:p.name||'' }));
+      _activity.gifts.slice(0,5).forEach(g => acts.push({ type:'gift', t:_toMillis(g.createdAt), title:'선물 위시리스트를 추가했어요', sub:g.title||'' }));
+
+      const top = acts.filter(a=>a.t>0).sort((a,b)=>b.t-a.t).slice(0,6);
+      el.innerHTML = '';
+      if (!top.length) { el.innerHTML = '<div class="muted small" style="text-align:center;padding:14px 0;">아직 활동이 없어요</div>'; return; }
+      top.forEach(a => {
+        const item = document.createElement('div'); item.className = 'ra-item';
+        const icon = document.createElement('div'); icon.className = `ra-icon ra-${a.type}`; icon.innerHTML = RA_ICONS[a.type] || '';
+        const body = document.createElement('div'); body.className = 'ra-body';
+        const title = document.createElement('div'); title.className = 'ra-title'; title.textContent = a.title;
+        body.appendChild(title);
+        if (a.sub) { const sub = document.createElement('div'); sub.className = 'ra-sub'; sub.textContent = a.sub; body.appendChild(sub); }
+        const time = document.createElement('div'); time.className = 'ra-time'; time.textContent = _timeAgo(a.t);
+        item.appendChild(icon); item.appendChild(body); item.appendChild(time);
+        el.appendChild(item);
       });
     }
 
@@ -3016,12 +3125,12 @@
           if (data.title) document.getElementById("navSubtitle").textContent = data.title;
         }
       }));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"schedules"), orderBy("date","asc"), orderBy("createdAt","asc")), snap => renderSchedules(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","desc")), snap => renderBucketList(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"photos"), orderBy("createdAt","desc")), snap => renderPhotos(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"letters"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderLetters(items); updateHomeLatestLetter(items); }));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"gifts"), orderBy("createdAt","desc")), snap => renderGifts(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
-      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"places"), orderBy("createdAt","desc")), snap => renderPlaces(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"schedules"), orderBy("date","asc"), orderBy("createdAt","asc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderSchedules(items); _activity.schedules = items; renderRecentActivity(); }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"bucket"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderBucketList(items); _activity.bucket = items; renderRecentActivity(); }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"photos"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderPhotos(items); _activity.photos = items; renderRecentActivity(); }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"letters"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderLetters(items); updateHomeLatestLetter(items); _activity.letters = items; renderRecentActivity(); }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"gifts"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderGifts(items); _activity.gifts = items; renderRecentActivity(); }));
+      unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"places"), orderBy("createdAt","desc")), snap => { const items = snap.docs.map(d => ({ id:d.id, ...d.data() })); renderPlaces(items); _activity.places = items; renderRecentActivity(); }));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"judgeHistory"), orderBy("createdAt","desc")), snap => renderJudgeHistory(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
       unsubscribers.push(onSnapshot(query(collection(db,"couples",code,"timeCapsules"), orderBy("createdAt","desc")), snap => renderTimeCapsules(snap.docs.map(d => ({ id:d.id, ...d.data() })))));
       setTimeout(() => initKakaoMap(), 500);
@@ -3225,6 +3334,7 @@
 
     function setRealtimeStatus(online) {
       const dot = document.getElementById("realtimeDot"); const text = document.getElementById("realtimeText");
+      if (!dot || !text) return;
       if (online) { dot.classList.remove("offline"); text.textContent = "실시간 동기화 중"; }
       else { dot.classList.add("offline"); text.textContent = "연결 대기중"; }
     }
