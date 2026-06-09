@@ -978,15 +978,7 @@
           </div>
         </div>
 
-        <!-- 최근 활동 -->
-        <div class="card" style="margin:0 0 12px;padding:16px;">
-          <div class="sec-head">
-            <span class="sec-title">최근 활동</span>
-          </div>
-          <div id="recentActivityList" class="recent-activity-list">
-            <div class="muted small" style="text-align:center;padding:14px 0;">아직 활동이 없어요</div>
-          </div>
-        </div>
+        <!-- 상대방에게 알림 보내기 -->
         <div class="card" style="margin:0 0 12px;">
           <div class="sec-head" style="margin-bottom:10px;"><span class="sec-title">🔔 상대방에게 알림 보내기</span></div>
           <div id="notificationOptIn" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;border-radius:12px;background:rgba(244,194,205,0.16);">
@@ -1003,6 +995,15 @@
             <button class="btn-outline" onclick="sendQuickNotification('일어났어? ☀️', '일어났어? ☀️')" style="font-size:12px;">일어났어? ☀️</button>
           </div>
           <div id="notifStatus" style="font-size:11px;color:#437f57;margin-top:8px;"></div>
+        </div>
+        <!-- 최근 활동 -->
+        <div class="card" style="margin:0 0 12px;padding:16px;">
+          <div class="sec-head">
+            <span class="sec-title">최근 활동</span>
+          </div>
+          <div id="recentActivityList" class="recent-activity-list">
+            <div class="muted small" style="text-align:center;padding:14px 0;">아직 활동이 없어요</div>
+          </div>
         </div>
       </section>
 
@@ -1880,9 +1881,10 @@
     function getPartnerName() { return _partnerDisplayName || '상대방'; }
 
     // 알림에 표시할 발신자(현재 사용자) 이름
-    // senderNames(uid별 '내 이름')이 가장 정확. 없으면 가입 시 displayName, 그래도 없으면 '상대방'.
+    // senderNames(uid별 '내 이름')이 가장 정확. 없으면 앱 내 설정 별명, 그래도 없으면 가입 시 displayName.
     function getSenderName() {
       if (currentUser && _senderNames[currentUser.uid]) return _senderNames[currentUser.uid];
+      if (_myDisplayName && _myDisplayName !== '나') return _myDisplayName;
       return (currentUser && currentUser.displayName) || '상대방';
     }
 
@@ -3055,6 +3057,10 @@
       if (data.senderNames) _senderNames = { ..._senderNames, ...data.senderNames };
       if (data.avatarName1) {
         _myDisplayName = data.avatarName1;
+        // senderNames에 내 uid가 없으면 avatarName1으로 채워줌 (이전 저장 데이터 호환)
+        if (currentUser && !_senderNames[currentUser.uid]) {
+          _senderNames[currentUser.uid] = data.avatarName1;
+        }
         const inp = document.getElementById('inputAvatarName1');
         if (inp) inp.value = data.avatarName1;
         applyCoverName(1, data.avatarName1);
@@ -3107,7 +3113,6 @@
       updateHomeWeather();
       updatePartnerStatus(code);
       setTimeout(() => prepareNotifications(), 1500);
-      setTimeout(() => notifyPartnerAppOpened(), 2200);
       const coupleRef = doc(db, "couples", code);
       const snap = await getDoc(coupleRef);
       if (!snap.exists()) {
@@ -3118,6 +3123,8 @@
         if (data.title) document.getElementById("navSubtitle").textContent = data.title;
         loadDecoData(data);
       }
+      // Firestore 데이터 로드 후 알림 발송 → 별명이 정확히 반영됨
+      notifyPartnerAppOpened();
       unsubscribers.push(onSnapshot(coupleRef, snap => {
         if (snap.exists()) {
           const data = snap.data();
