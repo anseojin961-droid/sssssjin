@@ -3057,9 +3057,17 @@
       if (data.senderNames) _senderNames = { ..._senderNames, ...data.senderNames };
       if (data.avatarName1) {
         _myDisplayName = data.avatarName1;
-        // senderNames에 내 uid가 없으면 avatarName1으로 채워줌 (이전 저장 데이터 호환)
+        // senderNames에 내 uid가 없으면 채워줌 (이전 저장 데이터 호환)
+        // 단, 다른 uid가 senderNames에 이미 있으면 내가 상대방(avatar2)이므로 avatarName2를 사용
         if (currentUser && !_senderNames[currentUser.uid]) {
-          _senderNames[currentUser.uid] = data.avatarName1;
+          const partnerAlreadyInSenderNames = data.senderNames &&
+            Object.keys(data.senderNames).some(uid => uid !== currentUser.uid);
+          if (partnerAlreadyInSenderNames && data.avatarName2) {
+            _senderNames[currentUser.uid] = data.avatarName2;
+            _myDisplayName = data.avatarName2;
+          } else {
+            _senderNames[currentUser.uid] = data.avatarName1;
+          }
         }
         const inp = document.getElementById('inputAvatarName1');
         if (inp) inp.value = data.avatarName1;
