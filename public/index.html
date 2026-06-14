@@ -769,6 +769,14 @@
             </div>
           </div>
 
+          <!-- 내 알림 이름 (본인 기기에서 본인 이름 — 알림 발신자용) -->
+          <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">📣 알림에 표시될 내 이름</div>
+          <div style="margin-bottom:14px;">
+            <input id="inputMySenderName" type="text" placeholder="이 휴대폰을 쓰는 '나'의 이름" maxlength="10"
+              style="width:100%;border:1px solid #e0c7ba;border-radius:12px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;background:#fff;" />
+            <div style="font-size:10px;opacity:0.6;margin-top:5px;line-height:1.5;">⚠️ 각자 <b>본인 휴대폰에서 본인 이름</b>을 넣어주세요. 알림(예: "OO님이 사진을 추가했어요")에 이 이름이 표시돼요.</div>
+          </div>
+
           <!-- 배경 테마 -->
           <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">배경 테마</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
@@ -2412,9 +2420,16 @@
       applyCoverName(1, name);
       updateGameNameLabels();
       pendingDeco.avatarName1 = name;
-      // '내 이름'을 현재 사용자 uid에 연결 → 알림 발신자 이름으로 사용
-      if (currentUser) { _senderNames[currentUser.uid] = name; pendingDeco['senderNames.' + currentUser.uid] = name; }
       markDecoUnsaved();
+    });
+    // 내 알림 이름 — 현재 기기 사용자(uid)에 직접 연결 (커버 이름과 분리)
+    document.getElementById('inputMySenderName') && document.getElementById('inputMySenderName').addEventListener('input', (e) => {
+      const name = e.target.value.trim();
+      if (currentUser) {
+        _senderNames[currentUser.uid] = name;
+        pendingDeco['senderNames.' + currentUser.uid] = name;
+        markDecoUnsaved();
+      }
     });
     document.getElementById('inputAvatarName2') && document.getElementById('inputAvatarName2').addEventListener('input', (e) => {
       const name = e.target.value.trim();
@@ -3055,6 +3070,9 @@
       if (data.avatar1) { applyAvatarUI(1, data.avatar1); applyCoverAvatar(1, data.avatar1); }
       if (data.avatar2) { applyAvatarUI(2, data.avatar2); applyCoverAvatar(2, data.avatar2); }
       if (data.senderNames) _senderNames = { ..._senderNames, ...data.senderNames };
+      // 내 알림 이름 입력칸 채우기 (현재 기기 사용자 기준)
+      const mySenderInp = document.getElementById('inputMySenderName');
+      if (mySenderInp && currentUser) mySenderInp.value = _senderNames[currentUser.uid] || '';
       if (data.avatarName1) {
         _myDisplayName = data.avatarName1;
         // senderNames에 내 uid가 없으면 avatarName1으로 채워줌 (이전 저장 데이터 호환)
