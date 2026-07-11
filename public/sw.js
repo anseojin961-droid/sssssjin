@@ -13,10 +13,30 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const { title, body } = payload.notification;
+  const notification = payload.notification || {};
+  const data = payload.data || {};
+  const title = notification.title || data.title || '새 알림';
+  const body = notification.body || data.body || '';
   self.registration.showNotification(title, {
     body,
     icon: '/logo.png',
-    badge: '/logo.png'
+    badge: '/logo.png',
+    data: {
+      url: data.url || '/'
+    }
   });
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(targetUrl);
+      return undefined;
+    })
+  );
 });

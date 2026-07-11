@@ -9,7 +9,7 @@ function setCors(req, res) {
   const origin = req.headers.origin;
   res.set("Access-Control-Allow-Origin", ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
   res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
 
 exports.naverLogin = functions.https.onRequest(async (req, res) => {
@@ -190,21 +190,40 @@ exports.sendNotification = functions.https.onRequest(async (req, res) => {
   if (!token) { res.status(400).json({ error: "token required" }); return; }
 
   try {
+    const authHeader = req.get("Authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ error: "auth required" });
+      return;
+    }
+    await admin.auth().verifyIdToken(authHeader.slice("Bearer ".length));
+
+    const safeTitle = String(title || "새 알림").slice(0, 100);
+    const safeBody = String(body || "").slice(0, 180);
     await admin.messaging().send({
       token,
-      notification: { title, body },
+      data: {
+        title: safeTitle,
+        body: safeBody,
+        url: "https://dnfl-bdc76.web.app/"
+      },
       webpush: {
-        notification: {
-          title,
-          body,
-          icon: "https://dnfl-bdc76.web.app/logo.png",
-          badge: "https://dnfl-bdc76.web.app/logo.png"
+        fcmOptions: {
+          link: "https://dnfl-bdc76.web.app/"
         }
       }
     });
     res.json({ success: true });
   } catch(e) {
     console.error(e);
+    const invalidTokenCodes = new Set([
+      "messaging/invalid-argument",
+      "messaging/invalid-registration-token",
+      "messaging/registration-token-not-registered"
+    ]);
+    if (invalidTokenCodes.has(e.code)) {
+      res.status(410).json({ error: e.message, code: e.code, invalidToken: true });
+      return;
+    }
     res.status(500).json({ error: e.message });
   }
 });

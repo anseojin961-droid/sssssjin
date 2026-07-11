@@ -1752,7 +1752,7 @@
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
-    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
+    import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDp8-HY4YxpR3hHWeDLEtyA3AV78siWyvo",
@@ -1771,7 +1771,8 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const storage = getStorage(app);
-    const messaging = getMessaging(app);
+    const messagingSupported = await isSupported().catch(() => false);
+    const messaging = messagingSupported ? getMessaging(app) : null;
 
     const VAPID_KEY = "BAdWwgD3o2-ov-gL2vsKkLzGMnky1YeeHlHF5ZLUVDwUyzUqYg7DpzJJkqzhmUMRJBnYgU9kNtz2v3yJbt74wVA";
     const SEND_NOTIFICATION_URL = "https://us-central1-dnfl-bdc76.cloudfunctions.net/sendNotification";
@@ -1785,6 +1786,12 @@
         status.textContent = "이 기기에서는 알림을 지원하지 않아요.";
         return;
       }
+      if (!messagingSupported || !messaging) {
+        button.disabled = true;
+        button.textContent = "알림 미지원";
+        status.textContent = "이 브라우저에서는 푸시 알림을 지원하지 않아요.";
+        return;
+      }
       if (Notification.permission === "granted") {
         button.disabled = true;
         button.textContent = "알림 켜짐";
@@ -1793,18 +1800,29 @@
         button.disabled = true;
         button.textContent = "알림 차단됨";
         status.textContent = "브라우저 설정에서 알림을 허용해 주세요.";
+      } else {
+        button.disabled = false;
+        button.textContent = "알림 받기";
+        status.textContent = "버튼을 누르면 브라우저 알림 권한을 요청해요.";
       }
     }
 
     async function registerFCMToken() {
+      if (!messagingSupported || !messaging) throw new Error("messaging unsupported");
       if (!("serviceWorker" in navigator)) throw new Error("service worker unsupported");
-      const registration = await navigator.serviceWorker.register("/sw.js");
+      const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
       const token = await getToken(messaging, {
         vapidKey: VAPID_KEY,
         serviceWorkerRegistration: registration
       });
+      if (!token) throw new Error("FCM token empty");
       if (token && currentCoupleCode && currentUser) {
-        await setDoc(doc(db, "couples", currentCoupleCode, "fcmTokens", currentUser.uid), { token, uid: currentUser.uid, updatedAt: serverTimestamp() }, { merge: true });
+        await setDoc(doc(db, "couples", currentCoupleCode, "fcmTokens", currentUser.uid), {
+          token,
+          uid: currentUser.uid,
+          updatedAt: serverTimestamp(),
+          userAgent: navigator.userAgent
+        }, { merge: true });
       }
     }
 
@@ -1830,19 +1848,42 @@
 
     window.requestNotificationPermission = initFCM;
 
+    // 예전 버전이 등록한 firebase-messaging-sw.js(현재 404)의 잔여 등록 정리
+    // 푸시 구독은 /sw.js 등록에 묶여 있으므로 안전하게 제거 가능
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => {
+          if (r.scope.includes("firebase-cloud-messaging-push-scope")) r.unregister().catch(() => {});
+        });
+      }).catch(() => {});
+    }
+
     async function sendPushToPartner(title, body) {
       if (!currentCoupleCode || !currentUser) return 0;
       try {
         const tokensSnap = await getDocs(collection(db, "couples", currentCoupleCode, "fcmTokens"));
-        const partnerTokens = tokensSnap.docs.filter(d => d.id !== currentUser.uid).map(d => d.data().token);
+        const partnerTokenDocs = tokensSnap.docs.filter(d => d.id !== currentUser.uid && d.data().token);
         let sentCount = 0;
-        for (const token of partnerTokens) {
+        const idToken = partnerTokenDocs.length ? await currentUser.getIdToken() : "";
+        for (const tokenDoc of partnerTokenDocs) {
+          const token = tokenDoc.data().token;
           const response = await fetch(SEND_NOTIFICATION_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${idToken}`
+            },
             body: JSON.stringify({ token, title, body })
           });
           if (response.ok) sentCount++;
+          else {
+            const errorBody = await response.json().catch(() => ({}));
+            if (response.status === 410 || errorBody.invalidToken) {
+              await deleteDoc(tokenDoc.ref).catch(err => console.warn("만료된 알림 토큰 삭제 실패", err));
+            } else {
+              console.warn("알림 전송 실패 응답", response.status, errorBody);
+            }
+          }
         }
         return sentCount;
       } catch(e) { console.error("알림 전송 실패", e); }
@@ -1858,8 +1899,11 @@
       if (sentCount > 0) sessionStorage.setItem(noticeKey, "sent");
     }
 
-    onMessage(messaging, (payload) => {
-      const { title, body } = payload.notification;
+    if (messaging) onMessage(messaging, (payload) => {
+      const notification = payload.notification || {};
+      const data = payload.data || {};
+      const title = notification.title || data.title || "새 알림";
+      const body = notification.body || data.body || "";
       const toast = document.createElement("div");
       toast.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e79aa8,#d07385);color:#fff;padding:12px 20px;border-radius:999px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(215,120,135,0.5);";
       toast.textContent = `💗 ${title}: ${body}`;
@@ -2318,17 +2362,23 @@
       if (img) { img.src = url; img.style.display = "block"; }
     }
 
-    document.getElementById("inputHomeBg") && document.getElementById("inputHomeBg").addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file || !currentCoupleCode) return;
+    // 업로드 전 이미지 리사이즈/압축 (원본 그대로 올리면 갤러리 로딩이 매우 느려짐)
+    async function compressImage(file, maxDim = 1600, quality = 0.82) {
+      if (!file || !file.type || !file.type.startsWith("image/") || file.type === "image/gif") return file;
       try {
-        const ref = storageRef(storage, `couples/${currentCoupleCode}/homebg/${Date.now()}_${file.name}`);
-        await uploadBytes(ref, file);
-        const url = await getDownloadURL(ref);
-        await updateDoc(doc(db, "couples", currentCoupleCode), { homeBg: url });
-        updateHomeBg(url);
-      } catch(e) { console.error(e); }
-    });
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+        if (scale >= 1 && file.size < 500 * 1024) { bitmap.close(); return file; }
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+        const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", quality));
+        if (!blob || blob.size >= file.size) return file;
+        return blob;
+      } catch (e) { return file; } // HEIC 등 디코딩 실패 시 원본 업로드
+    }
 
     // ── 꾸미기 기능 ──
     const COVER_THEMES = {
@@ -2383,7 +2433,7 @@
       if (!file || !currentCoupleCode) return;
       try {
         const r = storageRef(storage, `couples/${currentCoupleCode}/homebg/${Date.now()}_${file.name}`);
-        await uploadBytes(r, file);
+        await uploadBytes(r, await compressImage(file, 1920));
         const url = await getDownloadURL(r);
         updateHomeBg(url);
         document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
@@ -2429,7 +2479,7 @@
     document.getElementById('inputAvatar1') && document.getElementById('inputAvatar1').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file || !currentCoupleCode) return;
       const r = storageRef(storage, `couples/${currentCoupleCode}/avatars/avatar1_${Date.now()}`);
-      await uploadBytes(r, file);
+      await uploadBytes(r, await compressImage(file, 512));
       const url = await getDownloadURL(r);
       applyAvatarUI(1, url);
       applyCoverAvatar(1, url);
@@ -2439,7 +2489,7 @@
     document.getElementById('inputAvatar2') && document.getElementById('inputAvatar2').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file || !currentCoupleCode) return;
       const r = storageRef(storage, `couples/${currentCoupleCode}/avatars/avatar2_${Date.now()}`);
-      await uploadBytes(r, file);
+      await uploadBytes(r, await compressImage(file, 512));
       const url = await getDownloadURL(r);
       applyAvatarUI(2, url);
       applyCoverAvatar(2, url);
@@ -2465,7 +2515,7 @@
     document.getElementById('inputStickerImg') && document.getElementById('inputStickerImg').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file || !currentCoupleCode) return;
       const r = storageRef(storage, `couples/${currentCoupleCode}/stickers/${Date.now()}_${file.name}`);
-      await uploadBytes(r, file);
+      await uploadBytes(r, await compressImage(file, 512));
       const url = await getDownloadURL(r);
       const s = { id: Date.now(), type: 'img', content: url, x: Math.random()*50+10, y: Math.random()*40+10, scale: 1 };
       stickerData.push(s);
@@ -3105,10 +3155,12 @@
 
     window.sendQuickNotification = async (title, body) => {
       const status = document.getElementById("notifStatus");
-      status.textContent = "보내는 중...";
+      if (status) status.textContent = "보내는 중...";
       const sentCount = await sendPushToPartner(title, body);
-      status.textContent = sentCount > 0 ? "알림을 보냈어요! 💗" : "상대방이 먼저 알림 받기를 허용해야 해요.";
-      setTimeout(() => status.textContent = "", 3000);
+      if (status) {
+        status.textContent = sentCount > 0 ? "알림을 보냈어요! 💗" : "상대방이 먼저 알림 받기를 허용해야 해요.";
+        setTimeout(() => status.textContent = "", 3000);
+      }
     };
 
     async function enterMainApp(code) {
@@ -3678,9 +3730,15 @@
       renderPhotos(_lastPhotoItems);
     };
 
+    let _photosRenderPending = false;
     function renderPhotos(items) {
       _lastPhotoItems = items || [];
       updateStat('statPhotos', items ? items.length : 0);
+      // 사진 탭이 숨겨져 있으면 DOM 생성을 미룸 — display:none 안의 lazy 이미지는
+      // 크로미움이 전부 즉시 다운로드해서 앱 시작이 매우 느려짐
+      const section = document.getElementById("section-photos");
+      if (section && section.classList.contains("hidden")) { _photosRenderPending = true; return; }
+      _photosRenderPending = false;
       const photoList = document.getElementById("photoList"); const badge = document.getElementById("photoCountBadge");
       photoList.innerHTML = "";
       if (!items || !items.length) { photoList.innerHTML = '<div style="text-align:center;padding:24px 0;"><div style="font-size:36px;margin-bottom:8px;">📷</div><div class="muted small">아직 올라온 사진이 없어요.<br>첫 번째 추억을 남겨봐요!</div></div>'; badge.textContent = "0장"; return; }
@@ -3695,7 +3753,7 @@
         const grid = document.createElement('div'); grid.className = 'photo-grid-wrap';
         items.forEach(item => {
           const cell = document.createElement('div'); cell.className = 'photo-grid-item';
-          const img = document.createElement('img'); img.src = item.url; img.alt = item.caption || '';
+          const img = document.createElement('img'); img.src = item.url; img.alt = item.caption || ''; img.loading = 'lazy';
           img.addEventListener('click', () => openPhotoOverlay(item.url));
           if (item.caption) { const cap = document.createElement('div'); cap.className = 'photo-grid-caption'; cap.textContent = item.caption; cell.appendChild(cap); }
           const delBtn = document.createElement('button'); delBtn.className = 'photo-grid-del'; delBtn.textContent = '✕';
@@ -3961,7 +4019,7 @@
             const file = files[i];
             status.textContent = `${i+1}/${files.length}장 업로드 중…`;
             const r = storageRef(storage, `couples/${currentCoupleCode}/photos/${Date.now()}_${file.name}`);
-            await uploadBytes(r, file);
+            await uploadBytes(r, await compressImage(file, 1600));
             const finalUrl = await getDownloadURL(r);
             const photoCaption = files.length === 1 ? (caption || "") : (caption ? `${caption} (${i+1})` : "");
             await addDoc(collection(db,"couples",currentCoupleCode,"photos"), { url: finalUrl, caption: photoCaption, createdAt: serverTimestamp() });
@@ -4083,6 +4141,8 @@
       document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
       const sections = TAB_MAP[tab] || ['section-home'];
       sections.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
+      // 사진 탭을 처음 열 때(또는 숨김 상태에서 갱신된 뒤) 미뤄둔 렌더 실행
+      if (tab === 'photos' && _photosRenderPending) renderPhotos(_lastPhotoItems);
       const moreSubTabs = ['customize','capsule','dday','bucket','gifts','ai','map','games','mood','memo','question','vote'];
       MAIN_TABS.forEach(t => {
         const btn = document.getElementById('tab-' + t);
