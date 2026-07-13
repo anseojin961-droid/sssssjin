@@ -3,18 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <title>우리 둘만의 공간</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#e79aa8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="우리 흔적" />
   <link rel="apple-touch-icon" href="/logo.png" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://dapi.kakao.com" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=bb60f7842abbe4d6c1d65a31830dc8ea&libraries=services&autoload=false"></script>
   <style>
     :root {
+      color-scheme: light;
       /* ── 새 디자인 토큰 ── */
       --bg-base: #FBF5F0; --bg-tint: #F8E9E3; --bg-warm: #F2D9D1;
       --paper: #FFFBF8; --paper-2: #FFF6F1;
@@ -41,8 +46,21 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
     html, body { touch-action: manipulation; }
     button, a, [onclick] { touch-action: manipulation; cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--rose-500); outline-offset: 2px; }
+    /* 인라인 style의 outline:none이 특정도로 위 규칙을 눌러 포커스 링이 사라지는 걸 막는다.
+       키보드 탐색 시에만(:focus-visible) 나타나므로 마우스/터치 사용감엔 영향 없음 */
+    input:focus-visible, textarea:focus-visible, select:focus-visible,
+    button:focus-visible, a:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--rose-500) !important; outline-offset: 2px;
+    }
+    /* 숫자 자릿수 흔들림 방지 */
+    .stat-num, .dday-count, .clicker-score-val, .tetris-best-score, .tetris-info-val,
+    .badge-soft, #tetrisScore, #moleScore { font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
     body { margin:0; background:radial-gradient(1200px 600px at 20% 10%,#F8DDD4 0%,transparent 60%),radial-gradient(900px 600px at 80% 90%,#F1CFC8 0%,transparent 60%),linear-gradient(180deg,#F4E2DA 0%,#EDD1C6 100%); background-attachment:fixed; color:var(--ink); font-family:var(--font-kr); line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-    h1,h2,h3 { font-family:var(--font-display); letter-spacing:-0.02em; color:var(--wine); }
+    h1,h2,h3 { font-family:var(--font-display); letter-spacing:-0.02em; color:var(--wine); text-wrap:balance; }
     a { color:inherit; text-decoration:none; }
     button { cursor:pointer; border:none; font-family:inherit; }
     input,textarea,select { font-family:var(--font-kr); color:var(--ink); }
@@ -55,13 +73,13 @@
     .auth-title { font-size:22px; margin:0 0 4px; text-align:center; }
     .auth-sub { font-size:12px; opacity:0.7; text-align:center; margin-bottom:20px; }
     .auth-tabs { display:flex; gap:0; margin-bottom:20px; background:rgba(244,194,205,0.15); border-radius:999px; padding:3px; }
-    .auth-tab { flex:1; padding:7px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:all 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
+    .auth-tab { flex:1; padding:7px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:background 0.2s,color 0.2s,box-shadow 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
     .auth-tab.active { background:#fff; color:#4a3b35; box-shadow:0 2px 8px rgba(200,150,140,0.2); font-weight:500; }
     .form-group { margin-bottom:12px; }
     .form-label { font-size:11px; opacity:0.8; margin-bottom:4px; display:block; }
     .form-input { width:100%; padding:9px 14px; border-radius:999px; border:1px solid #e0c7ba; font-size:13px; outline:none; background:#fff; transition:border 0.15s,box-shadow 0.15s; box-sizing:border-box; }
     .form-input:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.2); }
-    .btn-full { width:100%; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; cursor:pointer; margin-bottom:8px; }
+    .btn-full { width:100%; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s,background 0.2s,box-shadow 0.2s; cursor:pointer; margin-bottom:8px; }
     .btn-full-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
     .btn-full-primary:hover { transform:translateY(-1px); }
     .btn-full-social { background:#fff; border:1px solid #e0e0e0; color:#333; }
@@ -81,7 +99,7 @@
     .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; flex-shrink:0; }
     .user-name { font-size:12px; flex:1; }
     .btn-sm-outline { padding:5px 12px; border-radius:999px; font-size:11px; background:#fff; border:1px solid rgba(224,198,185,0.9); color:#6f4d45; cursor:pointer; }
-    .navbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); background:rgba(255,251,248,0.88); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:12px 18px; box-shadow:var(--sh-1); }
+    .navbar { position:sticky; top:0; z-index:20; backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); background:rgba(255,251,248,0.88); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:calc(12px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) 12px calc(18px + env(safe-area-inset-left)); box-shadow:var(--sh-1); }
     .nav-left { display:flex; align-items:center; gap:10px; min-width:0; }
     .nav-logo { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--rose-400),var(--wine)); display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; box-shadow:0 4px 14px rgba(107,39,55,0.35); flex-shrink:0; font-family:var(--font-display); font-style:italic; }
     .nav-title { display:flex; flex-direction:column; gap:1px; min-width:0; }
@@ -140,7 +158,7 @@
     .game-header h2 { font-size:21px; margin:0 0 3px; }
     .game-header p { font-size:12px; opacity:0.6; margin:0; }
     .game-nav { display:flex; gap:8px; margin-bottom:20px; background:rgba(244,194,205,0.18); border-radius:999px; padding:4px; }
-    .game-tab { flex:1; padding:8px 4px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:all 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
+    .game-tab { flex:1; padding:8px 4px; border-radius:999px; font-size:12px; text-align:center; cursor:pointer; transition:background 0.2s,color 0.2s,box-shadow 0.2s; color:#9a7a7a; border:none; background:transparent; font-family:inherit; }
     .game-tab.active { background:#fff; color:#4a3b35; box-shadow:0 2px 8px rgba(200,150,140,0.25); font-weight:600; }
     .game-content { animation:fadeIn 0.25s ease; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
@@ -178,7 +196,7 @@
     /* 이심전심 게임 */
     .telepathy-question-text { font-size:18px; font-weight:600; text-align:center; color:#3c2f2a; line-height:1.5; margin:10px 0 16px; min-height:54px; }
     .telepathy-options { display:flex; gap:12px; margin:0 0 12px; }
-    .telepathy-option { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:22px 10px; border-radius:18px; border:2px solid transparent; cursor:pointer; transition:all 0.18s; font-family:inherit; font-size:15px; font-weight:600; background:#f5f0fb; }
+    .telepathy-option { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:22px 10px; border-radius:18px; border:2px solid transparent; cursor:pointer; transition:border-color 0.18s,box-shadow 0.18s,transform 0.18s; font-family:inherit; font-size:15px; font-weight:600; background:#f5f0fb; }
     .telepathy-option:first-child { background:linear-gradient(135deg,#ffe8f0,#ffd6e8); }
     .telepathy-option:last-child { background:linear-gradient(135deg,#e8f4ff,#d0e8ff); }
     .telepathy-emoji { font-size:32px; }
@@ -193,7 +211,7 @@
     .result-label { font-size:12px; opacity:0.6; }
     .result-val { font-size:14px; font-weight:600; color:#3c2f2a; }
     .result-match { text-align:center; margin-top:10px; font-size:15px; font-weight:700; color:var(--rose-deep); }
-    .game-next-btn { display:block; width:100%; margin-top:12px; padding:13px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; font-size:14px; font-weight:600; border:none; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(215,120,135,0.4); transition:all 0.18s; }
+    .game-next-btn { display:block; width:100%; margin-top:12px; padding:13px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; font-size:14px; font-weight:600; border:none; cursor:pointer; font-family:inherit; box-shadow:0 4px 12px rgba(215,120,135,0.4); transition:transform 0.18s,box-shadow 0.18s; }
     .game-next-btn:hover { transform:translateY(-1px); }
     /* 진실게임 */
     .truth-card-wrap { perspective:1000px; margin:10px 0 20px; }
@@ -242,11 +260,11 @@
     .tetris-info-label { opacity:0.55; }
     .tetris-info-val { font-weight:700; color:#3c2f2a; }
     .tetris-btns { display:flex; gap:8px; width:100%; max-width:220px; }
-    .tetris-btn { flex:1; padding:10px; border-radius:999px; border:none; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+    .tetris-btn { flex:1; padding:10px; border-radius:999px; border:none; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.15s,background 0.15s,box-shadow 0.15s; }
     .tetris-btn-start { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 12px rgba(215,120,135,0.35); }
     .tetris-btn-pause { background:rgba(244,194,205,0.3); color:var(--rose-deep); border:1.5px solid #f4c2cd; }
     .tetris-controls { display:flex; gap:6px; justify-content:center; margin-top:2px; }
-    .tetris-ctrl-btn { width:46px; height:46px; border-radius:12px; border:1.5px solid #f4c2cd; background:rgba(244,194,205,0.2); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; active:background:rgba(244,194,205,0.5); transition:background 0.1s; }
+    .tetris-ctrl-btn { width:46px; height:46px; border-radius:12px; border:1.5px solid #f4c2cd; background:rgba(244,194,205,0.2); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; transition:background 0.1s; }
     .tetris-ctrl-btn:active { background:rgba(244,194,205,0.55); }
     .tetris-overlay { position:absolute; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; background:rgba(253,248,243,0.88); }
     .tetris-overlay-text { font-size:22px; font-weight:700; color:var(--rose-deep); margin-bottom:6px; }
@@ -270,7 +288,7 @@
     input[type="text"],input[type="date"],input[type="url"],textarea { border-radius:999px; border:1px solid #e0c7ba; padding:7px 12px; font-size:12px; outline:none; background:rgba(255,255,255,0.9); transition:border 0.15s,box-shadow 0.15s; }
     textarea { border-radius:14px; min-height:70px; resize:vertical; }
     input:focus,textarea:focus { border-color:var(--rose); box-shadow:0 0 0 2px rgba(231,154,168,0.25); background:#fff; }
-    .btn-primary,.btn-outline { padding:7px 15px; border-radius:999px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; cursor:pointer; }
+    .btn-primary,.btn-outline { padding:7px 15px; border-radius:999px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; transition:transform 0.2s,background 0.2s,box-shadow 0.2s; cursor:pointer; }
     .btn-primary { background:linear-gradient(135deg,var(--rose),var(--rose-deep)); color:#fff; box-shadow:0 4px 10px rgba(215,120,135,0.45); border:none; }
     .btn-primary:hover { transform:translateY(-1px); }
     .btn-outline { background:rgba(255,255,255,0.9); border:1px solid rgba(224,198,185,0.9); color:#6f4d45; }
@@ -355,7 +373,7 @@
 
     .theme-picker { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
 
-    .theme-swatch { width:34px; height:34px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all 0.2s; flex-shrink:0; touch-action:manipulation; }
+    .theme-swatch { width:34px; height:34px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.2s,border-color 0.2s; flex-shrink:0; touch-action:manipulation; }
     .theme-swatch.active { border-color:#4a3b35; transform:scale(1.15); }
     .profile-avatar { width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,#f4c2cd,#e79aa8); display:flex; align-items:center; justify-content:center; font-size:26px; border:2px solid rgba(231,154,168,0.4); cursor:pointer; overflow:hidden; touch-action:manipulation; }
     .profile-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
@@ -459,7 +477,7 @@
     .mood-date { font-size:12px; opacity:0.55; margin-bottom:14px; }
     .mood-section-label { font-size:12px; font-weight:600; color:var(--rose-deep); margin-bottom:10px; }
     .mood-picker { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-    .mood-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:12px 6px 10px; border-radius:16px; border:2px solid transparent; background:rgba(244,194,205,0.12); cursor:pointer; transition:all 0.18s; user-select:none; }
+    .mood-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:12px 6px 10px; border-radius:16px; border:2px solid transparent; background:rgba(244,194,205,0.12); cursor:pointer; transition:border-color 0.18s,background 0.18s,box-shadow 0.18s; user-select:none; }
     .mood-btn span { font-size:11px; color:var(--text-main); opacity:0.7; }
     .mood-btn .mood-emoji { font-size:28px; line-height:1; }
     .mood-btn.selected { border-color:var(--rose); background:rgba(231,154,168,0.18); box-shadow:0 0 0 3px rgba(231,154,168,0.15); }
@@ -575,7 +593,7 @@
     /* Confetti */
     @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1;} 100%{transform:translateY(105vh) rotate(720deg);opacity:0;} }
     .confetti-piece { position:fixed; width:9px; height:9px; border-radius:2px; pointer-events:none; z-index:9999; animation:confetti-fall linear forwards; }
-    .confetti-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.48); z-index:9990; display:flex; align-items:center; justify-content:center; }
+    .confetti-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.48); z-index:9990; display:flex; align-items:center; justify-content:center; overscroll-behavior:contain; }
     .confetti-modal-box { background:#fff; border-radius:24px; padding:28px 24px; text-align:center; max-width:300px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1); }
     @keyframes pop-in { from{transform:scale(0.6);opacity:0;} to{transform:scale(1);opacity:1;} }
     .confetti-modal-emoji { font-size:52px; display:block; margin-bottom:10px; }
@@ -598,7 +616,7 @@
     .vote-card-ui { background:#fff; border-radius:16px; border:1px solid var(--border-soft); padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
     .vote-topic-text { font-size:15px; font-weight:500; color:#4a3b35; margin-bottom:14px; text-align:center; }
     .vote-options-row { display:flex; gap:10px; margin-bottom:12px; }
-    .vote-opt-btn { flex:1; padding:12px 8px; border-radius:14px; font-size:13px; border:2px solid rgba(224,198,185,0.9); background:#fff; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:5px; font-family:inherit; }
+    .vote-opt-btn { flex:1; padding:12px 8px; border-radius:14px; font-size:13px; border:2px solid rgba(224,198,185,0.9); background:#fff; cursor:pointer; transition:border-color 0.2s,background 0.2s; display:flex; flex-direction:column; align-items:center; gap:5px; font-family:inherit; }
     .vote-opt-btn.selected { border-color:#e79aa8; background:rgba(244,194,205,0.2); }
     .vote-opt-btn .v-emoji { font-size:26px; }
     .vote-bar-wrap { margin-top:2px; }
@@ -657,12 +675,12 @@
         <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">회원가입</button>
       </div>
       <div id="loginForm">
-        <div class="form-group"><label class="form-label">이메일</label><input id="loginEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
-        <div class="form-group"><label class="form-label">비밀번호</label><input id="loginPassword" class="form-input" type="password" placeholder="비밀번호" /></div>
-        <div id="loginError" class="auth-error"></div>
+        <div class="form-group"><label class="form-label" for="loginEmail">이메일</label><input id="loginEmail" class="form-input" type="email" name="email" autocomplete="email" spellcheck="false" placeholder="이메일 주소" /></div>
+        <div class="form-group"><label class="form-label" for="loginPassword">비밀번호</label><input id="loginPassword" class="form-input" type="password" name="password" autocomplete="current-password" placeholder="비밀번호" /></div>
+        <div id="loginError" class="auth-error" aria-live="polite"></div>
         <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="loginWithEmail()">로그인</button>
         <div class="divider-or"><span>또는</span></div>
-        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 로그인</button>
+        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" alt="" /> Google로 로그인</button>
         <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
           카카오로 로그인
@@ -673,13 +691,13 @@
         </button>
       </div>
       <div id="signupForm" class="hidden">
-        <div class="form-group"><label class="form-label">이메일</label><input id="signupEmail" class="form-input" type="email" placeholder="이메일 주소" /></div>
-        <div class="form-group"><label class="form-label">비밀번호</label><input id="signupPassword" class="form-input" type="password" placeholder="6자 이상" /></div>
-        <div class="form-group"><label class="form-label">닉네임</label><input id="signupName" class="form-input" type="text" placeholder="상대방에게 보일 이름" /></div>
-        <div id="signupError" class="auth-error"></div>
+        <div class="form-group"><label class="form-label" for="signupEmail">이메일</label><input id="signupEmail" class="form-input" type="email" name="email" autocomplete="email" spellcheck="false" placeholder="이메일 주소" /></div>
+        <div class="form-group"><label class="form-label" for="signupPassword">비밀번호</label><input id="signupPassword" class="form-input" type="password" name="new-password" autocomplete="new-password" placeholder="6자 이상" /></div>
+        <div class="form-group"><label class="form-label" for="signupName">닉네임</label><input id="signupName" class="form-input" type="text" name="nickname" autocomplete="nickname" placeholder="상대방에게 보일 이름" /></div>
+        <div id="signupError" class="auth-error" aria-live="polite"></div>
         <button class="btn-full btn-full-primary" style="margin-top:8px;" onclick="signupWithEmail()">회원가입</button>
         <div class="divider-or"><span>또는</span></div>
-        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" /> Google로 시작하기</button>
+        <button class="btn-full btn-full-social" onclick="loginWithGoogle()"><img src="https://www.google.com/favicon.ico" width="16" height="16" alt="" /> Google로 시작하기</button>
         <button class="btn-full btn-full-social btn-kakao" onclick="loginWithKakao()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.72 2 11.3c0 2.9 1.87 5.45 4.7 6.9l-1.2 4.4 5.1-3.4c.46.06.93.1 1.4.1 5.52 0 10-3.72 10-8.3S17.52 3 12 3z"/></svg>
           카카오로 시작하기
@@ -703,11 +721,11 @@
         <button class="btn-sm-outline" onclick="doLogout()">로그아웃</button>
       </div>
       <div class="field-group">
-        <label class="form-label">커플 코드</label>
-        <input id="inputCoupleCode" class="form-input" type="text" placeholder="예: peach-2023-0709" />
+        <label class="form-label" for="inputCoupleCode">커플 코드</label>
+        <input id="inputCoupleCode" class="form-input" type="text" name="couple-code" autocomplete="off" spellcheck="false" placeholder="예: peach-2023-0709" />
         <div style="font-size:11px;opacity:0.7;margin-top:6px;">- 처음이라면 원하는 코드를 정해서 입력하면 자동으로 만들어져요.<br />- 이미 쓰고 있다면 기존 코드 그대로 입력하세요.</div>
       </div>
-      <div id="codeError" class="auth-error"></div>
+      <div id="codeError" class="auth-error" aria-live="polite"></div>
       <button class="btn-full btn-full-primary" onclick="doEnterWithCode()">들어가기 💗</button>
     </div>
   </div>
@@ -740,7 +758,7 @@
         <div id="customizePanel" style="display:none;background:#fff;border-radius:20px;border:1px solid var(--border-soft);padding:16px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <div style="font-size:14px;font-weight:500;color:var(--text-main);">홈 꾸미기</div>
-            <button onclick="switchTabBar('home')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;touch-action:manipulation;">✕</button>
+            <button onclick="switchTabBar('home')" aria-label="꾸미기 닫기" style="background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;touch-action:manipulation;">✕</button>
           </div>
 
           <!-- 커플 프로필 -->
@@ -750,9 +768,9 @@
               <label style="cursor:pointer;touch-action:manipulation;position:relative;">
                 <div class="profile-avatar" id="avatar1">♥</div>
                 <div style="position:absolute;bottom:2px;right:2px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#e79aa8,#d07385);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
-                <input type="file" id="inputAvatar1" accept="image/*" style="display:none;" />
+                <input type="file" id="inputAvatar1" aria-label="내 프로필 사진 변경" accept="image/*" style="display:none;" />
               </label>
-              <input id="inputAvatarName1" type="text" placeholder="내 이름" maxlength="10"
+              <input id="inputAvatarName1" type="text" name="my-name" aria-label="내 이름" autocomplete="off" placeholder="내 이름" maxlength="10"
                 style="width:80px;text-align:center;border:1px solid #e0c7ba;border-radius:999px;padding:5px 8px;font-size:12px;font-family:inherit;outline:none;background:#fff;" />
               <div style="font-size:10px;opacity:0.5;">📷 눌러서 사진 변경</div>
             </div>
@@ -761,9 +779,9 @@
               <label style="cursor:pointer;touch-action:manipulation;position:relative;">
                 <div class="profile-avatar" id="avatar2">♥</div>
                 <div style="position:absolute;bottom:2px;right:2px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#e79aa8,#d07385);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);">📷</div>
-                <input type="file" id="inputAvatar2" accept="image/*" style="display:none;" />
+                <input type="file" id="inputAvatar2" aria-label="상대방 프로필 사진 변경" accept="image/*" style="display:none;" />
               </label>
-              <input id="inputAvatarName2" type="text" placeholder="상대방 이름" maxlength="10"
+              <input id="inputAvatarName2" type="text" name="partner-name" aria-label="상대방 이름" autocomplete="off" placeholder="상대방 이름" maxlength="10"
                 style="width:80px;text-align:center;border:1px solid #e0c7ba;border-radius:999px;padding:5px 8px;font-size:12px;font-family:inherit;outline:none;background:#fff;" />
               <div style="font-size:10px;opacity:0.5;">📷 눌러서 사진 변경</div>
             </div>
@@ -985,7 +1003,13 @@
             <span style="font-size:12px;">상대방이 앱을 사용하면 알려드릴까요?</span>
             <button id="btnEnableNotifications" class="btn-outline" onclick="enableNotifications()" style="font-size:11px;white-space:nowrap;">알림 받기</button>
           </div>
-          <div id="notificationPermissionStatus" style="font-size:11px;color:#437f57;margin:-5px 0 10px;"></div>
+          <div id="notificationPermissionStatus" aria-live="polite" style="font-size:11px;color:#437f57;margin:-5px 0 10px;"></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;margin-bottom:12px;border-radius:12px;background:rgba(244,194,205,0.16);">
+            <label for="inputSenderName" style="font-size:12px;white-space:nowrap;">알림에 보일 내 별명</label>
+            <input id="inputSenderName" type="text" name="sender-name" maxlength="10" autocomplete="off" spellcheck="false" placeholder="예: 자기야"
+              style="flex:1;min-width:0;border:1px solid #e0c7ba;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;outline:none;background:#fff;" />
+          </div>
+          <div id="senderNameStatus" aria-live="polite" style="font-size:11px;color:#437f57;margin:-6px 0 10px;"></div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
             <button class="btn-outline" onclick="sendQuickNotification('보고 싶어 💗', '보고 싶어 💗')" style="font-size:12px;">보고 싶어 💗</button>
             <button class="btn-outline" onclick="sendQuickNotification('사랑해 ❤️', '사랑해 ❤️')" style="font-size:12px;">사랑해 ❤️</button>
@@ -994,7 +1018,7 @@
             <button class="btn-outline" onclick="sendQuickNotification('잘 자 🌙', '잘 자 🌙')" style="font-size:12px;">잘 자 🌙</button>
             <button class="btn-outline" onclick="sendQuickNotification('일어났어? ☀️', '일어났어? ☀️')" style="font-size:12px;">일어났어? ☀️</button>
           </div>
-          <div id="notifStatus" style="font-size:11px;color:#437f57;margin-top:8px;"></div>
+          <div id="notifStatus" aria-live="polite" style="font-size:11px;color:#437f57;margin-top:8px;"></div>
         </div>
         <!-- 최근 활동 -->
         <div class="card" style="margin:0 0 12px;padding:16px;">
@@ -1018,22 +1042,22 @@
           <div id="timeCapsuleList" style="margin-bottom:10px;"></div>
           <div id="timeCapsuleForm" style="display:flex;flex-direction:column;gap:8px;">
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <input id="inputCapsuleFrom" type="text" placeholder="작성자 (예: 서후)" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;flex:1;min-width:100px;" />
-              <input id="inputCapsuleTitle" type="text" placeholder="제목 (예: 1년 후의 우리에게)" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;flex:2;min-width:140px;" />
+              <input id="inputCapsuleFrom" type="text" name="capsule-from" aria-label="타임캡슐 작성자" autocomplete="off" placeholder="작성자 (예: 서후)" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;flex:1;min-width:100px;" />
+              <input id="inputCapsuleTitle" type="text" name="capsule-title" aria-label="타임캡슐 제목" autocomplete="off" placeholder="제목 (예: 1년 후의 우리에게)" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;flex:2;min-width:140px;" />
             </div>
-            <textarea id="inputCapsuleBody" placeholder="미래의 우리에게 전하고 싶은 말…" style="font-size:12px;padding:8px 12px;border-radius:14px;border:1px solid #e0c7ba;outline:none;min-height:60px;resize:vertical;font-family:'Noto Serif KR',serif;background:rgba(255,255,255,0.9);"></textarea>
+            <textarea id="inputCapsuleBody" name="capsule-body" aria-label="타임캡슐 내용" placeholder="미래의 우리에게 전하고 싶은 말…" style="font-size:12px;padding:8px 12px;border-radius:14px;border:1px solid #e0c7ba;outline:none;min-height:60px;resize:vertical;font-family:'Noto Serif KR',serif;background:rgba(255,255,255,0.9);"></textarea>
             <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
               <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px;">
-                <label style="font-size:10px;opacity:0.55;padding-left:4px;">날짜를 정하세요</label>
-                <input id="inputCapsuleDate" type="date" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;" />
+                <label for="inputCapsuleDate" style="font-size:10px;opacity:0.55;padding-left:4px;">날짜를 정하세요</label>
+                <input id="inputCapsuleDate" type="date" name="capsule-date" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;" />
               </div>
               <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:100px;">
-                <label style="font-size:10px;opacity:0.55;padding-left:4px;">시간을 정하세요</label>
-                <input id="inputCapsuleTime" type="time" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;" />
+                <label for="inputCapsuleTime" style="font-size:10px;opacity:0.55;padding-left:4px;">시간을 정하세요</label>
+                <input id="inputCapsuleTime" type="time" name="capsule-time" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid #e0c7ba;outline:none;width:100%;" />
               </div>
               <button id="btnAddCapsule" class="btn-primary" style="font-size:12px;white-space:nowrap;">봉인하기 🔒</button>
             </div>
-            <div id="capsuleStatus" style="font-size:11px;color:#437f57;min-height:14px;"></div>
+            <div id="capsuleStatus" aria-live="polite" style="font-size:11px;color:#437f57;min-height:14px;"></div>
           </div>
         </div>
       </section>
@@ -1077,7 +1101,7 @@
               <span class="mood-emoji">😤</span><span>힘들어</span>
             </div>
           </div>
-          <input id="moodCaption" type="text" maxlength="30" placeholder="나 지금 뭐하는 중… (선택)" style="width:100%;box-sizing:border-box;margin-top:12px;padding:10px 14px;border-radius:999px;border:1px solid rgba(224,198,185,0.9);font-size:13px;font-family:inherit;outline:none;background:rgba(255,251,248,0.9);color:var(--ink);" />
+          <input id="moodCaption" type="text" name="mood-caption" aria-label="기분 한마디 (선택)" autocomplete="off" maxlength="30" placeholder="나 지금 뭐하는 중… (선택)" style="width:100%;box-sizing:border-box;margin-top:12px;padding:10px 14px;border-radius:999px;border:1px solid rgba(224,198,185,0.9);font-size:13px;font-family:inherit;outline:none;background:rgba(255,251,248,0.9);color:var(--ink);" />
           <div id="moodMySaved" class="mood-my-saved hidden">
             <span id="moodMySavedEmoji" class="mood-my-saved-emoji"></span>
             <span id="moodMySavedText" class="mood-my-saved-text"></span>
@@ -1112,7 +1136,7 @@
               <span class="memo-editor-label" id="memoEditorLabel">새 메모</span>
             </div>
             <input id="memoTitleInput" class="memo-title-input" placeholder="제목 (선택)" />
-            <textarea id="memoContentInput" class="memo-textarea" placeholder="내용을 입력하세요...&#10;쇼핑 리스트, 여행 계획, 하고 싶은 말... 뭐든 적어봐요 💕"></textarea>
+            <textarea id="memoContentInput" class="memo-textarea" placeholder="내용을 입력하세요…&#10;쇼핑 리스트, 여행 계획, 하고 싶은 말… 뭐든 적어봐요 💕"></textarea>
             <div class="memo-editor-footer">
               <span class="memo-editor-status" id="memoEditorStatus"></span>
               <button class="memo-save-btn" onclick="saveMemo()">💾 저장하기</button>
@@ -1132,7 +1156,7 @@
           </div>
           <div class="divider"></div>
           <div class="field-row">
-            <div class="field-group" style="flex:1;min-width:150px;"><label class="field-label">사귄 날짜</label><input id="inputStartDate" type="date" /></div>
+            <div class="field-group" style="flex:1;min-width:150px;"><label class="field-label" for="inputStartDate">사귄 날짜</label><input id="inputStartDate" type="date" /></div>
             <button id="btnSaveStartDate" class="btn-outline">D-day 저장</button>
           </div>
           <div id="ddaySaveMsg" class="success-text hidden"></div>
@@ -1146,12 +1170,12 @@
           </div>
           <div id="scheduleAddForm" style="display:none;background:rgba(255,255,255,0.9);border-radius:16px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(224,198,185,0.4);">
             <div class="field-row">
-              <div class="field-group" style="flex:1 1 120px;"><label class="field-label">날짜</label><input id="inputScheduleDate" type="date" /></div>
-              <div class="field-group" style="flex:2 1 150px;"><label class="field-label">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
+              <div class="field-group" style="flex:1 1 120px;"><label class="field-label" for="inputScheduleDate">날짜</label><input id="inputScheduleDate" type="date" /></div>
+              <div class="field-group" style="flex:2 1 150px;"><label class="field-label" for="inputScheduleTitle">제목</label><input id="inputScheduleTitle" type="text" placeholder="예: 200일 기념" /></div>
             </div>
             <div class="field-row">
               <div class="field-group" style="flex:1;">
-                <label class="field-label">종류</label>
+                <label class="field-label" for="selectScheduleType">종류</label>
                 <select id="selectScheduleType" style="padding:6px 12px;border-radius:999px;border:1px solid #e0c7ba;font-size:12px;">
                   <option value="anniversary">기념일</option><option value="date">데이트</option><option value="trip">여행</option><option value="etc">기타</option>
                 </select>
@@ -1166,8 +1190,8 @@
           <div class="card-header"><h2>우리의 버킷리스트</h2><span>언젠가 꼭 해보고 싶은 것들</span><span class="pill-label">함께 체크해 나가기</span></div>
           <p class="section-description">언젠가 둘이서 꼭 해보고 싶은 것들을 적어두고, 하나씩 완성해가요.</p>
           <div class="field-row">
-            <div class="field-group" style="flex:1 1 160px;"><label class="field-label">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
-            <div class="field-group" style="flex:1 1 130px;"><label class="field-label">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
+            <div class="field-group" style="flex:1 1 160px;"><label class="field-label" for="inputBucketTitle">버킷리스트</label><input id="inputBucketTitle" type="text" placeholder="예: 유럽 한 달 살기" /></div>
+            <div class="field-group" style="flex:1 1 130px;"><label class="field-label" for="inputBucketTag">태그 (선택)</label><input id="inputBucketTag" type="text" placeholder="여행, 데이트…" /></div>
             <button id="btnAddBucket" class="btn-primary" style="margin-top:18px;">추가</button>
           </div>
           <div class="divider"></div>
@@ -1190,10 +1214,10 @@
             </div>
           </div>
           <div id="photoUploadPanel" style="display:none;background:rgba(255,255,255,0.9);border-radius:16px;padding:14px 16px;margin-bottom:14px;border:1px solid rgba(224,198,185,0.4);">
-            <div class="field-group"><label class="field-label">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" multiple style="font-size:11px;" /><span class="muted small">- 여러 장 동시에 선택 가능해요 📸</span></div>
+            <div class="field-group"><label class="field-label" for="inputPhotoFile">사진 파일 업로드</label><input id="inputPhotoFile" type="file" accept="image/*" multiple style="font-size:11px;" /><span class="muted small">- 여러 장 동시에 선택 가능해요 📸</span></div>
             <div class="field-row">
-              <div class="field-group" style="flex:1;"><label class="field-label">사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://..." /></div>
-              <div class="field-group" style="flex:1;"><label class="field-label">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
+              <div class="field-group" style="flex:1;"><label class="field-label" for="inputPhotoUrl">사진 URL</label><input id="inputPhotoUrl" type="url" placeholder="https://…" /></div>
+              <div class="field-group" style="flex:1;"><label class="field-label" for="inputPhotoCaption">캡션</label><input id="inputPhotoCaption" type="text" placeholder="예: 첫 여행" /></div>
             </div>
             <div class="field-row" style="margin-top:4px;"><button id="btnAddPhoto" class="btn-primary">사진 추가</button><span id="photoUploadStatus" class="small muted"></span></div>
           </div>
@@ -1211,10 +1235,10 @@
           <div id="letterComposePanel" class="ltr-compose">
             <div class="ltr-compose-head">오늘의 한 줄</div>
             <div class="field-row">
-              <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">From.</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-              <div class="field-group" style="flex:1 1 140px;"><label class="field-label">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
+              <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label" for="inputLetterFrom">From.</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+              <div class="field-group" style="flex:1 1 140px;"><label class="field-label" for="inputLetterTitle">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
             </div>
-            <div class="field-group"><label class="field-label">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
+            <div class="field-group"><label class="field-label" for="textareaLetterBody">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
             <div class="field-row" style="justify-content:space-between;align-items:center;">
               <button id="btnSendLetter" class="btn-primary">💌 편지 보내기</button>
               <span id="letterStatus" class="small muted"></span>
@@ -1239,8 +1263,8 @@
         <!-- 싸움 판정 -->
         <div id="aiPanelJudge">
           <p class="section-description">각자의 입장을 입력하면 AI가 누구의 잘못인지 판정해줘요!</p>
-          <div class="field-group"><label class="field-label">내 입장</label><textarea id="inputMyStory" placeholder="내가 억울한 점, 상황 설명…" style="min-height:80px;border-radius:14px;"></textarea></div>
-          <div class="field-group"><label class="field-label">상대방 입장</label><textarea id="inputPartnerStory" placeholder="상대방 입장에서 쓰거나, 상대방이 직접 써도 돼요…" style="min-height:80px;border-radius:14px;"></textarea></div>
+          <div class="field-group"><label class="field-label" for="inputMyStory">내 입장</label><textarea id="inputMyStory" placeholder="내가 억울한 점, 상황 설명…" style="min-height:80px;border-radius:14px;"></textarea></div>
+          <div class="field-group"><label class="field-label" for="inputPartnerStory">상대방 입장</label><textarea id="inputPartnerStory" placeholder="상대방 입장에서 쓰거나, 상대방이 직접 써도 돼요…" style="min-height:80px;border-radius:14px;"></textarea></div>
           <button id="btnJudge" class="btn-primary">AI 판정 받기 ⚖️</button>
           <div id="judgeResult" style="margin-top:14px;padding:14px;border-radius:14px;background:rgba(244,194,205,0.15);border:1px solid rgba(244,194,205,0.7);font-size:13px;line-height:1.8;white-space:pre-wrap;display:none;"></div>
           <div id="judgeHistorySection" style="margin-top:18px;display:none;">
@@ -1253,14 +1277,14 @@
         <div id="aiPanelDate" style="display:none;">
           <p class="section-description">위치와 분위기를 입력하면 AI가 데이트 코스를 추천해줘요!</p>
           <div class="field-group">
-            <label class="field-label">위치</label>
+            <label class="field-label" for="inputDateLocation">위치</label>
             <div style="display:flex;gap:8px;">
-              <input id="inputDateLocation" type="text" placeholder="예: 홍대, 수원, 강남" style="flex:1;" />
+              <input id="inputDateLocation" type="text" name="date-location" autocomplete="off" placeholder="예: 홍대, 수원, 강남" style="flex:1;" />
               <button id="btnGetLocation" class="btn-outline" style="white-space:nowrap;">📍 현재위치</button>
             </div>
           </div>
-          <div class="field-group"><label class="field-label">분위기</label><input id="inputDateMood" type="text" placeholder="예: 조용한, 활동적인, 낭만적인" /></div>
-          <div class="field-group"><label class="field-label">예산</label><input id="inputDateBudget" type="text" placeholder="예: 5만원, 10만원" /></div>
+          <div class="field-group"><label class="field-label" for="inputDateMood">분위기</label><input id="inputDateMood" type="text" placeholder="예: 조용한, 활동적인, 낭만적인" /></div>
+          <div class="field-group"><label class="field-label" for="inputDateBudget">예산</label><input id="inputDateBudget" type="text" placeholder="예: 5만원, 10만원" /></div>
           <button id="btnDate" class="btn-primary">데이트 코스 추천 받기 📅</button>
           <div id="dateResult" style="margin-top:14px;padding:14px;border-radius:14px;background:rgba(244,194,205,0.15);border:1px solid rgba(244,194,205,0.7);font-size:13px;line-height:1.8;white-space:pre-wrap;display:none;"></div>
         </div>
@@ -1269,9 +1293,9 @@
         <div class="card-header"><h2>받고 싶은 선물 리스트 🎁</h2><span>서로의 위시리스트</span><span class="pill-label">선물 힌트</span></div>
         <p class="section-description">갖고 싶은 것들을 미리 적어두면, 기념일에 딱 맞는 선물을 고를 수 있어요.</p>
         <div class="field-row">
-          <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-          <div class="field-group" style="flex:2 1 180px;"><label class="field-label">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
-          <div class="field-group" style="flex:1 1 120px;"><label class="field-label">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://..." /></div>
+          <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label" for="inputGiftFrom">누가 원해요?</label><input id="inputGiftFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+          <div class="field-group" style="flex:2 1 180px;"><label class="field-label" for="inputGiftTitle">선물 이름</label><input id="inputGiftTitle" type="text" placeholder="예: 샤넬, 까르띠에" /></div>
+          <div class="field-group" style="flex:1 1 120px;"><label class="field-label" for="inputGiftLink">링크 (선택)</label><input id="inputGiftLink" type="url" placeholder="https://…" /></div>
           <button id="btnAddGift" class="btn-primary" style="margin-top:18px;">추가</button>
         </div>
         <div class="divider"></div>
@@ -1284,8 +1308,8 @@
         <div class="card-header"><h2>우리 흔적 🗺️</h2><span>함께 간 곳들</span><span class="pill-label">추억 지도</span></div>
         <p class="section-description">함께 갔던 곳을 지도에 핀으로 남겨요.</p>
         <div class="field-row">
-          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
-          <div class="field-group" style="flex:1 1 160px;"><label class="field-label">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
+          <div class="field-group" style="flex:1 1 160px;"><label class="field-label" for="inputPlaceName">장소 이름</label><input id="inputPlaceName" type="text" placeholder="예: 수원 우지커피" /></div>
+          <div class="field-group" style="flex:1 1 160px;"><label class="field-label" for="inputPlaceMemo">메모 (선택)</label><input id="inputPlaceMemo" type="text" placeholder="예: 첫 데이트한 곳" /></div>
           <button id="btnSearchPlace" class="btn-primary" style="margin-top:18px;">장소 검색</button>
           <button id="btnMyLocation" class="btn-outline" style="margin-top:18px;">📍 현재 위치</button>
         </div>
@@ -1437,21 +1461,21 @@
           <p class="section-description">오늘의 질문에 각자 솔직하게 답변하고, 서로의 생각을 확인해봐요.</p>
           <div class="question-card-ui">
             <div class="question-date-label" id="questionDateLabel"></div>
-            <div class="question-text-ui" id="questionTextDisplay">질문을 불러오는 중...</div>
+            <div class="question-text-ui" id="questionTextDisplay">질문을 불러오는 중…</div>
             <button onclick="nextQuestion()" class="btn-outline" style="font-size:12px;margin-bottom:12px;">🔀 다른 질문</button>
             <div id="questionMyAnswerWrap" class="question-answer-box" style="display:none;">
               <div class="question-answer-who">나의 답변 ✓</div>
               <div class="question-answer-text" id="questionMyAnswerText"></div>
             </div>
             <div id="questionInputWrap">
-              <textarea id="questionAnswerInput" placeholder="솔직하게 답변해봐요..." style="width:100%;min-height:70px;border-radius:14px;border:1px solid #e0c7ba;padding:10px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit;background:rgba(255,255,255,0.95);box-sizing:border-box;"></textarea>
+              <textarea id="questionAnswerInput" name="question-answer" aria-label="오늘의 질문 답변" placeholder="솔직하게 답변해봐요…" style="width:100%;min-height:70px;border-radius:14px;border:1px solid #e0c7ba;padding:10px 12px;font-size:13px;outline:none;resize:vertical;font-family:inherit;background:rgba(255,255,255,0.95);box-sizing:border-box;"></textarea>
               <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end;">
                 <button onclick="saveQuestionAnswer()" class="btn-primary" style="font-size:12px;">답변 저장 💗</button>
               </div>
             </div>
             <div id="questionPartnerWrap" class="question-answer-box partner" style="display:none;margin-top:8px;">
               <div class="question-answer-who">상대방 답변 💌</div>
-              <div class="question-answer-text" id="questionPartnerText">아직 답변하지 않았어요...</div>
+              <div class="question-answer-text" id="questionPartnerText">아직 답변하지 않았어요…</div>
             </div>
           </div>
           <div class="divider"></div>
@@ -1470,17 +1494,17 @@
           <p class="section-description">둘이 투표해서 결정해봐요. 메뉴, 영화, 데이트 장소 뭐든 OK!</p>
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
             <div class="field-group" style="margin:0;">
-              <label class="field-label">투표 주제</label>
-              <input id="inputVoteTopic" type="text" placeholder="예: 오늘 저녁 뭐 먹을까?" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:8px 14px;font-size:13px;outline:none;box-sizing:border-box;" />
+              <label class="field-label" for="inputVoteTopic">투표 주제</label>
+              <input id="inputVoteTopic" type="text" name="vote-topic" autocomplete="off" placeholder="예: 오늘 저녁 뭐 먹을까?" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:8px 14px;font-size:13px;outline:none;box-sizing:border-box;" />
             </div>
             <div style="display:flex;gap:8px;">
               <div class="field-group" style="flex:1;margin:0;">
-                <label class="field-label">선택지 A</label>
-                <input id="inputVoteA" type="text" placeholder="예: 🍗 치킨" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:7px 12px;font-size:12px;outline:none;box-sizing:border-box;" />
+                <label class="field-label" for="inputVoteA">선택지 A</label>
+                <input id="inputVoteA" type="text" name="vote-a" autocomplete="off" placeholder="예: 🍗 치킨" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:7px 12px;font-size:12px;outline:none;box-sizing:border-box;" />
               </div>
               <div class="field-group" style="flex:1;margin:0;">
-                <label class="field-label">선택지 B</label>
-                <input id="inputVoteB" type="text" placeholder="예: 🍕 피자" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:7px 12px;font-size:12px;outline:none;box-sizing:border-box;" />
+                <label class="field-label" for="inputVoteB">선택지 B</label>
+                <input id="inputVoteB" type="text" name="vote-b" autocomplete="off" placeholder="예: 🍕 피자" style="width:100%;border-radius:999px;border:1px solid #e0c7ba;padding:7px 12px;font-size:12px;outline:none;box-sizing:border-box;" />
               </div>
             </div>
             <button onclick="createVote()" class="btn-primary" style="align-self:flex-start;font-size:12px;">투표 만들기 🗳️</button>
@@ -1614,13 +1638,13 @@
             <div class="truth-answer-box">
               <div class="truth-answer-label" id="truthMyLabel">✏️ 내 답변</div>
               <div class="truth-input-row">
-                <textarea id="truthMyInput" class="truth-textarea" placeholder="솔직하게 적어봐요..." rows="2"></textarea>
+                <textarea id="truthMyInput" class="truth-textarea" placeholder="솔직하게 적어봐요…" rows="2"></textarea>
                 <button class="truth-submit-btn" onclick="submitTruthAnswer()">전송</button>
               </div>
             </div>
             <div class="truth-answer-box truth-partner-box">
               <div class="truth-answer-label" id="truthPartnerLabel">💌 상대방 답변</div>
-              <div class="truth-partner-answer" id="truthPartnerAnswer">아직 답변을 기다리는 중...</div>
+              <div class="truth-partner-answer" id="truthPartnerAnswer">아직 답변을 기다리는 중…</div>
             </div>
           </div>
           <div class="game-history-wrap">
@@ -1924,12 +1948,46 @@
     function getMyName() { return _myDisplayName || '나'; }
     function getPartnerName() { return _partnerDisplayName || '상대방'; }
 
+    function normalizeName(name) {
+      return String(name || '').trim();
+    }
+
+    function getAuthDisplayName() {
+      return normalizeName(currentUser && currentUser.displayName);
+    }
+
+    // senderNames.{uid}에 값이 없을 때만 로그인 계정 이름으로 채운다.
+    // (사용자가 직접 정한 별명을 덮어쓰면 안 되므로 이미 값이 있으면 건드리지 않는다)
+    function syncCurrentSenderName() {
+      if (!currentUser || !currentCoupleCode) return;
+      if (normalizeName(_senderNames[currentUser.uid])) return;
+      const authName = getAuthDisplayName();
+      if (!authName) return;
+      saveSenderName(authName);
+    }
+
+    // 알림에 쓸 내 별명을 couples/{code}.senderNames.{uid} 에 저장
+    function saveSenderName(name) {
+      if (!currentUser || !currentCoupleCode) return Promise.resolve();
+      const value = normalizeName(name);
+      _senderNames[currentUser.uid] = value;
+      return updateDoc(doc(db, "couples", currentCoupleCode), {
+        [`senderNames.${currentUser.uid}`]: value
+      }).catch(e => console.warn("알림 발신자 이름 저장 실패", e));
+    }
+
     // 알림에 표시할 발신자(현재 사용자) 이름
-    // senderNames(uid별 '내 이름')이 가장 정확. 없으면 앱 내 설정 별명, 그래도 없으면 가입 시 displayName.
+    // 앱에서 직접 정한 별명(uid별 저장)이 최우선. 없으면 로그인 계정 이름으로 대체한다.
+    // 커버의 1번/2번 이름은 공용 표시라 기기마다 뒤집힐 수 있어 마지막 수단으로만 쓴다.
     function getSenderName() {
-      if (currentUser && _senderNames[currentUser.uid]) return _senderNames[currentUser.uid];
-      if (_myDisplayName && _myDisplayName !== '나') return _myDisplayName;
-      return (currentUser && currentUser.displayName) || '상대방';
+      const savedName = normalizeName(currentUser && _senderNames[currentUser.uid]);
+      const authName = getAuthDisplayName();
+      const myName = normalizeName(_myDisplayName);
+
+      if (savedName) return savedName;
+      if (authName) return authName;
+      if (myName && myName !== '나') return myName;
+      return '상대방';
     }
 
     // '나'/'상대방' 내부값을 실제 이름으로 변환
@@ -2445,7 +2503,7 @@
     // 커버 아바타 동기화 함수
     function applyCoverAvatar(num, url) {
       const el = document.getElementById('coverAvatar' + num);
-      if (el) el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      if (el) el.innerHTML = `<img src="${url}" alt="${num === 1 ? '내' : '상대방'} 프로필 사진" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
     }
     function applyCoverName(num, name) {
       const el = document.getElementById('coverName' + num);
@@ -2462,8 +2520,6 @@
       applyCoverName(1, name);
       updateGameNameLabels();
       pendingDeco.avatarName1 = name;
-      // '내 이름'을 현재 사용자 uid에 연결 → 알림 발신자 이름으로 사용
-      if (currentUser) { _senderNames[currentUser.uid] = name; pendingDeco['senderNames.' + currentUser.uid] = name; }
       markDecoUnsaved();
     });
     document.getElementById('inputAvatarName2') && document.getElementById('inputAvatarName2').addEventListener('input', (e) => {
@@ -2474,6 +2530,24 @@
       pendingDeco.avatarName2 = name;
       markDecoUnsaved();
     });
+
+    // 알림 별명 입력 (uid별 저장 → 상대방 기기 알림에 이 이름으로 표시)
+    const senderNameInput = document.getElementById('inputSenderName');
+    if (senderNameInput) {
+      let senderNameTimer = null;
+      senderNameInput.addEventListener('input', (e) => {
+        const value = e.target.value.trim();
+        const status = document.getElementById('senderNameStatus');
+        clearTimeout(senderNameTimer);
+        senderNameTimer = setTimeout(async () => {
+          await saveSenderName(value);
+          if (status) {
+            status.textContent = value ? `알림에 "${value}"(으)로 표시돼요 💗` : '계정 이름으로 표시돼요.';
+            setTimeout(() => { if (status.textContent) status.textContent = ''; }, 3000);
+          }
+        }, 600);
+      });
+    }
 
     // 프로필 아바타
     document.getElementById('inputAvatar1') && document.getElementById('inputAvatar1').addEventListener('change', async (e) => {
@@ -2499,7 +2573,7 @@
 
     function applyAvatarUI(num, url) {
       const el = document.getElementById('avatar' + num);
-      if (el) el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      if (el) el.innerHTML = `<img src="${url}" alt="${num === 1 ? '내' : '상대방'} 프로필 사진" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
     }
 
     // 스티커
@@ -3071,7 +3145,7 @@
       const content = document.getElementById('memoContentInput').value.trim();
       const statusEl = document.getElementById('memoEditorStatus');
       if (!title && !content) { alert('내용을 입력해주세요'); return; }
-      statusEl.textContent = '저장 중...';
+      statusEl.textContent = '저장 중…';
       try {
         if (_editingMemoId) {
           await updateDoc(doc(db, 'couples', currentCoupleCode, 'sharedMemos', _editingMemoId), {
@@ -3105,20 +3179,12 @@
       if (data.avatar1) { applyAvatarUI(1, data.avatar1); applyCoverAvatar(1, data.avatar1); }
       if (data.avatar2) { applyAvatarUI(2, data.avatar2); applyCoverAvatar(2, data.avatar2); }
       if (data.senderNames) _senderNames = { ..._senderNames, ...data.senderNames };
+      // 저장된 별명이 없으면 로그인 계정 이름으로 한 번만 채운다 (기존 별명은 유지)
+      syncCurrentSenderName();
+      const senderInp = document.getElementById('inputSenderName');
+      if (senderInp && currentUser) senderInp.value = _senderNames[currentUser.uid] || '';
       if (data.avatarName1) {
         _myDisplayName = data.avatarName1;
-        // senderNames에 내 uid가 없으면 채워줌 (이전 저장 데이터 호환)
-        // 단, 다른 uid가 senderNames에 이미 있으면 내가 상대방(avatar2)이므로 avatarName2를 사용
-        if (currentUser && !_senderNames[currentUser.uid]) {
-          const partnerAlreadyInSenderNames = data.senderNames &&
-            Object.keys(data.senderNames).some(uid => uid !== currentUser.uid);
-          if (partnerAlreadyInSenderNames && data.avatarName2) {
-            _senderNames[currentUser.uid] = data.avatarName2;
-            _myDisplayName = data.avatarName2;
-          } else {
-            _senderNames[currentUser.uid] = data.avatarName1;
-          }
-        }
         const inp = document.getElementById('inputAvatarName1');
         if (inp) inp.value = data.avatarName1;
         applyCoverName(1, data.avatarName1);
@@ -3155,7 +3221,7 @@
 
     window.sendQuickNotification = async (title, body) => {
       const status = document.getElementById("notifStatus");
-      if (status) status.textContent = "보내는 중...";
+      if (status) status.textContent = "보내는 중…";
       const sentCount = await sendPushToPartner(title, body);
       if (status) {
         status.textContent = sentCount > 0 ? "알림을 보냈어요! 💗" : "상대방이 먼저 알림 받기를 허용해야 해요.";
@@ -3258,7 +3324,7 @@
         const partnerWrap = document.getElementById('questionPartnerWrap');
         if (partnerWrap) {
           if (partnerEntry) { partnerWrap.style.display='block'; document.getElementById('questionPartnerText').textContent = partnerEntry[1]; }
-          else { partnerWrap.style.display = myAns ? 'block' : 'none'; if (partnerEntry === undefined && myAns) document.getElementById('questionPartnerText').textContent = '아직 답변하지 않았어요...'; }
+          else { partnerWrap.style.display = myAns ? 'block' : 'none'; if (partnerEntry === undefined && myAns) document.getElementById('questionPartnerText').textContent = '아직 답변하지 않았어요…'; }
         }
       });
       // 기록
@@ -3548,9 +3614,9 @@
         const monthInfo = document.createElement("div"); monthInfo.className = "cal-month-info"; monthInfo.textContent = `${year} · ${monthEventsCount}개 일정`;
         heroLeft.appendChild(monthName); heroLeft.appendChild(monthInfo);
         const navRow = document.createElement("div"); navRow.className = "cal-nav-row";
-        const btnPrev = document.createElement("button"); btnPrev.className = "cal-nav-btn"; btnPrev.textContent = "‹";
+        const btnPrev = a11yIconBtn(document.createElement("button"), "이전 달"); btnPrev.className = "cal-nav-btn"; btnPrev.textContent = "‹";
         btnPrev.addEventListener("click", () => { month--; if (month < 0) { month = 11; year--; } renderCalendar(); });
-        const btnNext = document.createElement("button"); btnNext.className = "cal-nav-btn"; btnNext.textContent = "›";
+        const btnNext = a11yIconBtn(document.createElement("button"), "다음 달"); btnNext.className = "cal-nav-btn"; btnNext.textContent = "›";
         btnNext.addEventListener("click", () => { month++; if (month > 11) { month = 0; year++; } renderCalendar(); });
         navRow.appendChild(btnPrev); navRow.appendChild(btnNext);
         heroTop.appendChild(heroLeft); heroTop.appendChild(navRow);
@@ -3580,7 +3646,7 @@
             const popup = document.getElementById("calPopup"); if (popup) popup.remove();
             const box = document.createElement("div"); box.id = "calPopup";
             box.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid #f0e0d6;border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;min-width:220px;max-width:85vw;";
-            const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.style.cssText = "float:right;margin-left:8px;"; closeBtn.addEventListener("click", () => box.remove());
+            const closeBtn = a11yIconBtn(document.createElement("button"), "닫기"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.style.cssText = "float:right;margin-left:8px;"; closeBtn.addEventListener("click", () => box.remove());
             box.appendChild(closeBtn);
             const dateTitle = document.createElement("div"); dateTitle.style.cssText = "font-size:12px;color:#b07a8a;margin-bottom:8px;font-weight:500;"; dateTitle.textContent = `${year}년 ${month+1}월 ${d}일`;
             box.appendChild(dateTitle);
@@ -3630,7 +3696,7 @@
           box.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1px solid #f4c2cd;border-radius:18px;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:200;min-width:260px;max-width:85vw;max-height:70vh;overflow-y:auto;";
           const hdr = document.createElement("div"); hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;";
           const htitle = document.createElement("div"); htitle.style.cssText = "font-size:14px;font-weight:500;color:#4a3b35;"; htitle.textContent = "전체 일정 목록";
-          const closeBtn = document.createElement("button"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.addEventListener("click", () => box.remove());
+          const closeBtn = a11yIconBtn(document.createElement("button"), "닫기"); closeBtn.className = "btn-icon"; closeBtn.innerHTML = "✕"; closeBtn.addEventListener("click", () => box.remove());
           hdr.appendChild(htitle); hdr.appendChild(closeBtn); box.appendChild(hdr);
           (items || []).forEach(item => {
             const row = document.createElement("div"); row.style.cssText = "padding:8px 0;border-bottom:1px solid #f5e8e0;";
@@ -3641,8 +3707,8 @@
             const t = document.createElement("div"); t.style.cssText = "font-size:13px;color:#4a3b35;"; t.textContent = item.title;
             const dd = document.createElement("div"); dd.style.cssText = "font-size:10px;color:#b07a8a;margin-top:2px;"; dd.textContent = formatDate(item.date);
             info.appendChild(t); info.appendChild(dd);
-            const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
-            const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+            const btnEdit = a11yIconBtn(document.createElement("button"), "일정 수정"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
+            const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
             btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"schedules",item.id)); row.remove(); });
             viewMode.appendChild(badge); viewMode.appendChild(info); viewMode.appendChild(btnEdit); viewMode.appendChild(btnDel);
             const editMode = document.createElement("div"); editMode.style.cssText = "display:none;flex-direction:column;gap:6px;padding:6px 0;";
@@ -3692,8 +3758,8 @@
         const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
         info.appendChild(title); info.appendChild(ts);
         if (item.tag) { const tag = document.createElement("div"); tag.className = "bucket-tag"; tag.textContent = item.tag; info.appendChild(tag); }
-        const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️"; btnEdit.title = "수정";
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        const btnEdit = a11yIconBtn(document.createElement("button"), "수정"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
+        const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
         btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"bucket",item.id)); });
         const viewWrapper = document.createElement("div"); viewWrapper.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
         viewWrapper.appendChild(checkbox); viewWrapper.appendChild(info); viewWrapper.appendChild(btnEdit); viewWrapper.appendChild(btnDel);
@@ -3730,6 +3796,26 @@
       renderPhotos(_lastPhotoItems);
     };
 
+    // JS로 만든 클릭 요소를 키보드로도 쓸 수 있게 한다.
+    // 문서 끝의 접근성 보정 스크립트는 로드 시 1회만 돌아서 동적 요소를 잡지 못하므로,
+    // role=button + tabindex를 직접 붙여 Enter/Space 핸들러(문서 위임)가 걸리게 한다.
+    function a11yClickable(el, label) {
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      if (label) el.setAttribute('aria-label', label);
+      return el;
+    }
+    // 아이콘 전용 버튼(✕, ✏️ 등)에 접근 가능한 이름을 붙인다
+    function a11yIconBtn(btn, label) {
+      btn.type = 'button';
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
+      return btn;
+    }
+
+    // 사진이 많아지면 DOM/이미지가 한꺼번에 생겨 앱이 느려지므로 한 번에 60장씩만 그린다
+    const PHOTO_PAGE = 60;
+    let _photoRenderLimit = PHOTO_PAGE;
     let _photosRenderPending = false;
     function renderPhotos(items) {
       _lastPhotoItems = items || [];
@@ -3743,28 +3829,80 @@
       photoList.innerHTML = "";
       if (!items || !items.length) { photoList.innerHTML = '<div style="text-align:center;padding:24px 0;"><div style="font-size:36px;margin-bottom:8px;">📷</div><div class="muted small">아직 올라온 사진이 없어요.<br>첫 번째 추억을 남겨봐요!</div></div>'; badge.textContent = "0장"; return; }
       badge.textContent = `${items.length}장`;
+      const totalPhotos = items.length;
+      const visibleItems = items.slice(0, _photoRenderLimit);
+      // 남은 사진이 있으면 "더 보기"로 다음 60장을 이어서 그린다
+      function appendMoreButton() {
+        if (visibleItems.length >= totalPhotos) return;
+        const remain = totalPhotos - visibleItems.length;
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "btn-outline";
+        more.style.cssText = "display:block;margin:16px auto 0;font-size:12px;padding:8px 20px;";
+        more.textContent = `사진 ${Math.min(remain, PHOTO_PAGE)}장 더 보기 (남은 ${remain}장)`;
+        more.addEventListener("click", () => {
+          _photoRenderLimit += PHOTO_PAGE;
+          renderPhotos(_lastPhotoItems);
+        });
+        photoList.appendChild(more);
+      }
       const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      function openPhotoOverlay(url) {
-        const overlay = document.createElement('div'); overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-        const fi = document.createElement('img'); fi.src = url; fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;';
-        overlay.appendChild(fi); overlay.addEventListener('click', () => overlay.remove()); document.body.appendChild(overlay);
+      function openPhotoOverlay(url, caption) {
+        const opener = document.activeElement;
+        const overlay = document.createElement('div');
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', caption || '사진 크게 보기');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;overscroll-behavior:contain;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);';
+
+        const fi = document.createElement('img');
+        fi.src = url;
+        fi.alt = caption || '';
+        fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:12px;object-fit:contain;';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', '사진 닫기');
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = 'position:absolute;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.16);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;';
+
+        function close() {
+          document.removeEventListener('keydown', onKey);
+          overlay.remove();
+          if (opener && typeof opener.focus === 'function') opener.focus();
+        }
+        function onKey(e) {
+          if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+          // 오버레이가 열린 동안 포커스는 닫기 버튼에 묶어둔다
+          if (e.key === 'Tab') { e.preventDefault(); closeBtn.focus(); }
+        }
+        document.addEventListener('keydown', onKey);
+        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+        overlay.addEventListener('click', close);
+
+        overlay.appendChild(fi);
+        overlay.appendChild(closeBtn);
+        document.body.appendChild(overlay);
+        closeBtn.focus();
       }
       if (_photoGridMode) {
         const grid = document.createElement('div'); grid.className = 'photo-grid-wrap';
-        items.forEach(item => {
+        visibleItems.forEach(item => {
           const cell = document.createElement('div'); cell.className = 'photo-grid-item';
           const img = document.createElement('img'); img.src = item.url; img.alt = item.caption || ''; img.loading = 'lazy';
-          img.addEventListener('click', () => openPhotoOverlay(item.url));
+          a11yClickable(img, item.caption ? `사진 크게 보기: ${item.caption}` : '사진 크게 보기');
+          img.addEventListener('click', () => openPhotoOverlay(item.url, item.caption));
           if (item.caption) { const cap = document.createElement('div'); cap.className = 'photo-grid-caption'; cap.textContent = item.caption; cell.appendChild(cap); }
-          const delBtn = document.createElement('button'); delBtn.className = 'photo-grid-del'; delBtn.textContent = '✕';
+          const delBtn = a11yIconBtn(document.createElement('button'), '사진 삭제'); delBtn.className = 'photo-grid-del'; delBtn.textContent = '✕';
           delBtn.addEventListener('click', async (e) => { e.stopPropagation(); if (!confirm('삭제할까요?')) return; await deleteDoc(doc(db,'couples',currentCoupleCode,'photos',item.id)); });
           cell.appendChild(img); cell.appendChild(delBtn); grid.appendChild(cell);
         });
         photoList.appendChild(grid);
+        appendMoreButton();
         return;
       }
       const groups = {};
-      items.forEach(item => {
+      visibleItems.forEach(item => {
         const d = item.createdAt ? (item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt)) : new Date();
         const key = `${d.getFullYear()}-${d.getMonth()}`;
         if (!groups[key]) groups[key] = { year: d.getFullYear(), month: d.getMonth(), photos: [] };
@@ -3776,31 +3914,37 @@
         const monthName = document.createElement("div"); monthName.className = "mem-month-name"; monthName.textContent = MONTHS_EN[m];
         const monthMeta = document.createElement("div"); monthMeta.className = "mem-month-meta"; monthMeta.textContent = `${y} · ${photos.length}장의 추억`;
         const chevron = document.createElement("div"); chevron.className = "mem-month-chevron"; chevron.textContent = "▼";
+        chevron.setAttribute("aria-hidden", "true");
         monthHeader.appendChild(monthName); monthHeader.appendChild(monthMeta); monthHeader.appendChild(chevron);
         photoList.appendChild(monthHeader);
         const grid = document.createElement("div"); grid.className = "mem-grid" + (isCollapsed ? " collapsed" : "");
+        a11yClickable(monthHeader, `${y}년 ${m + 1}월 사진 접기/펼치기`);
+        monthHeader.setAttribute("aria-expanded", String(!isCollapsed));
         monthHeader.addEventListener("click", () => {
           const nowCollapsed = !grid.classList.contains("collapsed");
           grid.classList.toggle("collapsed", nowCollapsed);
           monthHeader.classList.toggle("collapsed", nowCollapsed);
+          monthHeader.setAttribute("aria-expanded", String(!nowCollapsed));
           if (nowCollapsed) _collapsedMonths.add(key); else _collapsedMonths.delete(key);
         });
         photos.forEach(item => {
           const cell = document.createElement("div"); cell.className = "mem-grid-item";
           const img = document.createElement("img"); img.src = item.url; img.alt = item.caption || ""; img.loading = "lazy";
-          img.addEventListener("click", () => openPhotoOverlay(item.url));
+          a11yClickable(img, item.caption ? `사진 크게 보기: ${item.caption}` : "사진 크게 보기");
+          img.addEventListener("click", () => openPhotoOverlay(item.url, item.caption));
           const overlay = document.createElement("div"); overlay.className = "mem-grid-overlay";
           if (item.caption) { const cap = document.createElement("div"); cap.className = "mem-grid-caption"; cap.textContent = item.caption; overlay.appendChild(cap); }
           const dateLabel = document.createElement("div"); dateLabel.className = "mem-grid-date";
           const d2 = item._date; dateLabel.textContent = `${d2.getFullYear()}.${String(d2.getMonth()+1).padStart(2,"0")}.${String(d2.getDate()).padStart(2,"0")}`;
           overlay.appendChild(dateLabel);
-          const delBtn = document.createElement("button"); delBtn.className = "mem-grid-del"; delBtn.textContent = "✕";
+          const delBtn = a11yIconBtn(document.createElement("button"), "사진 삭제"); delBtn.className = "mem-grid-del"; delBtn.textContent = "✕";
           delBtn.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"photos",item.id)); });
           cell.appendChild(img); cell.appendChild(overlay); cell.appendChild(delBtn);
           grid.appendChild(cell);
         });
         photoList.appendChild(grid);
       });
+      appendMoreButton();
     }
 
     function renderLetters(items) {
@@ -3899,8 +4043,8 @@
         const ts = document.createElement("div"); ts.style.cssText = "font-size:10px;opacity:0.5;margin-top:2px;"; ts.textContent = formatTimestamp(item.createdAt);
         info.appendChild(title); info.appendChild(ts);
         const linkEl = item.link ? (() => { const a = document.createElement("a"); a.href = item.link; a.target = "_blank"; a.style.cssText = "font-size:10px;color:#c9736f;text-decoration:underline;"; a.textContent = "링크 보기"; info.appendChild(a); return a; })() : null;
-        const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️"; btnEdit.title = "수정";
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        const btnEdit = a11yIconBtn(document.createElement("button"), "수정"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
+        const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
         btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"gifts",item.id)); });
         const viewWrapper = document.createElement("div"); viewWrapper.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
         viewWrapper.appendChild(checkbox); viewWrapper.appendChild(info); viewWrapper.appendChild(btnEdit); viewWrapper.appendChild(btnDel);
@@ -3948,8 +4092,8 @@
           kakaoMap.setCenter(new kakao.maps.LatLng(item.lat, item.lng)); kakaoMap.setLevel(3);
           document.getElementById("kakaoMap").scrollIntoView({ behavior:"smooth", block:"center" });
         });
-        const btnEdit = document.createElement("button"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️"; btnEdit.title = "수정";
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        const btnEdit = a11yIconBtn(document.createElement("button"), "수정"); btnEdit.className = "btn-icon"; btnEdit.innerHTML = "✏️";
+        const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
         btnDel.addEventListener("click", async () => { if (!confirm("삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"places",item.id)); });
         const viewWrapper = document.createElement("div"); viewWrapper.style.cssText = "display:flex;align-items:center;gap:8px;width:100%;";
         viewWrapper.appendChild(meta); viewWrapper.appendChild(btnEdit); viewWrapper.appendChild(btnDel);
@@ -4064,7 +4208,7 @@
       const keyword = document.getElementById("inputPlaceName").value.trim();
       if (!keyword) { alert("장소 이름을 입력해주세요."); return; }
       if (!kakaoMap) { initKakaoMap(); setTimeout(() => document.getElementById("btnSearchPlace").click(), 1000); return; }
-      const mapSearchResults = document.getElementById("mapSearchResults"); mapSearchResults.innerHTML = '<div class="muted small">검색 중...</div>';
+      const mapSearchResults = document.getElementById("mapSearchResults"); mapSearchResults.innerHTML = '<div class="muted small">검색 중…</div>';
       const ps = new kakao.maps.services.Places();
       ps.keywordSearch(keyword, (data, status) => {
         mapSearchResults.innerHTML = "";
@@ -4181,7 +4325,7 @@
         const header = document.createElement("div");
         header.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(244,194,205,0.15);cursor:pointer;";
         const dateEl = document.createElement("div"); dateEl.style.cssText = "font-size:11px;color:#b07a8a;"; dateEl.textContent = formatTimestamp(item.createdAt);
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
+        const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕";
         btnDel.addEventListener("click", async (e) => { e.stopPropagation(); if (!confirm("기록을 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"judgeHistory",item.id)); });
         const arrowEl = document.createElement("span"); arrowEl.style.cssText = "font-size:11px;color:#e79aa8;margin-left:6px;"; arrowEl.textContent = "▼";
         const titleRow = document.createElement("div"); titleRow.style.cssText = "display:flex;align-items:center;gap:6px;";
@@ -4231,7 +4375,7 @@
         dtBadge.style.cssText = "opacity:0.75;font-size:9px;";
         subEl.appendChild(dtBadge);
         metaBlock.appendChild(titleEl); metaBlock.appendChild(subEl);
-        const btnDel = document.createElement("button"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.style.cssText = "flex-shrink:0;font-size:11px;";
+        const btnDel = a11yIconBtn(document.createElement("button"), "삭제"); btnDel.className = "btn-icon"; btnDel.innerHTML = "✕"; btnDel.style.cssText = "flex-shrink:0;font-size:11px;";
         btnDel.addEventListener("click", async () => { if (!confirm("타임캡슐을 삭제할까요?")) return; await deleteDoc(doc(db,"couples",currentCoupleCode,"timeCapsules",item.id)); });
         topRow.appendChild(lockIcon); topRow.appendChild(metaBlock); topRow.appendChild(btnDel);
         card.appendChild(topRow);
@@ -4490,7 +4634,7 @@
       document.getElementById('telepathyBtnMe').disabled = true;
       document.getElementById('telepathyBtnPartner').disabled = true;
       (choice === '나' ? document.getElementById('telepathyBtnMe') : document.getElementById('telepathyBtnPartner')).classList.add('selected');
-      document.getElementById('telepathyStatus').textContent = `${getPartnerName()} 선택 기다리는 중... 💬`;
+      document.getElementById('telepathyStatus').textContent = `${getPartnerName()} 선택 기다리는 중… 💬`;
       const ref = doc(db, 'couples', currentCoupleCode, 'games', 'telepathy');
       try { await updateDoc(ref, { [`answers.${currentUser.uid}`]: choice }); }
       catch { await setDoc(ref, { questionIdx: _telepathyIdx, answers: { [currentUser.uid]: choice } }); }
@@ -4532,7 +4676,7 @@
           document.getElementById('telepathyBtnMe').disabled = true;
           document.getElementById('telepathyBtnPartner').disabled = true;
           (myAns === '나' ? document.getElementById('telepathyBtnMe') : document.getElementById('telepathyBtnPartner')).classList.add('selected');
-          if (!partnerAns) document.getElementById('telepathyStatus').textContent = `${getPartnerName()} 선택 기다리는 중... 💬`;
+          if (!partnerAns) document.getElementById('telepathyStatus').textContent = `${getPartnerName()} 선택 기다리는 중… 💬`;
         }
         if (myAns && partnerAns) {
           _partnerTelepathyPick = partnerAns;
@@ -4572,7 +4716,7 @@
         document.getElementById('truthMyInput').value = '';
         document.getElementById('truthMyInput').disabled = false;
       }
-      document.getElementById('truthPartnerAnswer').textContent = partnerAns || `${getPartnerName()}의 답변을 기다리는 중...`;
+      document.getElementById('truthPartnerAnswer').textContent = partnerAns || `${getPartnerName()}의 답변을 기다리는 중…`;
     }
 
     function _initTruthListener() {
@@ -4616,7 +4760,7 @@
       document.getElementById('truthQText').classList.remove('hidden');
       document.getElementById('truthMyInput').value = '';
       document.getElementById('truthMyInput').disabled = false;
-      document.getElementById('truthPartnerAnswer').textContent = '아직 답변을 기다리는 중...';
+      document.getElementById('truthPartnerAnswer').textContent = '아직 답변을 기다리는 중…';
       document.getElementById('truthAnswerArea').classList.remove('hidden');
       if (currentCoupleCode) {
         await setDoc(doc(db, 'couples', currentCoupleCode, 'games', 'truth'), {
@@ -5155,6 +5299,31 @@
       _tet.timer = setTimeout(_tetTick, _tet.dropInterval);
     };
 
+  </script>
+  <script>
+    // 접근성 보강: onclick div/span에 키보드 포커스·조작 지원, 장식용 아이콘 숨김
+    (function () {
+      const INTERACTIVE = 'BUTTON,A,INPUT,SELECT,TEXTAREA,LABEL';
+      document.querySelectorAll('[onclick], .theme-swatch').forEach(function (el) {
+        if (el.matches(INTERACTIVE) || el.closest('button, a, label')) return;
+        if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+        if (el.classList.contains('theme-swatch') && !el.hasAttribute('aria-label')) {
+          el.setAttribute('aria-label', '배경 테마: ' + (el.dataset.theme || ''));
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const t = e.target;
+        if (t && t.getAttribute && t.getAttribute('role') === 'button' && !t.matches(INTERACTIVE)) {
+          e.preventDefault();
+          t.click();
+        }
+      });
+      document.querySelectorAll('button svg, [role="button"] svg, .tab-icon svg').forEach(function (s) {
+        s.setAttribute('aria-hidden', 'true');
+      });
+    })();
   </script>
 </body>
 </html>
