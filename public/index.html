@@ -1009,6 +1009,7 @@
             <input id="inputSenderName" type="text" name="sender-name" maxlength="10" autocomplete="off" spellcheck="false" placeholder="예: 자기야"
               style="flex:1;min-width:0;border:1px solid #e0c7ba;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;outline:none;background:#fff;" />
           </div>
+          <div style="font-size:10px;opacity:0.6;margin:-6px 0 10px;line-height:1.5;">⚠️ 각자 <b>본인 휴대폰에서 본인 이름</b>을 넣어주세요. 알림(예: "OO님이 사진을 추가했어요")에 이 이름이 표시돼요.</div>
           <div id="senderNameStatus" aria-live="polite" style="font-size:11px;color:#437f57;margin:-6px 0 10px;"></div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
             <button class="btn-outline" onclick="sendQuickNotification('보고 싶어 💗', '보고 싶어 💗')" style="font-size:12px;">보고 싶어 💗</button>
@@ -1977,16 +1978,14 @@
     }
 
     // 알림에 표시할 발신자(현재 사용자) 이름
-    // 앱에서 직접 정한 별명(uid별 저장)이 최우선. 없으면 로그인 계정 이름으로 대체한다.
-    // 커버의 1번/2번 이름은 공용 표시라 기기마다 뒤집힐 수 있어 마지막 수단으로만 쓴다.
+    // 1) 앱에서 직접 정한 별명(uid별 저장) 2) 로그인 계정 이름 순.
+    // 커버의 1번/2번 이름(_myDisplayName)은 커플이 공유하는 값이라 양쪽 기기에서 같다 —
+    // 폴백으로 쓰면 상대방 이름으로 알림이 가므로 절대 쓰지 않는다.
     function getSenderName() {
       const savedName = normalizeName(currentUser && _senderNames[currentUser.uid]);
-      const authName = getAuthDisplayName();
-      const myName = normalizeName(_myDisplayName);
-
       if (savedName) return savedName;
+      const authName = getAuthDisplayName();
       if (authName) return authName;
-      if (myName && myName !== '나') return myName;
       return '상대방';
     }
 
