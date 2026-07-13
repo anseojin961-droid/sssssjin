@@ -313,39 +313,65 @@
     .bucket-tag { font-size:10px; padding:1px 8px; border-radius:999px; border:1px solid rgba(210,150,150,0.8); background:rgba(244,194,205,0.28); }
     input[type="checkbox"] { accent-color:#d27990; }
     /* ── Love Letters (편지) 섹션 ── */
-    .ltr-page-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px; }
-    .ltr-page-title { font-size:30px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; }
-    .ltr-page-sub { font-size:12px; color:var(--ink-3); margin-top:6px; }
-    .ltr-write-toggle { display:flex; align-items:center; gap:5px; height:36px; padding:0 15px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); border:none; color:#fff; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; box-shadow:0 3px 10px rgba(215,120,135,0.35); white-space:nowrap; flex-shrink:0; }
-    /* 편지지 작성 패널 */
-    .ltr-compose { position:relative; border-radius:20px; padding:18px 18px 16px; margin-bottom:18px; overflow:hidden;
-      background:linear-gradient(rgba(255,250,247,0.97),rgba(255,250,247,0.97)),
+    .ltr-page-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; }
+    .ltr-page-title { font-size:34px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); line-height:1; letter-spacing:-0.02em; }
+    .ltr-page-sub { font-size:12px; color:var(--ink-3); margin-top:7px; }
+    /* 버튼-인-버튼: 아이콘이 자기만의 원형 아일랜드 안에 앉는다 */
+    .ltr-write-toggle { display:flex; align-items:center; gap:8px; height:40px; padding:4px 4px 4px 16px; border-radius:999px; background:linear-gradient(135deg,var(--rose),var(--rose-deep)); border:none; color:#fff; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; box-shadow:0 3px 12px rgba(215,120,135,0.35), inset 0 1px 1px rgba(255,255,255,0.25); white-space:nowrap; flex-shrink:0; transition:transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring); }
+    .ltr-write-toggle:active { transform:scale(0.96); }
+    .ltr-write-ico { width:32px; height:32px; border-radius:999px; background:rgba(255,255,255,0.2); box-shadow:inset 0 1px 1px rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; transition:transform 0.5s var(--ease-spring); }
+    @media (hover:hover) {
+      .ltr-write-toggle:hover { box-shadow:0 6px 18px rgba(215,120,135,0.45), inset 0 1px 1px rgba(255,255,255,0.25); }
+      .ltr-write-toggle:hover .ltr-write-ico { transform:translate(2px,-1px) scale(1.06); }
+    }
+    /* 편지지 작성 패널 — 이중 베젤: 크림 트레이(외피) 안에 줄노트 코어 */
+    .ltr-compose { position:relative; border-radius:24px; padding:7px; margin-bottom:20px;
+      background:linear-gradient(180deg,rgba(252,240,235,0.92),rgba(248,228,222,0.92));
+      border:1px solid rgba(122,64,70,0.08);
+      box-shadow:0 1px 2px rgba(107,39,55,0.03), 0 22px 44px -20px rgba(107,39,55,0.18); }
+    .ltr-compose-core { position:relative; border-radius:17px; padding:16px 16px 14px; overflow:hidden;
+      background:linear-gradient(rgba(255,251,248,0.97),rgba(255,251,248,0.97)),
         repeating-linear-gradient(transparent, transparent 30px, rgba(215,120,135,0.10) 31px, rgba(215,120,135,0.10) 32px);
-      border:1px solid rgba(228,185,172,0.6); box-shadow:0 6px 20px rgba(150,80,90,0.07); }
-    .ltr-compose::after { content:'💌'; position:absolute; top:10px; right:16px; font-size:26px; opacity:0.3; transform:rotate(10deg); pointer-events:none; }
+      border:1px solid rgba(255,255,255,0.9);
+      box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), inset 0 0 0 1px rgba(228,185,172,0.3); }
+    .ltr-compose-core::after { content:'💌'; position:absolute; top:10px; right:16px; font-size:26px; opacity:0.3; transform:rotate(10deg); pointer-events:none; }
     .ltr-compose-head { font-size:16px; font-weight:400; font-family:var(--font-display); font-style:italic; color:var(--wine); margin-bottom:12px; }
-    .ltr-list-meta { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; padding:0 2px; }
+    .ltr-list-meta { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; padding:0 2px; }
     .ltr-list-meta-title { font-size:14px; font-weight:700; color:var(--ink-1); }
-    .ltr-list-meta-count { font-size:11px; color:var(--ink-3); }
-    .letters-list { display:flex; flex-direction:column; gap:11px; }
-    .ltr-card { position:relative; border-radius:18px; padding:15px 16px 13px; cursor:pointer; overflow:hidden; transition:transform 0.12s, box-shadow 0.2s;
-      background:linear-gradient(150deg,#fff7f4,#fdeae4); border:1px solid rgba(228,185,172,0.6); box-shadow:0 3px 14px rgba(150,80,90,0.06); }
+    .ltr-list-meta-count { font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+    .letters-list { display:flex; flex-direction:column; gap:12px; }
+    /* 편지 카드 — 부드러운 확산 그림자 + 상단 하이라이트 + 스프링 등장 */
+    @keyframes ltrCardIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .ltr-card { position:relative; border-radius:20px; padding:15px 16px 13px; cursor:pointer; overflow:hidden;
+      background:linear-gradient(160deg,#FFFAF7,#FBEBE5); border:1px solid rgba(122,64,70,0.09);
+      box-shadow:0 1px 2px rgba(107,39,55,0.03), 0 14px 30px -18px rgba(107,39,55,0.16), inset 0 1px 0 rgba(255,255,255,0.85);
+      transition:transform 0.55s var(--ease-spring), box-shadow 0.55s var(--ease-spring);
+      animation:ltrCardIn 0.5s var(--ease-spring) both; }
+    .ltr-card:nth-child(2) { animation-delay:0.05s; } .ltr-card:nth-child(3) { animation-delay:0.1s; }
+    .ltr-card:nth-child(4) { animation-delay:0.15s; } .ltr-card:nth-child(5) { animation-delay:0.2s; }
+    .ltr-card:nth-child(n+6) { animation-delay:0.24s; }
+    @media (hover:hover) {
+      .ltr-card:hover { transform:translateY(-2px); box-shadow:0 2px 4px rgba(107,39,55,0.04), 0 22px 40px -18px rgba(107,39,55,0.24), inset 0 1px 0 rgba(255,255,255,0.85); }
+    }
     .ltr-card:active { transform:scale(0.985); }
-    .ltr-card.ltr-unread { background:linear-gradient(150deg,#ffeef1,#fbdde3); border-color:rgba(220,120,140,0.5); box-shadow:0 4px 18px rgba(200,90,110,0.13); }
+    .ltr-card.ltr-unread { background:linear-gradient(160deg,#FFF0F3,#FBDCE3); border-color:rgba(220,120,140,0.45); box-shadow:0 1px 2px rgba(160,60,80,0.05), 0 16px 34px -16px rgba(190,80,105,0.3), inset 0 1px 0 rgba(255,255,255,0.7); }
     .ltr-card-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .ltr-stamp { width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e58aa0, #a8425c); color:#fff; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 6px rgba(150,60,80,0.25); }
+    .ltr-stamp { width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e58aa0, #a8425c); color:#fff; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 6px rgba(150,60,80,0.25), inset 0 1px 1px rgba(255,255,255,0.35); }
     .ltr-meta { flex:1; min-width:0; }
     .ltr-sender { font-size:13px; font-weight:700; color:var(--wine); }
-    .ltr-date { font-size:10px; color:var(--ink-4); margin-top:1px; }
-    .ltr-title { font-size:15px; font-weight:700; color:var(--ink-1); line-height:1.35; }
+    .ltr-date { font-size:10px; color:var(--ink-4); margin-top:1px; font-variant-numeric:tabular-nums; }
+    .ltr-title { font-size:16px; font-weight:500; color:var(--ink-1); line-height:1.4; font-family:var(--font-display); }
     .ltr-bottom-row { display:flex; align-items:center; margin-top:11px; gap:8px; }
     .ltr-new-pill { font-size:9px; font-weight:800; color:#fff; background:linear-gradient(135deg,#e06a82,#b8324f); padding:3px 10px; border-radius:999px; letter-spacing:0.06em; flex-shrink:0; box-shadow:0 2px 6px rgba(200,80,110,0.3); }
     .ltr-read-pill { font-size:9px; color:#6a9a7a; background:rgba(100,180,130,0.12); border:1px solid rgba(100,180,130,0.3); padding:2px 9px; border-radius:999px; flex-shrink:0; }
     .ltr-hint { font-size:11px; color:var(--wine); flex:1; text-align:right; opacity:0.7; }
-    .ltr-chevron { font-size:22px; color:var(--wine); line-height:1; margin-left:2px; opacity:0.75; transition:transform 0.2s; }
+    .ltr-chevron { font-size:22px; color:var(--wine); line-height:1; margin-left:2px; opacity:0.75; transition:transform 0.5s var(--ease-spring); }
     .ltr-card.ltr-open .ltr-chevron { transform:rotate(90deg); }
-    .ltr-expand { display:none; margin-top:13px; padding-top:13px; border-top:1px dashed rgba(200,140,130,0.3); }
-    .ltr-card.ltr-open .ltr-expand { display:block; }
+    /* 펼침 — grid-rows 0fr→1fr로 부드럽게 (기존 display:none 즉시 전환 대체) */
+    .ltr-expand { display:grid; grid-template-rows:0fr; opacity:0; margin-top:0; padding-top:0; border-top:1px dashed rgba(200,140,130,0);
+      transition:grid-template-rows 0.6s var(--ease-spring), opacity 0.45s var(--ease-spring), margin-top 0.6s var(--ease-spring), padding-top 0.6s var(--ease-spring), border-color 0.45s var(--ease-spring); }
+    .ltr-expand-in { overflow:hidden; min-height:0; }
+    .ltr-card.ltr-open .ltr-expand { grid-template-rows:1fr; opacity:1; margin-top:13px; padding-top:13px; border-top-color:rgba(200,140,130,0.3); }
     .ltr-expand-body { font-size:13.5px; white-space:pre-wrap; line-height:1.85; color:var(--ink-2); font-family:var(--font-display); }
     .ltr-expand-sign { font-size:12px; color:var(--wine); text-align:right; margin-top:12px; font-family:var(--font-display); font-style:italic; opacity:0.85; }
     .ltr-expand-actions { display:flex; justify-content:flex-end; align-items:center; margin-top:8px; gap:8px; }
@@ -435,19 +461,31 @@
     .weather-tint-sunny { background:linear-gradient(180deg,rgba(255,220,80,0.08) 0%,transparent 40%) !important; }
 
     /* ── 커플 통계 대시보드 ── */
-    .stats-dashboard { padding:16px 16px 14px; }
+    /* 스프링 감쇠 곡선 — 모든 프리미엄 모션에 공통 사용 */
+    :root { --ease-spring: cubic-bezier(0.32, 0.72, 0, 1); }
+    .stats-dashboard { padding:18px 16px 16px; }
     /* 통일된 카드 섹션 헤더 */
     .sec-head, .stats-dashboard-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
     .sec-title, .stats-dashboard-title { font-size:15px; font-weight:700; color:var(--ink); letter-spacing:-0.01em; }
     .sec-link, .stats-dashboard-link { font-size:12px; color:var(--ink-3); background:none; border:none; font-family:inherit; padding:0; cursor:pointer; }
     .sec-link:active, .stats-dashboard-link:active { color:var(--wine); }
-    .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-    .stat-item { display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:18px; padding:14px 4px 11px; position:relative; overflow:hidden; transition:transform 0.15s; cursor:pointer; }
-    .stat-item:active { transform:scale(0.93); }
-    .stat-item { background:var(--rose-50); border:1px solid rgba(122,64,70,0.06); }
-    .stat-item svg { width:22px; height:22px; margin-bottom:2px; stroke:var(--rose-600); }
-    .stat-num { position:absolute; top:5px; right:5px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--wine); font-size:10px; font-weight:700; color:#fff; display:flex; align-items:center; justify-content:center; }
-    .stat-label { font-size:10.5px; color:var(--ink-3); text-align:center; line-height:1.3; }
+    /* 마이크로 아이브로우 태그 */
+    .sec-eyebrow { display:inline-flex; align-items:center; padding:2px 9px; margin-bottom:6px; border-radius:999px; background:rgba(196,96,85,0.07); border:1px solid rgba(196,96,85,0.16); font-family:var(--font-en); font-size:8.5px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--rose-500); }
+    .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
+    /* 숫자를 주인공으로 — 세리프 숫자 + 부드러운 확산 그림자 + 스프링 리프트 */
+    .stat-item { display:flex; flex-direction:column; align-items:center; gap:1px; border-radius:16px; padding:12px 2px 10px; position:relative; overflow:hidden; cursor:pointer;
+      background:linear-gradient(180deg,#FFFDFB,#FAEFEA);
+      border:1px solid rgba(122,64,70,0.08);
+      box-shadow:0 1px 2px rgba(107,39,55,0.03), 0 12px 26px -16px rgba(107,39,55,0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+      transition:transform 0.55s var(--ease-spring), box-shadow 0.55s var(--ease-spring); }
+    @media (hover:hover) {
+      .stat-item:hover { transform:translateY(-2px); box-shadow:0 2px 4px rgba(107,39,55,0.04), 0 20px 36px -16px rgba(107,39,55,0.22), inset 0 1px 0 rgba(255,255,255,0.9); }
+    }
+    .stat-item:active { transform:scale(0.94); }
+    .stat-item svg { width:16px; height:16px; order:-1; margin-bottom:4px; opacity:0.8; transition:transform 0.55s var(--ease-spring); }
+    @media (hover:hover) { .stat-item:hover svg { transform:translateY(-1px) scale(1.08); } }
+    .stat-num { font-family:var(--font-display); font-style:italic; font-weight:500; font-size:21px; line-height:1.05; color:var(--wine); }
+    .stat-label { font-size:9.5px; color:var(--ink-3); letter-spacing:0.03em; text-align:center; line-height:1.3; margin-top:2px; }
     /* ── 홈 무드 미리보기 ── */
     .home-mood-card { border-radius:14px; padding:12px 12px 10px; display:flex; flex-direction:column; gap:3px; }
     .home-mood-card.me { background:rgba(255,232,238,0.85); border:1px solid rgba(244,194,205,0.5); }
@@ -943,7 +981,10 @@
         <!-- 커플 통계 대시보드 -->
         <div class="card stats-dashboard" style="margin:0 0 12px;">
           <div class="stats-dashboard-header">
-            <span class="stats-dashboard-title">우리의 기록</span>
+            <div>
+              <div class="sec-eyebrow">Our Archive</div>
+              <div class="stats-dashboard-title">우리의 기록</div>
+            </div>
             <button class="stats-dashboard-link" onclick="switchTabBar('photos')">전체보기 ›</button>
           </div>
           <div class="stats-grid">
@@ -1228,21 +1269,27 @@
         <section id="section-letters" class="tab-section hidden" style="padding:4px 2px 20px;">
           <div class="ltr-page-header">
             <div>
+              <div class="sec-eyebrow">Slow Mail</div>
               <div class="ltr-page-title">Love Letters</div>
               <div class="ltr-page-sub">서로에게 전하는 마음 💌</div>
             </div>
-            <button class="ltr-write-toggle" onclick="var p=document.getElementById('letterComposePanel');var open=p.style.display!=='none';p.style.display=open?'none':'block';if(!open)p.scrollIntoView({behavior:'smooth',block:'nearest'})">✍️ 편지 쓰기</button>
+            <button class="ltr-write-toggle" onclick="var p=document.getElementById('letterComposePanel');var open=p.style.display!=='none';p.style.display=open?'none':'block';if(!open)p.scrollIntoView({behavior:'smooth',block:'nearest'})">
+              <span>편지 쓰기</span>
+              <span class="ltr-write-ico" aria-hidden="true">✍️</span>
+            </button>
           </div>
           <div id="letterComposePanel" class="ltr-compose">
-            <div class="ltr-compose-head">오늘의 한 줄</div>
-            <div class="field-row">
-              <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label" for="inputLetterFrom">From.</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
-              <div class="field-group" style="flex:1 1 140px;"><label class="field-label" for="inputLetterTitle">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
-            </div>
-            <div class="field-group"><label class="field-label" for="textareaLetterBody">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
-            <div class="field-row" style="justify-content:space-between;align-items:center;">
-              <button id="btnSendLetter" class="btn-primary">💌 편지 보내기</button>
-              <span id="letterStatus" class="small muted"></span>
+            <div class="ltr-compose-core">
+              <div class="ltr-compose-head">오늘의 한 줄</div>
+              <div class="field-row">
+                <div class="field-group" style="flex:0.7 1 100px;"><label class="field-label" for="inputLetterFrom">From.</label><input id="inputLetterFrom" type="text" placeholder="예: 서후, 서진…" /></div>
+                <div class="field-group" style="flex:1 1 140px;"><label class="field-label" for="inputLetterTitle">제목 (선택)</label><input id="inputLetterTitle" type="text" placeholder="예: 오늘도 행복했어" /></div>
+              </div>
+              <div class="field-group"><label class="field-label" for="textareaLetterBody">편지 내용</label><textarea id="textareaLetterBody" placeholder="오늘 서로에게 전하고 싶은 말을 적어보세요."></textarea></div>
+              <div class="field-row" style="justify-content:space-between;align-items:center;">
+                <button id="btnSendLetter" class="btn-primary">💌 편지 보내기</button>
+                <span id="letterStatus" class="small muted" aria-live="polite"></span>
+              </div>
             </div>
           </div>
           <div class="ltr-list-meta">
@@ -3950,6 +3997,8 @@
       updateStat('statLetters', items ? items.length : 0);
       const el = document.getElementById("lettersList");
       const badge = document.getElementById("letterCountBadge");
+      // 재렌더(읽음 처리 등) 시 펼쳐둔 편지가 접히지 않게 열림 상태 보존
+      const openIds = new Set(Array.from(el.querySelectorAll(".ltr-card.ltr-open")).map(c => c.dataset.id));
       el.innerHTML = "";
       if (!items || !items.length) { el.innerHTML = '<div class="muted small" style="text-align:center;padding:20px 0;">아직 편지가 없어요 :)</div>'; badge.textContent = "0통"; return; }
       const unreadCount = items.filter(i => i.readBy && !i.readBy.includes(currentUser?.uid)).length;
@@ -3960,7 +4009,8 @@
         const senderName = item.from || "누군가";
 
         const card = document.createElement("div");
-        card.className = "ltr-card" + (isRead ? "" : " ltr-unread");
+        card.dataset.id = item.id;
+        card.className = "ltr-card" + (isRead ? "" : " ltr-unread") + (openIds.has(item.id) ? " ltr-open" : "");
 
         // 헤더: 하트 스탬프 + From.이름 + 날짜
         const head = document.createElement("div"); head.className = "ltr-card-head";
@@ -3993,12 +4043,13 @@
         bottomRow.appendChild(hint); bottomRow.appendChild(chevron);
         card.appendChild(bottomRow);
 
-        // 펼침 영역
+        // 펼침 영역 — grid-rows 애니메이션을 위해 단일 래퍼(.ltr-expand-in)로 감싼다
         const expand = document.createElement("div"); expand.className = "ltr-expand";
+        const expandIn = document.createElement("div"); expandIn.className = "ltr-expand-in";
         const body = document.createElement("div"); body.className = "ltr-expand-body"; body.textContent = item.body || "(내용 없음)";
-        expand.appendChild(body);
+        expandIn.appendChild(body);
         const sign = document.createElement("div"); sign.className = "ltr-expand-sign"; sign.textContent = `— ${senderName} 💗`;
-        expand.appendChild(sign);
+        expandIn.appendChild(sign);
         const actions = document.createElement("div"); actions.className = "ltr-expand-actions";
         const btnDel = document.createElement("button"); btnDel.className = "ltr-del-btn"; btnDel.textContent = "삭제";
         btnDel.addEventListener("click", async (e) => {
@@ -4007,7 +4058,8 @@
           await deleteDoc(doc(db,"couples",currentCoupleCode,"letters",item.id));
         });
         actions.appendChild(btnDel);
-        expand.appendChild(actions);
+        expandIn.appendChild(actions);
+        expand.appendChild(expandIn);
         card.appendChild(expand);
 
         // 탭 동작
